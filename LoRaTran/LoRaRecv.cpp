@@ -26,7 +26,7 @@
 #include "arduPiLoRa.h"
 #include <string>
 #include "FileTran.h"
-#include "LoRa_RSSIToDistance.h"
+#include "rssi_to_distance/LoRa_RSSIToDistance.h"
 using namespace std;
 
 int e;
