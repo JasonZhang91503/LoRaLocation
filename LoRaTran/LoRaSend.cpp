@@ -91,7 +91,7 @@ int main (int argc, char **argv){
 	LoRaSendNum = argv[0];
 	
 	setup();
-	while(1){
+	while(num < 1){
 		loop();
 	}
 	return (0);

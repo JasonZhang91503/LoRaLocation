@@ -27,6 +27,7 @@
 #include <string>
 #include "FileTran.h"
 #include "rssi_to_distance/LoRa_RSSIToDistance.h"
+#include "Lora_Positioning.h"
 using namespace std;
 
 int e;
@@ -167,6 +168,14 @@ int main (int argc, char **argv){
 	Rssi_info new_rssi;
 	Rssi_info* rssi_arr;
 	Locate_info loca_info;
+	Point BSpointA,BSpointB,BSpointC;
+    Point finalPoint;
+    
+    BSpointA=set_Bspoint(4.0,4.0, 'A');
+    BSpointB=set_Bspoint(9.0,7.0, 'B');
+    BSpointC=set_Bspoint(9.0,1.0, 'C');
+    
+	
 	
 	setup();
 	
@@ -200,11 +209,16 @@ int main (int argc, char **argv){
 			continue;
 		}
 		
-					
-			
+		
 		/*
-			將loca_info丟給distance_to_point計算;
-		*/
+         loca_info.distances[0]=4;
+         loca_info.distances[1]=3;
+         loca_info.distances[2]=3.25;
+         */
+		 
+		 //將loca_info丟給distance_to_point計算;
+        finalPoint=trilateration(BSpointA, BSpointB, BSpointC, loca_info.distances[0],loca_info.distances[1], loca_info.distances[2]);
+        cout<<finalPoint.x<<" "<<finalPoint.y;
 		
 		count++;
 	}
