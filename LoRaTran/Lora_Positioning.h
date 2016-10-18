@@ -6,6 +6,7 @@
 //  Copyright © 2016 Keng. All rights reserved.
 //
 #include "LoRa_RSSIToDistance.h"
+#include <math.h>
 #ifndef Lora_Positioning_h
 #define Lora_Positioning_h
 /*-----------------------
