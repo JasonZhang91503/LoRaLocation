@@ -1,4 +1,4 @@
-/*  
+ /*
  *  LoRa 868 / 915MHz SX1272 LoRa module
  *  
  *  Copyright (C) Libelium Comunicaciones Distribuidas S.L. 

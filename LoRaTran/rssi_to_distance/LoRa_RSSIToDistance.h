@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<queue>
+#include <math.h>
 using namespace std;
 /*-------------------------------------------------
 struct Locate_info:
@@ -19,8 +20,6 @@ struct Locate_info
 	float distances[3];
 	double x, y;
 };
-
-
 
 /*-------------------------------------------------
 struct Rssi_info:
@@ -79,7 +78,7 @@ public:
 		changeBufStateAfterPush();
 	}
 
-	Rssi_info buf_pop(char* deviceID) {
+	void buf_pop(char* deviceID) {
 		popFrontByNumber(1,deviceID);
 	}
 
@@ -124,7 +123,7 @@ public:
 	
 private:
 	queue<Rssi_info>* getQueue(char* deviceID) {
-		if (deviceID == deviceID_a) {
+        if (deviceID == deviceID_a) {
 			return &RssiInfo_queue_A;
 		}
 		if (deviceID == deviceID_b) {
@@ -133,6 +132,8 @@ private:
 		if (deviceID == deviceID_c) {
 			return &RssiInfo_queue_C;
 		}
+        //new
+        return &RssiInfo_queue_C;
 	}
 	bool changeBufStateAfterPush() {
 		bool IsChanged = false;
@@ -187,7 +188,7 @@ float Rssi_to_distance(Rssi_info rssi_info,float A,float N) {
 	char* deviceID = rssi_info.deviceID;
 	
 	//D =10 ^（（ABS（RSSI） - A）/（10* N））
-	rssi = abs(rssi);
+	rssi = fabsf(rssi);
 	power = (rssi - A) / (10 * N);
 	distance = pow(10, power);
 	return distance;
