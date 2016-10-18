@@ -34,6 +34,7 @@ int e;
 string LoRaRecvNum;
 int NodeAddress;
 float rssi_value;
+char my_packet[100];
 
 void setup()
 {
@@ -149,13 +150,13 @@ int Recv(Rssi_info &rssi_info){
 
 char* findDeviceID(int address){
 	if(address == 1){
-		return "A"
+		return "A";
 	}
 	else if(address == 2){
-		return "B"
+		return "B";
 	}
 	else if(address == 3){
-		return "C"
+		return "C";
 	}
 }
 
@@ -182,9 +183,9 @@ int main (int argc, char **argv){
 	
 	int count = 0;
 	while(count < 3){
-		rssi_info.RSSI = 0;
-		rssi_info.deviceID = NULL;
-		rssi_info.number = 0;
+		new_rssi.RSSI = 0;
+		new_rssi.deviceID = NULL;
+		new_rssi.number = 0;
 		e = Recv(new_rssi);
 		if(e != 0){
 			printf("recving data error!End Program");
