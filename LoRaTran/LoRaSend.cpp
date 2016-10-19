@@ -25,6 +25,7 @@
 // Include the SX1272 and SPI library: 
 #include "arduPiLoRa.h"
 #include <string>
+#include <iostream>
 using namespace std;
 
 int e;
@@ -88,7 +89,10 @@ void loop(void)
 }
 
 int main (int argc, char **argv){
-	LoRaSendNum = argv[0];
+	//LoRaSendNum = argv[0];
+	//LoRaSendNum = "1";
+	cout << "NodeAddress(1=A,2=B,3=C):";
+	cin >> LoRaSendNum;
 	
 	setup();
 	while(num < 1){
