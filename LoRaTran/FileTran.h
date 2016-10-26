@@ -25,7 +25,17 @@ void fileInput(char line[]){
     file << lineStr << endl;
 }
 
+void filePrint(char line[]){
+	for(int i = 0; line[i] != '\0'; i++){	
+		printf("%c",line[i]);
+	}
+	printf("\n");
+	fileInput(line);
+}
+
 void fileClose(){
     file.close();
     cout << "file close" << endl;
 }
+
+
