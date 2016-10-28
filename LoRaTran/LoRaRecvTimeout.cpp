@@ -147,7 +147,6 @@ void RecvWithTimeout(clock_t Timeout,clock_t Timeout_Begin,Rssi_info* A_buffer, 
 		}
 		Timeout_End = clock();
 	} while (Timeout_End - Timeout_Begin < 10000 && !A_buffer && !B_buffer && !C_buffer);
-
 }
 
 void Rssi_to_point(Rssi_info* A_buffer, Rssi_info* B_buffer, Rssi_info* C_buffer) {
@@ -159,7 +158,9 @@ void Rssi_to_point(Rssi_info* A_buffer, Rssi_info* B_buffer, Rssi_info* C_buffer
 	BSpointC = set_Bspoint(9.0, 1.0, 'C');
 	char output[50];
 
-	if (!A_buffer || !B_buffer || !C_buffer) {}
+	if (!A_buffer || !B_buffer || !C_buffer) {
+		printf("Reaching Timeout!\n");
+	}
 	else {
 		loca_info.distances[0] = Rssi_to_distance(*A_buffer, RSSI_A, RSSI_n);
 		printf("Point %s , Distance : %.2f \n", A_buffer->deviceID, loca_info.distances[0]);
@@ -190,6 +191,7 @@ int main (int argc, char **argv){
     printf("Begin receiving message ! \n");
 	//接收RSSI
 	while(true){//新循環
+		printf("Timeout Begin set = 0 ! \n");
 		Timeout_Begin = clock();
 		A_buffer = NULL;
 		B_buffer = NULL;
