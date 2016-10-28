@@ -90,7 +90,8 @@ Rssi_info* RecvRssi(){
 
 	printf("Receive packet, state %d\n", e);//1
 	if (e != 0) {//if fail to get,return
-		return NULL;
+		rssi_info->deviceID = " ";
+		return rssi_info;
 	}
 
     for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
@@ -102,7 +103,8 @@ Rssi_info* RecvRssi(){
     is_RSSI=sx1272.getRSSIpacket();
 	if (is_RSSI){	//if fail to get,return
 		filePrint("rssi error!\n");
-		return NULL;
+		rssi_info->deviceID = " ";
+		return rssi_info;
 	}
 
 	//set Rssi_info
@@ -145,6 +147,7 @@ void RecvWithTimeout(clock_t Timeout,clock_t Timeout_Begin,Rssi_info* A_buffer, 
 		default:
 			break;
 		}
+		free(temp_rssi);
 		Timeout_End = clock();
 	} while (Timeout_End - Timeout_Begin < 10000 && !A_buffer && !B_buffer && !C_buffer);
 }
