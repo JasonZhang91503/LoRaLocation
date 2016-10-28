@@ -30,10 +30,20 @@ void filePrint(char line[]){
 		printf("%c",line[i]);
 	}
 	printf("\n");
+
+	if (!file) {
+		cout << "file not open!" << endl;
+		return;
+	}
 	fileInput(line);
 }
 
 void fileClose(){
+	if (!file) {
+		cout << "file not open!" << endl;
+		return;
+	}
+
     file.close();
     cout << "file close" << endl;
 }

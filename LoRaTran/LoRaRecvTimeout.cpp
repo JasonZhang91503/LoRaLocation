@@ -9,13 +9,13 @@
 #include "arduPiLoRa.h"
 #include <string>
 #include "FileTran.h"
-#include "LoRa_RSSIToDistance.h"
+#include "rssi_to_distance\LoRa_RSSIToDistance.h"
+#include "Lora_Positioning.h"
 #include <time.h>
 using namespace std;
 
 int e;
 float rssi_value;
-string LoRaRecvNum;
 int NodeAddress;
 char my_packet[100];
 Rssi_info rssi_info;
@@ -62,20 +62,24 @@ void setup()
     delay(1000);
 }
 
-char findDeviceID(char address){
+char* findDeviceID(char address){
     if(address == '1'){
         return "A";
     }
     else if(address == '2'){
-        return "B";
+		return "B";
     }
     else if(address == '3'){
         return "C";
     }
 }
 
-Rssi_info Recv(Rssi_info rssi_info){
-    
+
+
+
+
+Rssi_info* RecvRssi(){
+	Rssi_info* rssi_info= (Rssi_info*)malloc(sizeof(Rssi_info));;
     bool is_RSSI;
     char rssiValue[20];
     char ReceiveMessage[100];
@@ -83,48 +87,42 @@ Rssi_info Recv(Rssi_info rssi_info){
     
     // Receive message
     e = sx1272.receivePacketTimeout(10000);
-    if ( e == 0 )
-    {
-        printf("Receive packet, state %d\n",e);
-        
-        for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
-        {
-            my_packet[i] = (char)sx1272.packet_received.data[i];
-        }
-               //get rssi_value;
-        is_RSSI=sx1272.getRSSIpacket();
-        if(!is_RSSI){
-            rssi_value=sx1272._RSSIpacket;
-            rssi_info.RSSI = rssi_value;
-			 //display RSSI and record it
-			sprintf(ReceiveMessage,"Packet send from address = %s\n",my_packet);
-			sprintf(rssiValue,"rssi = %.2f ",rssi_value);
-			filePrint(ReceiveMessage);
-			filePrint(rssiValue);
-        }
-        else{
-            filePrint("rssi error!\n");
-            return rssi_info;
-        }
-		
-        deviceID = findDeviceID(my_packet[0]);
-        rssi_info.deviceID = deviceID;
 
+	printf("Receive packet, state %d\n", e);//1
+	if (e != 0) {//if fail to get,return
+		return NULL;
+	}
+
+    for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
+    {
+        my_packet[i] = (char)sx1272.packet_received.data[i];
     }
-    else {
-        printf("Receive packet, state %d\n",e);
-    }
-    return rssi_info;
+
+    //get rssi_value;
+    is_RSSI=sx1272.getRSSIpacket();
+	if (is_RSSI){	//if fail to get,return
+		filePrint("rssi error!\n");
+		return NULL;
+	}
+
+	//set Rssi_info
+    rssi_value=sx1272._RSSIpacket;
+    rssi_info->RSSI = rssi_value;
+	rssi_info->deviceID = findDeviceID(my_packet[0]);
+
+	//display RSSI and record it
+	sprintf(ReceiveMessage,"Packet send from address = %s\n",my_packet);
+	sprintf(rssiValue,"rssi = %.2f ",rssi_value);
+	filePrint(ReceiveMessage);
+	filePrint(rssiValue);
+
+	return rssi_info;
 }
 
 
 int main (int argc, char **argv){
-    LoRaRecvNum = 'none';
-    fileOpen(argv[1]);
     float distance[3];
     char output[50];
-    //Rssi_info* rssi_arr;
-    //Rssi_BufferManager bufferManger;
     Rssi_info new_rssi;
     Rssi_info packet[3];
     Locate_info loca_info;
@@ -136,28 +134,27 @@ int main (int argc, char **argv){
     Rssi_info* A_buffer = NULL ,*B_buffer = NULL,*C_buffer = NULL, *temp_rssi = NULL;
 	clock_t Timeout_Begin, Timeout_End;
 	
+	//file Operation
+	if (argv[1] != NULL) {
+		fileOpen(argv[1]);
+	}
+
     int count = 0;
     setup();
     printf("Begin receiving message ! \n");
 	//接收RSSI
 	while(true){
+		//新循環
 		Timeout_Begin = clock();
 		A_buffer = NULL;
 		B_buffer = NULL;
 		C_buffer = NULL;
-		do{ //10秒
 		
-			//default set up;
-			/*
-			packet[count]=Recv();
-			distance[count] = Rssi_to_distance(packet[count], -34, 2);
-			printf("Point %c , Distance : %.2f \n",packet[count].deviceID,distance[count])
-			count++;
-			*/
-			temp_rssi = malloc(sizeof(Rssi_info));
-			*temp_rssi = Recv();
+		//10秒內判斷是否收到
+		do{ 
+			temp_rssi = RecvRssi();
 			
-			switch (temp_rssi->deviceID) {
+			switch (temp_rssi->deviceID[0]) {
 				case 'A':
 					if(A_buffer == NULL){
 						A_buffer = temp_rssi;
@@ -186,15 +183,17 @@ int main (int argc, char **argv){
 					break;
 			}
 			Timeout_End = clock();
-		}while(Timeout_End - Timeout_Begin < 10000 && !A_buffer && !B_buffer && !C_buffer)
+		} while (Timeout_End - Timeout_Begin < 10000 && !A_buffer && !B_buffer && !C_buffer);
+
+
 		if(!A_buffer||!B_buffer||!C_buffer){}
 		else{
-			loca_info.distance[0] = Rssi_to_distance(*A_buffer, RSSI_A, RSSI_n);
-			printf("Point %c , Distance : %.2f \n",A_buffer->deviceID,loca_info.distance[0]);
-			loca_info.distance[1] = Rssi_to_distance(*B_buffer, RSSI_A, RSSI_n);
-			printf("Point %c , Distance : %.2f \n",B_buffer->deviceID,loca_info.distance[1]);
-			loca_info.distance[2] = Rssi_to_distance(*C_buffer, RSSI_A, RSSI_n);
-			printf("Point %c , Distance : %.2f \n",C_buffer->deviceID,loca_info.distance[2]);
+			loca_info.distances[0] = Rssi_to_distance(*A_buffer, RSSI_A, RSSI_n);
+			printf("Point %c , Distance : %.2f \n",A_buffer->deviceID,loca_info.distances[0]);
+			loca_info.distances[1] = Rssi_to_distance(*B_buffer, RSSI_A, RSSI_n);
+			printf("Point %c , Distance : %.2f \n",B_buffer->deviceID,loca_info.distances[1]);
+			loca_info.distances[2] = Rssi_to_distance(*C_buffer, RSSI_A, RSSI_n);
+			printf("Point %c , Distance : %.2f \n",C_buffer->deviceID,loca_info.distances[2]);
 		
 		
 			finalPoint=trilateration(BSpointA, BSpointB, BSpointC, loca_info.distances[0],loca_info.distances[1],loca_info.distances[2]);
