@@ -33,7 +33,7 @@ struct Rssi_info:
 struct Rssi_info
 {
 	float RSSI;
-	char* deviceID = NULL;
+	char* deviceID;
 	int number;
 };
 

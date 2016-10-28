@@ -162,11 +162,11 @@ void Rssi_to_point(Rssi_info* A_buffer, Rssi_info* B_buffer, Rssi_info* C_buffer
 	if (!A_buffer || !B_buffer || !C_buffer) {}
 	else {
 		loca_info.distances[0] = Rssi_to_distance(*A_buffer, RSSI_A, RSSI_n);
-		printf("Point %c , Distance : %.2f \n", A_buffer->deviceID, loca_info.distances[0]);
+		printf("Point %s , Distance : %.2f \n", A_buffer->deviceID, loca_info.distances[0]);
 		loca_info.distances[1] = Rssi_to_distance(*B_buffer, RSSI_A, RSSI_n);
-		printf("Point %c , Distance : %.2f \n", B_buffer->deviceID, loca_info.distances[1]);
+		printf("Point %s , Distance : %.2f \n", B_buffer->deviceID, loca_info.distances[1]);
 		loca_info.distances[2] = Rssi_to_distance(*C_buffer, RSSI_A, RSSI_n);
-		printf("Point %c , Distance : %.2f \n", C_buffer->deviceID, loca_info.distances[2]);
+		printf("Point %s , Distance : %.2f \n", C_buffer->deviceID, loca_info.distances[2]);
 
 
 		finalPoint = trilateration(BSpointA, BSpointB, BSpointC, loca_info.distances[0], loca_info.distances[1], loca_info.distances[2]);
