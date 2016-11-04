@@ -29,6 +29,8 @@
  int8_t sendATcommand(const char* ATcommand, const char* expected_answer1, unsigned int timeout);
  void power_on();
  
+
+ int e;
 int8_t answer;
 int onModulePin= 2;
 int counter;
@@ -61,43 +63,6 @@ void GPSsetup(){
     while( (sendATcommand("AT+CGPSSTATUS?", "2D Fix", 5000) || 
             sendATcommand("AT+CGPSSTATUS?", "3D Fix", 5000)) == 0 );
     
-
-}
-
-void loop(){
-    // Basic
-    // Clean the input buffer
-    while( Serial.available() > 0) Serial.read();    
-    delay(100);
-    // request Basic string
-    sendATcommand("AT+CGPSINF=0", "AT+CGPSINF=0\r\n\r\n", 2000);
-    
-    counter = 0;
-    answer = 0;
-    memset(Basic_str, '\0', 100);    // Initialize the string
-    previous = millis();
-    // this loop waits for the NMEA string
-    do{
-
-        if(Serial.available() != 0){    
-            Basic_str[counter] = Serial.read();
-            counter++;
-            // check if the desired answer is in the response of the module
-            if (strstr(Basic_str, "OK") != NULL)    
-            {
-                answer = 1;
-            }
-        }
-        // Waits for the asnwer with time out
-    }while((answer == 0) && ((millis() - previous) < 2000));  
-    
-    Basic_str[counter-3] = '\0';
-    
-    printf("*************************************************\n");
-    printf("Basic string: ");
-    printf("%s\n",Basic_str);
-   
-    delay(1000);
 
 }
 
@@ -138,6 +103,45 @@ void LoRasetup()
 	printf("SX1272 successfully configured\n\n");
 	delay(1000);
 }
+
+void loop(){
+    // Basic
+    // Clean the input buffer
+    while( Serial.available() > 0) Serial.read();    
+    delay(100);
+    // request Basic string
+    sendATcommand("AT+CGPSINF=0", "AT+CGPSINF=0\r\n\r\n", 2000);
+    
+    counter = 0;
+    answer = 0;
+    memset(Basic_str, '\0', 100);    // Initialize the string
+    previous = millis();
+    // this loop waits for the NMEA string
+    do{
+
+        if(Serial.available() != 0){    
+            Basic_str[counter] = Serial.read();
+            counter++;
+            // check if the desired answer is in the response of the module
+            if (strstr(Basic_str, "OK") != NULL)    
+            {
+                answer = 1;
+            }
+        }
+        // Waits for the asnwer with time out
+    }while((answer == 0) && ((millis() - previous) < 2000));  
+    
+    Basic_str[counter-3] = '\0';
+    
+    printf("*************************************************\n");
+    printf("Basic string: ");
+    printf("%s\n",Basic_str);
+   
+    delay(1000);
+
+}
+
+
 
 
 void power_on(){
