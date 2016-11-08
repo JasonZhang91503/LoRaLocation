@@ -209,7 +209,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             mLocationTextView.setText("My position=lat/lng:\n" +
                     "(" + mLocation.getLatitude() +
                     ", " + mLocation.getLongitude() + ")");
-            String buffer = "1"+mLocation.getLatitude()+"%"+mLocation.getLongitude();
+            String buffer = "1"+mLocation.getLatitude()+"%"+mLocation.getLongitude()+"$";
             byte tmp[]= buffer.getBytes();
             try{
                 mOutStream.write(tmp);
