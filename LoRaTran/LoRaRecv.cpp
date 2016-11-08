@@ -8,6 +8,7 @@
 
 #include "arduPiLoRa.h"
 #include "Lora_Setup.h"
+#include "FileTran.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -35,7 +36,8 @@ char* recvMessage() {
             lastPacketMessage[i] = (char)sx1272.packet_received.data[i];
             messageStr[i] = lastPacketMessage[i];
         }
-        printf("Message: %s\n", lastPacketMessage);
+        cout<<"message:"<<endl;
+        fileInput(lastPacketMessage);
         
         return messageStr;
     }
@@ -56,6 +58,14 @@ int main (int argc, char **argv){
     
     cout<<"Set Receiver NodeAddress (1=A,2=B,3=C)"<<endl;
     cin>>NodeAddress;
+    
+    if (argv[1] != NULL) {
+        fileOpen(argv[1]);
+    }
+    else{
+        printf("please key in txt file name\n");
+        return 0;
+    }
     e=setup(NodeAddress);
     while(1){
         loop();

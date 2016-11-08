@@ -48,7 +48,7 @@ Position readFromBluetooth(){
     char buf[1024]={0};
     Position local;
     // read data from the client
-    bytes_read = read(client, buf, sizeof(buf));
+    bytes_read =unistd:read(client, buf, sizeof(buf));
     
     if( bytes_read > 0 ) {
         std::size_t found = buf.find("%");
