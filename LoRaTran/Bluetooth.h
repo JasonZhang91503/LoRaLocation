@@ -19,6 +19,11 @@ bdaddr_t my_bdaddr_any = {0,0,0,0,0,0};
 int s,client, bytes_read;
 struct sockaddr_rc loc_addr = {0},rem_addr={0};
 
+struct position{
+    char *latitude;
+    char *longitude;
+};
+typedef struct position Position;
 void BluetoothInitial(){
     socklen_t opt = sizeof(rem_addr);
     s = socket(AF_BLUETOOTH,SOCK_STREAM,BTPROTO_RFCOMM);
@@ -39,22 +44,23 @@ void BluetoothInitial(){
     memset(buf, 0, sizeof(buf));
 }
 
-void readFromBluetooth(char *latitude,char *longitude){
+Position readFromBluetooth(){
     char buf[1024]={0};
-    
+    Position local;
     // read data from the client
     bytes_read = read(client, buf, sizeof(buf));
     
     if( bytes_read > 0 ) {
         std::size_t found = buf.find("%");
-        std::size_t length = buf.copy(latitude,found-1,1);
-        latitude[length]="\0";
+        std::size_t length = buf.copy(local.latitude,found-1,1);
+        local.latitude[length]="\0";
         
         std::size_t foundEnd = buf.find("$");
-        length = buf.copy(longitude,foundEnd-found-1,found+1);
-        longitude[length]="\0";
+        length = buf.copy(local.longitude,foundEnd-found-1,found+1);
+        local.longitude[length]="\0";
 
-        cout<<"latitude: "<<latitude<<" longitude: "<<longitude<<endl;
+        cout<<"latitude: "<<local.latitude<<" longitude: "<<local.longitude<<endl;
+        return local;
     }
 }
 
