@@ -207,9 +207,9 @@ int8_t sendATcommand(const char* ATcommand, const char* expected_answer, unsigne
 }
 
 int main(){
-	
-    GPSsetup();
 	LoRasetup();
+    GPSsetup();
+	
     while(1){loop();}
     return 0;
 }
