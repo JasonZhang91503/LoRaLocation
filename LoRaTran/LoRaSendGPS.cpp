@@ -82,7 +82,7 @@ void LoRasetup()
 	// Set header
 	e = sx1272.setHeaderON();
 	printf("Setting Header ON: state %d\n", e);
-
+	
 	// Select frequency channel
 	e = sx1272.setChannel(CH_10_868);
 	printf("Setting Channel: state %d\n", e);
