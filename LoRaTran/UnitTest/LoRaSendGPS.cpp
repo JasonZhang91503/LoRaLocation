@@ -54,6 +54,7 @@
  //Include arduPi library
  #include "arduPi.h"
 #include "arduPiLoRa.h"
+#include "arduPiClasses.h"
 
  int8_t sendATcommand(const char* ATcommand, const char* expected_answer1, unsigned int timeout);
  void power_on();
