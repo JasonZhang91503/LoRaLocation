@@ -21,4 +21,6 @@
     <string name="button_scan">Scan for devices</string>
 
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+
+    <string name="send_success">Send message success.</string>>
 </resources>

@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +61,8 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private static final int NO_CONNECT = 0;
     private static final int CONNECT = 1;
 
+    private Button testbut;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +72,14 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 .findFragmentById(R.id.map);
 
         mAdapter = BluetoothAdapter.getDefaultAdapter();
+        testbut = (Button)findViewById(R.id.butTest);
+        testbut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tmp = "123.22%125.34$";
+                sendMes(tmp);
+            }
+        });
         curState = NO_CONNECT;
         if (mAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
@@ -82,8 +93,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 setBluetoothConnect();
             }
         }
-
-
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
         buildGoogleApiClient();
@@ -210,12 +219,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     "(" + mLocation.getLatitude() +
                     ", " + mLocation.getLongitude() + ")");
             String buffer = "1"+mLocation.getLatitude()+"%"+mLocation.getLongitude()+"$";
-            byte tmp[]= buffer.getBytes();
-            try{
-                mOutStream.write(tmp);
-            }catch(IOException e){
-                Log.e(TAG, "Exception during write", e);
-            }
+            sendMes(buffer);
 
 
         } else {
@@ -276,7 +280,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         mAdapter.cancelDiscovery();
         try{
-            mOutStream = mSocket.getOutputStream();
+            mSocket.connect();
             synchronized (this){
                 if(curState==CONNECT){
                     return;
@@ -292,5 +296,22 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
             curState=NO_CONNECT;
         }
+        try {
+            mOutStream = mSocket.getOutputStream();
+        }catch(IOException e){
+            Log.d("bluetooth","getOutputStream has exception");
+        }
+
+    }
+
+    public void sendMes(String mes){
+            byte tmp[]= mes.getBytes();
+            try{
+                mOutStream.write(tmp);
+            }catch(IOException e){
+                Log.e(TAG, "Exception during write", e);
+            }
+            Toast.makeText(this,"send access"+mes, Toast.LENGTH_LONG).show();
+
     }
 }

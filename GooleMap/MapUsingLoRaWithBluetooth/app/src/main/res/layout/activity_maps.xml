@@ -22,11 +22,19 @@
             android:text="@string/my_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:text="test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/butTest"
+            />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_text"
-            android:onClick="locationButtonOnClick"/>
+            android:onClick="locationButtonOnClick (MapsActivity)"/>
 
     </LinearLayout>
 </FrameLayout>
