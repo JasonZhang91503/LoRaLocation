@@ -8,7 +8,13 @@
 
 #ifndef LoraSetup_h
 #define LoraSetup_h
+#include <stdio.h>
+#include <stdlib.h>
 
+void ClearScreen()
+{
+   printf("\033[2J");
+}
 int setup(int Address)
 {
     int e;
