@@ -353,6 +353,110 @@ uint8_t SX1272ON()
 	
   return state;
 }
+uint8_t setLORA()
+{
+    uint8_t state = 2;
+    byte st0;
+
+	#if (SX1272_debug_mode > 1)
+		printf("\n");
+		printf("Starting 'setLORA'\n");
+	#endif
+
+	writeRegister(REG_OP_MODE, FSK_SLEEP_MODE);    // Sleep mode (mandatory to set LoRa mode)
+	writeRegister(REG_OP_MODE, LORA_SLEEP_MODE);    // LoRa sleep mode
+	writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);	// LoRa standby mode
+
+	writeRegister(REG_MAX_PAYLOAD_LENGTH,MAX_LENGTH);
+
+	delayMicroseconds(100);
+
+	st0 = readRegister(REG_OP_MODE);	// Reading config mode
+	if( st0 == LORA_STANDBY_MODE )
+	{ // LoRa mode
+		_modem = LORA;
+		state = 0;
+		#if (SX1272_debug_mode > 1)
+			printf("## LoRa set with success ##\n");
+			printf("\n");
+		#endif
+	}
+	else
+	{ // FSK mode
+		_modem = FSK;
+		state = 1;
+//		#if (SX1272_debug_mode > 1)
+			printf("** There has been an error while setting LoRa **\n");
+			printf("\n");
+//		#endif
+	}
+	return state;
+}
+
+int8_t SX1272::setMaxCurrent(uint8_t rate)
+{
+	int8_t state = 2;
+	byte st0;
+
+	#if (SX1272_debug_mode > 1)
+		printf("\n");
+		printf("Starting 'setMaxCurrent'\n");
+	#endif
+
+	// Maximum rate value = 0x1B, because maximum current supply = 240 mA
+	if (rate > 0x1B)
+	{
+		state = -1;
+		#if (SX1272_debug_mode > 1)
+			printf("** Maximum current supply is 240 mA, ");
+			printf("so maximum parameter value must be 27 (DEC) or 0x1B (HEX) **\n");
+			printf("\n");
+		#endif
+	}
+	else
+	{
+		// Enable Over Current Protection
+        rate |= 0B00100000;
+
+		state = 1;
+		st0 = readRegister(REG_OP_MODE);	// Save the previous status
+		if( _modem == LORA )
+		{ // LoRa mode
+			writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);	// Set LoRa Standby mode to write in registers
+		}
+		else
+		{ // FSK mode
+			writeRegister(REG_OP_MODE, FSK_STANDBY_MODE);	// Set FSK Standby mode to write in registers
+		}
+		writeRegister(REG_OCP, rate);		// Modifying maximum current supply
+		writeRegister(REG_OP_MODE, st0);		// Getting back to previous status
+		state = 0;
+	}
+	return state;
+}
+
+void writeRegister(byte address, byte data)
+{
+	digitalWrite(SX1272_SS,LOW);
+	delayMicroseconds(1);
+    bitSet(address, 7);			// Bit 7 set to read from registers
+    //SPI.transfer(address);
+    //SPI.transfer(data);
+    txbuf[0] = address;
+	txbuf[1] = data;
+	maxWrite16();
+	//digitalWrite(SX1272_SS,HIGH);
+
+    #if (SX1272_debug_mode > 1)
+        printf("## Writing:  ##\tRegister ");
+		bitClear(address, 7);
+		printf("%X", address);
+		printf(":  ");
+		printf("%X", data);
+		printf("\n");
+	#endif
+
+}
 
 int main(){
 	//LoRasetup();
