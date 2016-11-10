@@ -81,6 +81,11 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             }
         });
         curState = NO_CONNECT;
+        
+        mapFragment.getMapAsync(this);
+        mapView = mapFragment.getView();
+        buildGoogleApiClient();
+        
         if (mAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             this.finish();
@@ -93,9 +98,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 setBluetoothConnect();
             }
         }
-        mapFragment.getMapAsync(this);
-        mapView = mapFragment.getView();
-        buildGoogleApiClient();
+        
     }
 
     /**
