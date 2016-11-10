@@ -235,8 +235,127 @@ int8_t sendATcommand(const char* ATcommand, const char* expected_answer, unsigne
         return answer;
 }
 
+uint8_t SX1272ON()
+{
+
+  uint8_t state = 2;
+
+  #if (SX1272_debug_mode > 1)
+	  printf("\n");
+	  printf("Starting 'ON'\n");
+  #endif
+
+  // Inital Reset Sequence
+
+  // 1.- power ON embebed socket
+  Utils.socketON();
+
+  // 2.- reset pulse for LoRa module initialization
+  pinMode(LORA_RESET_PIN, OUTPUT);
+  digitalWrite(LORA_RESET_PIN, HIGH);
+  delay(100);
+
+  digitalWrite(LORA_RESET_PIN, LOW);
+  delay(100);
+
+  // 3.- SPI chip select
+  pinMode(SX1272_SS,OUTPUT);
+  digitalWrite(SX1272_SS,HIGH);
+  delayMicroseconds(100);
+ 
+  //Configure the MISO, MOSI, CS, SPCR.
+  SPI.begin();
+  //Set Most significant bit first
+  SPI.setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+  //Divide the clock frequency
+  SPI.setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
+  //Set data mode
+  SPI.setDataMode(BCM2835_SPI_MODE0);
+  delayMicroseconds(100);
+  setMaxCurrent(0x1B);
+  #if (SX1272_debug_mode > 1)
+	  printf("## Setting ON with maximum current supply ##\n");
+	  printf("\n");
+  #endif
+
+  // set LoRa mode
+  state = setLORA();
+
+	//Set initialization values
+	writeRegister(0x0,0x0);
+	writeRegister(0x1,0x81);
+	writeRegister(0x2,0x1A);
+	writeRegister(0x3,0xB);
+	writeRegister(0x4,0x0);
+	writeRegister(0x5,0x52);
+	writeRegister(0x6,0xD8);
+	writeRegister(0x7,0x99);
+	writeRegister(0x8,0x99);
+	writeRegister(0x9,0x0);
+	writeRegister(0xA,0x9);
+	writeRegister(0xB,0x3B);
+	writeRegister(0xC,0x23);
+	writeRegister(0xD,0x1);
+	writeRegister(0xE,0x80);
+	writeRegister(0xF,0x0);
+	writeRegister(0x10,0x0);
+	writeRegister(0x11,0x0);
+	writeRegister(0x12,0x0);
+	writeRegister(0x13,0x0);
+	writeRegister(0x14,0x0);
+	writeRegister(0x15,0x0);
+	writeRegister(0x16,0x0);
+	writeRegister(0x17,0x0);
+	writeRegister(0x18,0x10);
+	writeRegister(0x19,0x0);
+	writeRegister(0x1A,0x0);
+	writeRegister(0x1B,0x0);
+	writeRegister(0x1C,0x0);
+	writeRegister(0x1D,0x4A);
+	writeRegister(0x1E,0x97);
+	writeRegister(0x1F,0xFF);
+	writeRegister(0x20,0x0);
+	writeRegister(0x21,0x8);
+	writeRegister(0x22,0xFF);
+	writeRegister(0x23,0xFF);
+	writeRegister(0x24,0x0);
+	writeRegister(0x25,0x0);
+	writeRegister(0x26,0x0);
+	writeRegister(0x27,0x0);
+	writeRegister(0x28,0x0);
+	writeRegister(0x29,0x0);
+	writeRegister(0x2A,0x0);
+	writeRegister(0x2B,0x0);
+	writeRegister(0x2C,0x0);
+	writeRegister(0x2D,0x50);
+	writeRegister(0x2E,0x14);
+	writeRegister(0x2F,0x40);
+	writeRegister(0x30,0x0);
+	writeRegister(0x31,0x3);
+	writeRegister(0x32,0x5);
+	writeRegister(0x33,0x27);
+	writeRegister(0x34,0x1C);
+	writeRegister(0x35,0xA);
+	writeRegister(0x36,0x0);
+	writeRegister(0x37,0xA);
+	writeRegister(0x38,0x42);
+	writeRegister(0x39,0x12);
+	writeRegister(0x3A,0x65);
+	writeRegister(0x3B,0x1D);
+	writeRegister(0x3C,0x1);
+	writeRegister(0x3D,0xA1);
+	writeRegister(0x3E,0x0);
+	writeRegister(0x3F,0x0);
+	writeRegister(0x40,0x0);
+	writeRegister(0x41,0x0);
+	writeRegister(0x42,0x22);
+	
+  return state;
+}
+
 int main(){
-	LoRasetup();
+	//LoRasetup();
+	SX1272ON();
     GPSsetup();
 	
     while(1){loop();}
