@@ -18,7 +18,7 @@ using namespace std;
 bdaddr_t my_bdaddr_any = {0,0,0,0,0,0};
 int s,client, bytes_read=0;
 struct sockaddr_rc loc_addr = {0},rem_addr={0};
-char mes[20]={"0"};
+char mes[30]={"0"};
 
 struct position{
     char latitude[10];
