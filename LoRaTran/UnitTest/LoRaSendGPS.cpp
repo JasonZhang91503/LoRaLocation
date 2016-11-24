@@ -104,7 +104,7 @@ void LoRasetup()
 	// Power ON the module
 	e = sx1272.ON();
 	printf("Setting power ON: state %d\n", e);
-
+	/*
 	// Set transmission mode
 	e = sx1272.setMode(4);
 	printf("Setting Mode: state %d\n", e);
@@ -132,6 +132,7 @@ void LoRasetup()
 	// Print a success message
 	printf("SX1272 successfully configured\n\n");
 	delay(1000);
+	*/
 }
 
 void loop(){
@@ -236,231 +237,8 @@ int8_t sendATcommand(const char* ATcommand, const char* expected_answer, unsigne
         return answer;
 }
 
-uint8_t SX1272ON()
-{
-
-  uint8_t state = 2;
-
-  #if (SX1272_debug_mode > 1)
-	  printf("\n");
-	  printf("Starting 'ON'\n");
-  #endif
-
-  // Inital Reset Sequence
-
-  // 1.- power ON embebed socket
-  Utils.socketON();
-
-  // 2.- reset pulse for LoRa module initialization
-  pinMode(LORA_RESET_PIN, OUTPUT);
-  digitalWrite(LORA_RESET_PIN, HIGH);
-  delay(100);
-
-  digitalWrite(LORA_RESET_PIN, LOW);
-  delay(100);
-
-  // 3.- SPI chip select
-  pinMode(SX1272_SS,OUTPUT);
-  digitalWrite(SX1272_SS,HIGH);
-  delayMicroseconds(100);
- 
-  //Configure the MISO, MOSI, CS, SPCR.
-  SPI.begin();
-  //Set Most significant bit first
-  SPI.setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
-  //Divide the clock frequency
-  SPI.setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
-  //Set data mode
-  SPI.setDataMode(BCM2835_SPI_MODE0);
-  delayMicroseconds(100);
-  setMaxCurrent(0x1B);
-  #if (SX1272_debug_mode > 1)
-	  printf("## Setting ON with maximum current supply ##\n");
-	  printf("\n");
-  #endif
-
-  // set LoRa mode
-  state = setLORA();
-
-	//Set initialization values
-	writeRegister(0x0,0x0);
-	writeRegister(0x1,0x81);
-	writeRegister(0x2,0x1A);
-	writeRegister(0x3,0xB);
-	writeRegister(0x4,0x0);
-	writeRegister(0x5,0x52);
-	writeRegister(0x6,0xD8);
-	writeRegister(0x7,0x99);
-	writeRegister(0x8,0x99);
-	writeRegister(0x9,0x0);
-	writeRegister(0xA,0x9);
-	writeRegister(0xB,0x3B);
-	writeRegister(0xC,0x23);
-	writeRegister(0xD,0x1);
-	writeRegister(0xE,0x80);
-	writeRegister(0xF,0x0);
-	writeRegister(0x10,0x0);
-	writeRegister(0x11,0x0);
-	writeRegister(0x12,0x0);
-	writeRegister(0x13,0x0);
-	writeRegister(0x14,0x0);
-	writeRegister(0x15,0x0);
-	writeRegister(0x16,0x0);
-	writeRegister(0x17,0x0);
-	writeRegister(0x18,0x10);
-	writeRegister(0x19,0x0);
-	writeRegister(0x1A,0x0);
-	writeRegister(0x1B,0x0);
-	writeRegister(0x1C,0x0);
-	writeRegister(0x1D,0x4A);
-	writeRegister(0x1E,0x97);
-	writeRegister(0x1F,0xFF);
-	writeRegister(0x20,0x0);
-	writeRegister(0x21,0x8);
-	writeRegister(0x22,0xFF);
-	writeRegister(0x23,0xFF);
-	writeRegister(0x24,0x0);
-	writeRegister(0x25,0x0);
-	writeRegister(0x26,0x0);
-	writeRegister(0x27,0x0);
-	writeRegister(0x28,0x0);
-	writeRegister(0x29,0x0);
-	writeRegister(0x2A,0x0);
-	writeRegister(0x2B,0x0);
-	writeRegister(0x2C,0x0);
-	writeRegister(0x2D,0x50);
-	writeRegister(0x2E,0x14);
-	writeRegister(0x2F,0x40);
-	writeRegister(0x30,0x0);
-	writeRegister(0x31,0x3);
-	writeRegister(0x32,0x5);
-	writeRegister(0x33,0x27);
-	writeRegister(0x34,0x1C);
-	writeRegister(0x35,0xA);
-	writeRegister(0x36,0x0);
-	writeRegister(0x37,0xA);
-	writeRegister(0x38,0x42);
-	writeRegister(0x39,0x12);
-	writeRegister(0x3A,0x65);
-	writeRegister(0x3B,0x1D);
-	writeRegister(0x3C,0x1);
-	writeRegister(0x3D,0xA1);
-	writeRegister(0x3E,0x0);
-	writeRegister(0x3F,0x0);
-	writeRegister(0x40,0x0);
-	writeRegister(0x41,0x0);
-	writeRegister(0x42,0x22);
-	
-  return state;
-}
-uint8_t setLORA()
-{
-    uint8_t state = 2;
-    byte st0;
-
-	#if (SX1272_debug_mode > 1)
-		printf("\n");
-		printf("Starting 'setLORA'\n");
-	#endif
-
-	writeRegister(REG_OP_MODE, FSK_SLEEP_MODE);    // Sleep mode (mandatory to set LoRa mode)
-	writeRegister(REG_OP_MODE, LORA_SLEEP_MODE);    // LoRa sleep mode
-	writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);	// LoRa standby mode
-
-	writeRegister(REG_MAX_PAYLOAD_LENGTH,MAX_LENGTH);
-
-	delayMicroseconds(100);
-
-	st0 = readRegister(REG_OP_MODE);	// Reading config mode
-	if( st0 == LORA_STANDBY_MODE )
-	{ // LoRa mode
-		_modem = LORA;
-		state = 0;
-		#if (SX1272_debug_mode > 1)
-			printf("## LoRa set with success ##\n");
-			printf("\n");
-		#endif
-	}
-	else
-	{ // FSK mode
-		_modem = FSK;
-		state = 1;
-//		#if (SX1272_debug_mode > 1)
-			printf("** There has been an error while setting LoRa **\n");
-			printf("\n");
-//		#endif
-	}
-	return state;
-}
-
-int8_t SX1272::setMaxCurrent(uint8_t rate)
-{
-	int8_t state = 2;
-	byte st0;
-
-	#if (SX1272_debug_mode > 1)
-		printf("\n");
-		printf("Starting 'setMaxCurrent'\n");
-	#endif
-
-	// Maximum rate value = 0x1B, because maximum current supply = 240 mA
-	if (rate > 0x1B)
-	{
-		state = -1;
-		#if (SX1272_debug_mode > 1)
-			printf("** Maximum current supply is 240 mA, ");
-			printf("so maximum parameter value must be 27 (DEC) or 0x1B (HEX) **\n");
-			printf("\n");
-		#endif
-	}
-	else
-	{
-		// Enable Over Current Protection
-        rate |= 0B00100000;
-
-		state = 1;
-		st0 = readRegister(REG_OP_MODE);	// Save the previous status
-		if( _modem == LORA )
-		{ // LoRa mode
-			writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);	// Set LoRa Standby mode to write in registers
-		}
-		else
-		{ // FSK mode
-			writeRegister(REG_OP_MODE, FSK_STANDBY_MODE);	// Set FSK Standby mode to write in registers
-		}
-		writeRegister(REG_OCP, rate);		// Modifying maximum current supply
-		writeRegister(REG_OP_MODE, st0);		// Getting back to previous status
-		state = 0;
-	}
-	return state;
-}
-
-void writeRegister(byte address, byte data)
-{
-	digitalWrite(SX1272_SS,LOW);
-	delayMicroseconds(1);
-    bitSet(address, 7);			// Bit 7 set to read from registers
-    //SPI.transfer(address);
-    //SPI.transfer(data);
-    txbuf[0] = address;
-	txbuf[1] = data;
-	maxWrite16();
-	//digitalWrite(SX1272_SS,HIGH);
-
-    #if (SX1272_debug_mode > 1)
-        printf("## Writing:  ##\tRegister ");
-		bitClear(address, 7);
-		printf("%X", address);
-		printf(":  ");
-		printf("%X", data);
-		printf("\n");
-	#endif
-
-}
-
 int main(){
-	//LoRasetup();
-	SX1272ON();
+	LoRasetup();
     GPSsetup();
 	
     while(1){loop();}
