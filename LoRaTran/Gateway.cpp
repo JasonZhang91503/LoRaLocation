@@ -19,6 +19,7 @@ using namespace std;
 #define IP "192.168.0.116"
 #define PORT 3306
 int e,NodeAddress=1;
+
 MYSQL *database_initial(MYSQL *sql){
     sql=mysql_init(NULL);
     
@@ -80,11 +81,16 @@ int main(int argc, const char * argv[]) {
     MYSQL *mysql1;
     mysql1=database_initial(mysql1);
     mysql_library_init(0,NULL,NULL);
-    string state;
+    string data[3];
+    string start_point[2];
+    string des_point[2];
     char *recvMsg;
+    string sendMsg;
+    string key;
     e=setup(NodeAddress);
     cout<<"[State 0] Query state about the database"<<endl;
-    if (mysql_query(mysql1, "SELECT state FROM transport")){finish_with_error(mysql1);}
+    mysql_query(mysql1, "Use postman");
+    if (mysql_query(mysql1, "SELECT state,start_id,des_id FROM transport")){finish_with_error(mysql1);}
     else{
         MYSQL_RES *result = mysql_store_result(mysql1);
         if(result==NULL){finish_with_error(mysql1);}
@@ -95,20 +101,47 @@ int main(int argc, const char * argv[]) {
             {
                 for(int i = 0; i < num_fields; i++)
                     {
-                        state=row[i];
-                        cout<<"Get State "<<row[i]<<endl;
+                        data[i]=row[i];
                     }
             }
         }
-        //Get longtitude latitude
     }
-    if(state=="0"){
-        send(state,e);//還要給經緯度
+    for(int n=1;n<=2;n++){
+        string command="SELECT longitude,latitude from location where _id="+data[n];
+    
+        if (mysql_query(mysql1,command.c_str())){finish_with_error(mysql1);}
+        else{
+            MYSQL_RES *result = mysql_store_result(mysql1);
+            if(result==NULL){finish_with_error(mysql1);}
+            else{
+                int num_fields = mysql_num_fields(result);
+                MYSQL_ROW row;
+                while ((row = mysql_fetch_row(result)))
+                {
+                    for(int i = 0; i < num_fields; i++)
+                    {
+                        if(n==1){
+                            start_point[i]=row[i];
+                        }else{
+                            des_point[i]=row[i];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    sendMsg=data[0]+" "+start_point[0]+","+start_point[1]+" "+des_point[0]+","+des_point[1];
+    cout<<"Send_Msg:"<<endl;
+    cout<<sendMsg<<endl;
+    if(data[0]=="0"){
+        send(sendMsg,e);//還要給經緯度
     }
     cout<<"[State 1] Wait for message 1 & update the database state to 2"<<endl;
     while(1){
         recvMsg = recvMessage();
-        if(strcmp(recvMsg,"1")){
+        if(recvMsg!=NULL){
+            if(strcmp(recvMsg, "1")){
             send("2",e);
             if (mysql_query(mysql1, "UPDATE transport SET state = 2 where _id=2;"))
             {
@@ -116,34 +149,55 @@ int main(int argc, const char * argv[]) {
             }else{
                 cout<<"update database to 2"<<endl;
             }
-            break;
+                break;
+            }
         }
     }
     cout<<"[State 2] Wait for message 3"<<endl;
     while(1){
         recvMsg = recvMessage();
-        if(strcmp(recvMsg,"3")){
-            if (mysql_query(mysql1, "UPDATE transport SET state = 3 where _id=2;"))
-            {
-                finish_with_error(mysql1);
-            }else{
-                cout<<"update database to 3"<<endl;
-
+        if(recvMsg!=NULL){
+            if(strcmp(recvMsg, "3")){
+                if (mysql_query(mysql1, "UPDATE transport SET state = 3 where _id=2;"))
+                {
+                    finish_with_error(mysql1);
+                }else{
+                    cout<<"update database to 3"<<endl;
+                    if (mysql_query(mysql1, "SELECT packetKey FROM transport")){finish_with_error(mysql1);}
+                    else{
+                        MYSQL_RES *result = mysql_store_result(mysql1);
+                        if(result==NULL){finish_with_error(mysql1);}
+                        else{
+                            int num_fields = mysql_num_fields(result);
+                            MYSQL_ROW row;
+                            while ((row = mysql_fetch_row(result)))
+                            {
+                                for(int i = 0; i < num_fields; i++)
+                                {
+                                    key=row[i];
+                                }
+                            }
+                        }
+                    }
+                    send(key, e);
+                }
+                break;
             }
-            break;
         }
     }
     cout<<"[State 3] Wait for message 4"<<endl;
     while(1){
         recvMsg = recvMessage();
-        if(strcmp(recvMsg,"4")){
-            if (mysql_query(mysql1, "UPDATE transport SET state = 4 where _id=2;"))
-            {
-                finish_with_error(mysql1);
-            }else{
-                cout<<"update database to 4"<<endl;
+        if(recvMsg!=NULL){
+            if(strcmp(recvMsg, "4")){
+                if (mysql_query(mysql1, "UPDATE transport SET state = 4 where _id=2;"))
+                {
+                    finish_with_error(mysql1);
+                }else{
+                    cout<<"update database to 4"<<endl;
+                }
+                break;
             }
-            break;
         }
     }
 
