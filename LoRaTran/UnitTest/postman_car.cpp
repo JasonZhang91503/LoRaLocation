@@ -397,22 +397,22 @@ int endTransport(string *packetKey){
 int checkState(int tarState){
 	int returnCode;
 	switch(tarState){
-		case -1;
+		case -1:
 			returnCode = CAR_STATE_-1_ERROR;
 			break;
-		case 0;
+		case 0:
 			returnCode = CAR_STATE_0_ERROR;
 			break;
-		case 1;
+		case 1:
 			returnCode = CAR_STATE_1_ERROR;
 			break;			
-		case 2;
+		case 2:
 			returnCode = CAR_STATE_2_ERROR;
 			break;
-		case 3;
+		case 3:
 			returnCode = CAR_STATE_3_ERROR;
 			break;
-		case 4;
+		case 4:
 			returnCode = CAR_STATE_4_ERROR;
 			break;			
 	}
