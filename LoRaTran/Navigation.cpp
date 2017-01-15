@@ -37,7 +37,7 @@ double distanceBetween(double lat1, double lon1, double lat2, double lon2, char 
 double deg2rad(double);
 double rad2deg(double);
 
-bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat) {
+bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat){
 	double x, y;
 	
 	x = destinationLon - sourceLon;
