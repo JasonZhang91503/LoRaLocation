@@ -374,7 +374,7 @@ int endTransport(string *packetKey){
 	cout << "endTransport : Wait for password input" << endl << endl;
 	do{
 		cout << "Password :";
-		cin.get(input,4);
+		getline(cin,input,'\n');
 		
 		if(input != *packetKey){
 			cout << "Error! Please enter password again" << endl;
