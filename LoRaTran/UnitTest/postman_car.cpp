@@ -60,7 +60,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 
 //std function
-#include <stdio>
+#include <cstdio>
 #include <iostream>
 #include <string>
 
