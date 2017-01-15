@@ -129,11 +129,11 @@ int main(){
 	
 	
 	//state 2->3 = 抵達->告知抵達，並且接收packetKey
-	moveToReceiver(*longitude,*latitude,*packetKey);
+	moveToReceiver(*longitude,*latitude,packetKey);
 	
 	
 	//state 3->4 = 等待領或->輸入密碼成功，取貨完畢
-	endTransport(*packetKey);
+	endTransport(packetKey);
 	
 	
     return 0;
