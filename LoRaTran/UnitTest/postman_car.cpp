@@ -60,6 +60,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 
 //std function
+#include <stdio>
 #include <iostream>
 #include <string>
 
@@ -263,7 +264,7 @@ int beginTransport(double *longitude,double *latitude){
 	
 	
 	//判定使用者放入文件，目前使用enter做為判定
-	cin.getline();
+	getchar();
 	
 	cout << "beginTransport : recv longitude = " << *longitude << ", latitude = " << *latitude << endl;
 	
@@ -381,7 +382,7 @@ int endTransport(string *packetKey){
 		要判定東西被拿走
 		這裡用按下enter來當作拿了
 	*/
-	cin.getline();
+	getchar();
 	
 	
 	//確認state是否正確
