@@ -58,6 +58,8 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include "arduPiClasses.h"
 #include "Lora_Setup.h"
 
+//Include Navigation library
+#include "Navigation.h"
 
 //std function
 #include <cstdio>
