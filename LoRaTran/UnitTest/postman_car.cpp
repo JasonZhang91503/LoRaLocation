@@ -273,6 +273,7 @@ int beginTransport(double *longitude,double *latitude){
 		剖析楷甯給的字串變成資料
 		存到longitude與latitude兩個pointer裡面
 	*/
+	//------------1/15  改到state0去做	
 	
 	
 	//判定使用者放入文件，目前使用enter做為判定
