@@ -364,6 +364,7 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 int endTransport(string *packetKey){
 	string input;
 	bool isCorrect = false;
+	int StateCode;
 	
 	//確認state是否正確
 	StateCode = checkState(3);
