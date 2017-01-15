@@ -43,7 +43,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 487:代表沒有問題太棒了
 
 */
-#define CAR_STATE_-1_ERROR 9487999
+#define CAR_STATE_999_ERROR 9487999
 #define CAR_STATE_0_ERROR 9487000
 #define CAR_STATE_1_ERROR 9487001
 #define CAR_STATE_2_ERROR 9487002
