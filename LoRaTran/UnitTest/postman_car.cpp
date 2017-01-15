@@ -71,6 +71,14 @@ int e;
 int state = -1;//用-1表示此車剛啟動,idle狀態
 char recv_packet[256];	//車子接收資料的buffer
 
+void init(double *longitude,double *latitude,string *packetKey);
+int recvSenderRequest(double *longitude,double *latitude);
+int moveToSender(double dLon,double dLat);
+int beginTransport(double *longitude,double *latitude);
+int moveToReceiver(double dLon,double dLat,string *packetKey);
+int endTransport(string *packetKey);
+int checkState(int tarState);
+
 void GPSsetup(){
 	//等著填入
 }
@@ -109,23 +117,23 @@ int main(){
 	cout << "Begin transport" << endl;
 	
 	//state -1->0 = idle - >接收到經緯度,開始到sender地點
-	recvSenderRequest();
+	recvSenderRequest(longitude,latitude);
 	
 	
 	//state 0->1 = 行走->到達sender指定地點
-	moveToSender();
+	moveToSender(*longitude,*latitude);
 	
 	
 	//state 1->2 = 抵達->sender放入文件，開始前往recv點
-	beginTransport();
+	beginTransport(longitude,latitude);
 	
 	
 	//state 2->3 = 抵達->告知抵達，並且接收packetKey
-	moveToReceiver();
+	moveToReceiver(*longitude,*latitude,*packetKey);
 	
 	
 	//state 3->4 = 等待領或->輸入密碼成功，取貨完畢
-	endTransport();
+	endTransport(*packetKey);
 	
 	
     return 0;
