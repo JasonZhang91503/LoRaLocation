@@ -398,7 +398,7 @@ int checkState(int tarState){
 	int returnCode;
 	switch(tarState){
 		case -1:
-			returnCode = CAR_STATE_-1_ERROR;
+			returnCode = CAR_STATE_999_ERROR;
 			break;
 		case 0:
 			returnCode = CAR_STATE_0_ERROR;
