@@ -1,4 +1,4 @@
-#pragma once
+
 
 // Return whether the car reaches the destination, return true if the source and the destination
 // are closer than the ReachDistance attribute in kilometer.
@@ -6,5 +6,5 @@
 // Attribute distance will return the distance between the source and the destination.
 // North represents 0.0, East represents 90.0, and so on.
 // You should fill Lons and Lats of the source and the destination.
-// ³o­Ófunction¦³­Óbug¡A¥L¤£¯à¸ó°ê»Ú´«¤é½u¡A¦]¬°¥¦·|¿ï¾Ü¨«¸g¹L¸g«×0¡C
+// é€™å€‹functionæœ‰å€‹bugï¼Œä»–ä¸èƒ½è·¨åœ‹éš›æ›æ—¥ç·šï¼Œå› ç‚ºå®ƒæœƒé¸æ“‡èµ°ç¶“éç¶“åº¦0ã€‚
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
