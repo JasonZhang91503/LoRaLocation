@@ -291,7 +291,7 @@ int beginTransport(double *longitude,double *latitude){
 	state = 2;
 	
 	/*task
-		send 新state資訊給gateway(主動)
+		send 新state資訊給gateway(主動)////////////
 	*/
 }
 
@@ -405,6 +405,12 @@ int endTransport(string *packetKey){
 		return StateCode;
 	}
 	state = 4;
+	
+	/*task
+		send 新state資訊給gateway(主動)
+	*/
+	
+	return CAR_OK;
 }
 
 
