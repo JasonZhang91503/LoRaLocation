@@ -73,6 +73,8 @@ int e;
 int state = -1;//用-1表示此車剛啟動,idle狀態
 char recv_packet[256];	//車子接收資料的buffer
 
+bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
+
 void init(double *longitude,double *latitude,string *packetKey);
 int recvSenderRequest(double *longitude,double *latitude);
 int moveToSender(double dLon,double dLat);
