@@ -405,7 +405,9 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
     {
         recv_packet[i] = (char)sx1272.packet_received.data[i];
+		cout << recv_packet[i];
     }
+	cout << endl;
 	
 	/*task
 		將recv的密碼分析成字串
@@ -607,9 +609,10 @@ string parsePassword(){
 	char* pw = new char[pw_size];
 	char* p;
 	int i = 0;
-	for(p = recv_packet,i = 0; *p != '\n'; p++,i++){
-		pw[i] = *p;
+	for(p = recv_packet,i = 0; i < pw_size;i++){
+		pw[i] = p[i];
 	}
+	pw[i] = '\0';
 	string pwStr(pw);
 	return pwStr;
 }
