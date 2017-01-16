@@ -61,6 +61,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 //Include Navigation library
 #include "Navigation.h"
 
+//Include gps library
+#include <gps.h>
+
 //std function
 #include <cstdio>
 #include <cstdlib>
@@ -92,7 +95,7 @@ int getGPSLocation(double &sLon,double &sLat);
 int sendPacket();
 int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat);
 int parseStateData();
-char* parsePassword();
+string parsePassword();
 
 void GPSsetup(){
 	if ((rc = gps_open("localhost", "2947", &gps_data)) == -1) {
@@ -526,13 +529,21 @@ int sendPacket(){
 int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	const char *d = " ,";
 	char* statePtr;
+	char* sLonPtr;
+	char* sLatPtr;
+	char* dLonPtr;
+	char* dLatPtr;
 	statePtr = strtok(recv_packet,d);	//state
-	sLon = strtok(recv_packet,d);
-	sLat = strtok(recv_packet,d);
-	dLon = strtok(recv_packet,d);
-	dLat = strtok(recv_packet,d);
+	sLonPtr = strtok(recv_packet,d);
+	sLatPtr = strtok(recv_packet,d);
+	dLonPtr = strtok(recv_packet,d);
+	dLatPtr = strtok(recv_packet,d);
 	
 	int rState = atoi(statePtr);
+	*sLon = atof(sLonPtr);
+	*sLat = atof(sLatPtr);
+	*dLon = atof(dLonPtr);
+	*dLat = atof(dLatPtr);
 	
 	return rState;
 }
@@ -545,7 +556,7 @@ int parseStateData(){
 
 string parsePassword(){
 	char* pw = new char[pw_size];
-	for(char* p == recv_packet,int i = 0; *p != '\n', p++,i++){
+	for(char* p = recv_packet,int i = 0; *p != '\n'; p++,i++){
 		pw[i] = *p;
 	}
 	string pwStr(pw);
