@@ -65,8 +65,10 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include <gps.h>
 
 //std function
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <math.h>
 #include <iostream>
 #include <string>
 
