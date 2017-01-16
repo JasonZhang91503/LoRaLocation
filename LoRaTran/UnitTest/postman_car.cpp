@@ -556,7 +556,9 @@ int parseStateData(){
 
 string parsePassword(){
 	char* pw = new char[pw_size];
-	for(char* p = recv_packet,int i = 0; *p != '\n'; p++,i++){
+	char* p;
+	int i = 0;
+	for(p = recv_packet,i = 0; *p != '\n'; p++,i++){
 		pw[i] = *p;
 	}
 	string pwStr(pw);
