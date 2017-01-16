@@ -101,7 +101,7 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat);
 int parseStateData();
 string parsePassword();
 
-void GPSsetup(){
+int GPSsetup(){
 	if ((rc = gps_open("localhost", "2947", &myGPS_Data)) == -1) {
         printf("code: %d, reason: %s\n", rc, gps_errstr(rc));
         return EXIT_FAILURE;
@@ -122,11 +122,15 @@ int main(){
 	
 	error = setup(1);//
 	if(error != 0){
-		cout << "LoRa Setup error occur" << endl;
+		cout << "GPSsetup error occur" << endl;
 		return error;
 	}
 	
-	GPSsetup();
+	error = GPSsetup();
+	if(error != 0){
+		cout << "LoRa Setup error occur" << endl;
+		return error;
+	}
 	
 	//car程式開始執行
 	
@@ -264,7 +268,7 @@ int moveToSender(double dLon,double dLat){
 		}
 		
 		cout << "You should still go toward "<< directionInfo << " degree for " << distanceInfo << " kilometer." << endl;
-		usleep(1000);
+		unistd::usleep(1000);
 	} while ( -180 < sLon && sLon < 180);
 	
 	
@@ -364,7 +368,7 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 		}
 		
 		cout << "You should still go toward "<< directionInfo << " degree for " << distanceInfo << " kilometer." << endl;
-		usleep(1000);
+		unistd::usleep(1000);
 	} while ( -180 < sLon && sLon < 180);
 	
 	//recv一組密碼
@@ -515,7 +519,7 @@ int getGPSLocation(double &sLon,double &sLat){
 			printf("wait for 2 seconds to receive data again\n");
 		}
 
-        sleep(3);
+        unistd::sleep(3);
     }
 	
 	sLon = myGPS_Data.fix.longitude;
