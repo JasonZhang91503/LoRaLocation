@@ -81,7 +81,7 @@ int state = -1;//用-1表示此車剛啟動,idle狀態
 char recv_packet[100];	//車子接收資料的buffer
 char send_packet[100];	//車子送出資料的buffer
 int rc; //GPS的return code
-struct gps_data_t gps_data;	//GPS的端口
+//struct gps_data_t gps_data;	//GPS的端口
 gps_data_t gps_data;	//GPS的端口
 int pw_size = 4;
 
