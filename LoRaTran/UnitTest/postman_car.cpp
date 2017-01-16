@@ -251,7 +251,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 
 int moveToSender(double dLon,double dLat){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.01;	//判定多少距離內算到達(單位公里)
+	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
@@ -354,7 +354,7 @@ int beginTransport(double *longitude,double *latitude){
 
 int moveToReceiver(double dLon,double dLat,string *packetKey){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.01;	//判定多少距離內算到達(單位公里)
+	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
