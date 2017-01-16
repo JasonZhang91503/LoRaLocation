@@ -34,7 +34,7 @@ int main() {
                 }
             }
         }
-		eles{
+		else{
 			printf("wait for 2 seconds to receive data again\n");
 		}
 
