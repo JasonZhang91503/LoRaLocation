@@ -146,7 +146,13 @@ int main(){
 	*/
 	
 	
-	init(src_longitude,src_latitude,dest_longitude,dest_latitude,packetKey);
+	//init(src_longitude,src_latitude,dest_longitude,dest_latitude,packetKey);
+	src_longitude = new double;
+	src_latitude = new double;
+	dest_longitude = new double;
+	dest_latitude = new double;
+	packetKey = new string;
+	state = -1;
 	
 	//開始送貨循環
 	
@@ -238,7 +244,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 	/*task
 		send 新state資訊給gateway(被動)
 	*/
-	sendPacket();
+	//sendPacket();
 	
 	return CAR_OK;
 }
@@ -516,7 +522,8 @@ int getGPSLocation(double &sLon,double &sLat){
                     !isnan(myGPS_Data.fix.longitude)) {
                         //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
                         printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
-                } else {
+						break;
+               } else {
                     printf("no GPS data available\n");
                 }
             }
@@ -572,13 +579,13 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	*/
 	int rState = 0;
 	printf("rState :%d",rState);
-	*sLon = 123.4400000;
+	*sLon = 24.944185;
 	printf("rState :%f",*sLon);
-	*sLat = 123.4400000;
+	*sLat = 121.369862;
 	printf("rState :%f",*sLat);
-	*dLon = 123.2200000;
+	*dLon = 24.944185;
 	printf("rState :%f",*dLon);
-	*dLat = 23.4400000;
+	*dLat = 121.369862;
 	printf("rState :%f",*dLat);
 	
 	
