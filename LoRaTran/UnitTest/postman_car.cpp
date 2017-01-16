@@ -391,6 +391,8 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	}
 	state = 3;
 	
+	sendPacket();
+	
 	//recv一組密碼
 	cout<<"moveToReceiver : Wait for PacketKey..."<<endl;
 	e = sx1272.receivePacketTimeout(10000);
@@ -420,7 +422,7 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	/*task
 		send 新state資訊給gateway(主動)
 	*/
-	sendPacket();
+	
 	
 	return CAR_OK;
 }
