@@ -383,6 +383,14 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 		unistd::usleep(1000);
 	} while ( -180 < sLon && sLon < 180);
 	
+	//確認state是否正確
+	StateCode = checkState(2);
+	if(StateCode != CAR_OK){
+		cout << "moveToReceiver : retrun error in method checkState after reach destnation" << endl;
+		return StateCode;
+	}
+	state = 3;
+	
 	//recv一組密碼
 	cout<<"moveToReceiver : Wait for PacketKey..."<<endl;
 	e = sx1272.receivePacketTimeout(10000);
@@ -407,13 +415,7 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	//*packetKey = "9487";
 	
 	
-	//確認state是否正確
-	StateCode = checkState(2);
-	if(StateCode != CAR_OK){
-		cout << "moveToReceiver : retrun error in method checkState after reach destnation" << endl;
-		return StateCode;
-	}
-	state = 3;
+	
 	
 	/*task
 		send 新state資訊給gateway(主動)
@@ -579,13 +581,13 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	*/
 	int rState = 0;
 	printf("rState :%d",rState);
-	*sLon = 24.944185;
+	*sLon = 121.369862;
 	printf("rState :%f",*sLon);
-	*sLat = 121.369862;
+	*sLat = 24.944185;
 	printf("rState :%f",*sLat);
-	*dLon = 24.944185;
+	*dLon = 121.369862;
 	printf("rState :%f",*dLon);
-	*dLat = 121.369862;
+	*dLat = 24.944185;
 	printf("rState :%f",*dLat);
 	
 	
