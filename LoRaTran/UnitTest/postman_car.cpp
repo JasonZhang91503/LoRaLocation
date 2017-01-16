@@ -63,41 +63,60 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 //std function
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <string>
+
 
 
 using namespace std;
 
 int e;
 int state = -1;//用-1表示此車剛啟動,idle狀態
-char recv_packet[256];	//車子接收資料的buffer
+char recv_packet[100];	//車子接收資料的buffer
+char send_packet[100];	//車子送出資料的buffer
+int rc; //GPS的return code
+struct gps_data_t gps_data;	//GPS的端口
+int pw_size = 4;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
 
-void init(double *longitude,double *latitude,string *packetKey);
-int recvSenderRequest(double *longitude,double *latitude);
+void init(double *sLon,double *sLat,double *dLon,double *dLat,string *packetKey);
+int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat);
 int moveToSender(double dLon,double dLat);
 int beginTransport(double *longitude,double *latitude);
 int moveToReceiver(double dLon,double dLat,string *packetKey);
 int endTransport(string *packetKey);
 int checkState(int tarState);
+int getGPSLocation(double &sLon,double &sLat);
+int sendPacket();
+int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat);
+int parseStateData();
+char* parsePassword();
 
 void GPSsetup(){
-	//等著填入
+	if ((rc = gps_open("localhost", "2947", &gps_data)) == -1) {
+        printf("code: %d, reason: %s\n", rc, gps_errstr(rc));
+        return EXIT_FAILURE;
+    }
+	printf("GPSsetup : success!\n");
+    gps_stream(&gps_data, WATCH_ENABLE | WATCH_JSON, NULL);
 }
 
 
 int main(){
 	int error;	//
-	double *longitude = NULL;
-	double *latitude = NULL;
+	double *src_longitude = NULL;
+	double *src_latitude = NULL;
+	double *dest_longitude = NULL;
+	double *dest_latitude = NULL;
 	string *packetKey = NULL;
 	
 	
 	error = setup(1);//
 	if(error != 0){
 		cout << "LoRa Setup error occur" << endl;
+		return error;
 	}
 	
 	GPSsetup();
@@ -114,26 +133,26 @@ int main(){
 	*/
 	
 	
-	init(longitude,latitude,packetKey);
+	init(src_longitude,src_latitude,dest_longitude,dest_latitude,packetKey);
 	
 	//開始送貨循環
 	
 	cout << "Begin transport" << endl;
 	
 	//state -1->0 = idle - >接收到經緯度,開始到sender地點
-	recvSenderRequest(longitude,latitude);
+	recvSenderRequest(src_longitude,src_latitude,dest_longitude,dest_latitude);
 	
 	
 	//state 0->1 = 行走->到達sender指定地點
-	moveToSender(*longitude,*latitude);
+	moveToSender(*src_longitude,*src_latitude);
 	
 	
 	//state 1->2 = 抵達->sender放入文件，開始前往recv點
-	beginTransport(longitude,latitude);
+	beginTransport(dest_longitude,dest_latitude);
 	
 	
 	//state 2->3 = 抵達->告知抵達，並且接收packetKey
-	moveToReceiver(*longitude,*latitude,packetKey);
+	moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
 	
 	
 	//state 3->4 = 等待領或->輸入密碼成功，取貨完畢
@@ -143,14 +162,16 @@ int main(){
     return 0;
 }
 
-void init(double *longitude,double *latitude,string *packetKey){
-	longitude = new double;
-	latitude = new double;
+void init(double *sLon,double *sLat,double *dLon,double *dLat,string *packetKey){
+	sLon = new double;
+	sLat = new double;
+	dLon = new double;
+	dLat = new double;
 	packetKey = new string;
 	state = -1;
 }
 
-int recvSenderRequest(double *longitude,double *latitude){
+int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 	int StateCode;
 	
 	//確認state是否正確
@@ -178,8 +199,16 @@ int recvSenderRequest(double *longitude,double *latitude){
 		剖析楷甯給的字串變成資料
 		存到longitude與latitude兩個pointer裡面
 	*/
+	// 1/15 還要再加上目的地的經緯度
+	int rState = parseRequestData(sLon,sLat,dLon,dLat);
+	if(rState != 0){
+		cout << "recvSenderRequest : recv state data error! tarState = " << 0 << ",Recv_state = " << rState << endl;
+		return CAR_STATE_0_ERROR;
+	}
 	
-	cout << "recvSenderRequest : recv longitude = " << *longitude << ", latitude = " << *latitude << endl;
+	cout << "recvSenderRequest : recv source longitude = " << *sLon << ", latitude = " << *sLat << endl;
+	cout << "recvSenderRequest : recv destnation longitude = " << *dLon << ", latitude = " << *dLat << endl;
+	cout << "recvSenderRequest : recv state = " << rState << endl;
 	
 	
 	//確認state是否正確
@@ -189,11 +218,12 @@ int recvSenderRequest(double *longitude,double *latitude){
 		return StateCode;
 	}
 	
-	state = 0;
+	state = rState;
 	
 	/*task
 		send 新state資訊給gateway(被動)
 	*/
+	sendPacket();
 	
 	return CAR_OK;
 }
@@ -204,6 +234,7 @@ int moveToSender(double dLon,double dLat){
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
+    
 	
 	//確認state是否正確
 	StateCode = checkState(0);
@@ -212,12 +243,12 @@ int moveToSender(double dLon,double dLat){
 		return StateCode;
 	}
 	
+	
 	do {
+		//取得車子本身GPS座標
+		getGPSLocation(sLon,sLat);
 		
-		/*
-			透過GPS函式取得GPS資訊
-		*/
-		
+		//去計算是否到達目標
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, dLon, dLat);
 		
 		if (isCarReach) {
@@ -238,9 +269,7 @@ int moveToSender(double dLon,double dLat){
 	}
 	state = 1;
 	
-	/*task
-		send 新state資訊給gateway(主動)
-	*/
+	sendPacket();
 	
 	return CAR_OK;
 }
@@ -269,18 +298,24 @@ int beginTransport(double *longitude,double *latitude){
         recv_packet[i] = (char)sx1272.packet_received.data[i];
     }
 	
+	
 	/*task
 		剖析楷甯給的字串變成資料
 		存到longitude與latitude兩個pointer裡面
 	*/
-	//------------1/15  改到state0去做	
-	
+	//------------1/15  改到state0去做,這邊只接收state切換	
+	int rState = parseStateData();
+	if(rState != 2){
+		cout << "beginTransport : recv state data error! tarState = " << 2 << ",Recv_state = " << rState << endl;
+		return CAR_STATE_2_ERROR;
+	}
 	
 	//判定使用者放入文件，目前使用enter做為判定
+	cout << "beginTransport : Wait for sender place the file" << endl;
+	cout << "beginTransport :Press enter to start transport" << endl;
 	getchar();
 	
-	cout << "beginTransport : recv longitude = " << *longitude << ", latitude = " << *latitude << endl;
-	
+	cout << "beginTransport : goto longitude = " << *longitude << ", latitude = " << *latitude << endl;
 	
 	//確認state是否正確
 	StateCode = checkState(1);
@@ -291,9 +326,7 @@ int beginTransport(double *longitude,double *latitude){
 	
 	state = 2;
 	
-	/*task
-		send 新state資訊給gateway(主動)////////////
-	*/
+	return CAR_OK;
 }
 
 int moveToReceiver(double dLon,double dLat,string *packetKey){
@@ -312,10 +345,10 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	
 	do {
 		
-		/*
-			透過GPS函式取得GPS資訊
-		*/
+		//取得車子本身GPS座標
+		getGPSLocation(sLon,sLat);
 		
+		//去計算是否到達目標
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, dLon, dLat);
 		
 		if (isCarReach) {
@@ -345,8 +378,10 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 		將recv的密碼分析成字串
 		存入packetKey內
 	*/
+	*packetKey = parsePassword();
+	
 	//目前先用9487來代替
-	*packetKey = "9487";
+	//*packetKey = "9487";
 	
 	
 	//確認state是否正確
@@ -360,6 +395,7 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 	/*task
 		send 新state資訊給gateway(主動)
 	*/
+	sendPacket();
 	
 	return CAR_OK;
 }
@@ -410,6 +446,7 @@ int endTransport(string *packetKey){
 	/*task
 		send 新state資訊給gateway(主動)
 	*/
+	sendPacket();
 	
 	return CAR_OK;
 }
@@ -445,4 +482,72 @@ int checkState(int tarState){
 	else{
 		return CAR_OK;
 	}
+}
+
+int getGPSLocation(double &sLon,double &sLat){
+	while (1) {
+        /* wait for 2 seconds to receive data */
+        if (gps_waiting (&gps_data, 2000000)) {
+            /* read data */
+            if ((rc = gps_read(&gps_data)) == -1) {
+                printf("error occured reading gps data. code: %d, reason: %s\n", rc, gps_errstr(rc));
+            } else {
+                /* Display data from the GPS receiver. */
+                if ((gps_data.status == STATUS_FIX) && 
+                    (gps_data.fix.mode == MODE_2D || gps_data.fix.mode == MODE_3D) &&
+                    !isnan(gps_data.fix.latitude) && 
+                    !isnan(gps_data.fix.longitude)) {
+                        //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
+                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", gps_data.fix.latitude, gps_data.fix.longitude, gps_data.fix.speed, gps_data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
+                } else {
+                    printf("no GPS data available\n");
+                }
+            }
+        }
+		eles{
+			printf("wait for 2 seconds to receive data again\n");
+		}
+
+        sleep(3);
+    }
+	
+	sLon = gps_data.fix.longitude;
+	sLat = gps_data.fix.latitude;
+	
+	return CAR_OK;
+}
+
+int sendPacket(){
+	sprintf(send_packet,"%d",state);
+    e = sx1272.sendPacketTimeout(0, send_packet);
+    printf("Packet sent, state :%d, code :%d\n",state,e);
+}
+
+int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
+	const char *d = " ,";
+	char* statePtr;
+	statePtr = strtok(recv_packet,d);	//state
+	sLon = strtok(recv_packet,d);
+	sLat = strtok(recv_packet,d);
+	dLon = strtok(recv_packet,d);
+	dLat = strtok(recv_packet,d);
+	
+	int rState = atoi(statePtr);
+	
+	return rState;
+}
+
+int parseStateData(){
+	int rState = atoi(recv_packet);
+	
+	return rState;
+}
+
+string parsePassword(){
+	char* pw = new char[pw_size];
+	for(char* p == recv_packet,int i = 0; *p != '\n', p++,i++){
+		pw[i] = *p;
+	}
+	string pwStr(pw);
+	return pwStr;
 }

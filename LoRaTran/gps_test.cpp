@@ -34,6 +34,9 @@ int main() {
                 }
             }
         }
+		eles{
+			printf("wait for 2 seconds to receive data again\n");
+		}
 
         sleep(3);
     }
