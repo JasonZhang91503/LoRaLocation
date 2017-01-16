@@ -108,6 +108,8 @@ int GPSsetup(){
     }
 	printf("GPSsetup : success!\n");
     gps_stream(&myGPS_Data, WATCH_ENABLE | WATCH_JSON, NULL);
+	
+	return 0;
 }
 
 
@@ -122,13 +124,13 @@ int main(){
 	
 	error = setup(1);//
 	if(error != 0){
-		cout << "GPSsetup error occur" << endl;
+		cout << "LoRa error occur" << endl;
 		return error;
 	}
 	
 	error = GPSsetup();
 	if(error != 0){
-		cout << "LoRa Setup error occur" << endl;
+		cout << "GPSSetup error occur" << endl;
 		return error;
 	}
 	
