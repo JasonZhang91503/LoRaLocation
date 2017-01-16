@@ -206,7 +206,9 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 	for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
     {
         recv_packet[i] = (char)sx1272.packet_received.data[i];
+		cout << recv_packet[i];
     }
+	cout << endl;
 	
 	/*task
 		剖析楷甯給的字串變成資料
@@ -309,7 +311,9 @@ int beginTransport(double *longitude,double *latitude){
 	for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
     {
         recv_packet[i] = (char)sx1272.packet_received.data[i];
+		cout << recv_packet[i];
     }
+	cout << endl;
 	
 	
 	/*task
