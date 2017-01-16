@@ -81,8 +81,9 @@ int state = -1;//用-1表示此車剛啟動,idle狀態
 char recv_packet[100];	//車子接收資料的buffer
 char send_packet[100];	//車子送出資料的buffer
 int rc; //GPS的return code
-typedef struct gps_data_t GPS_Data;	//GPS的端口
-GPS_Data gps_data;
+//typedef struct gps_data_t GPS_Data;	//GPS的端口
+struct gps_data_t myGPS_Data;	//GPS的端口
+//GPS_Data gps_data;
 int pw_size = 4;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
@@ -101,12 +102,12 @@ int parseStateData();
 string parsePassword();
 
 void GPSsetup(){
-	if ((rc = gps_open("localhost", "2947", &gps_data)) == -1) {
+	if ((rc = gps_open("localhost", "2947", &myGPS_Data)) == -1) {
         printf("code: %d, reason: %s\n", rc, gps_errstr(rc));
         return EXIT_FAILURE;
     }
 	printf("GPSsetup : success!\n");
-    gps_stream(&gps_data, WATCH_ENABLE | WATCH_JSON, NULL);
+    gps_stream(&myGPS_Data, WATCH_ENABLE | WATCH_JSON, NULL);
 }
 
 
@@ -493,18 +494,18 @@ int checkState(int tarState){
 int getGPSLocation(double &sLon,double &sLat){
 	while (1) {
         /* wait for 2 seconds to receive data */
-        if (gps_waiting (&gps_data, 2000000)) {
+        if (gps_waiting (&myGPS_Data, 2000000)) {
             /* read data */
-            if ((rc = gps_read(&gps_data)) == -1) {
+            if ((rc = gps_read(&myGPS_Data)) == -1) {
                 printf("error occured reading gps data. code: %d, reason: %s\n", rc, gps_errstr(rc));
             } else {
                 /* Display data from the GPS receiver. */
-                if ((gps_data.status == STATUS_FIX) && 
-                    (gps_data.fix.mode == MODE_2D || gps_data.fix.mode == MODE_3D) &&
-                    !isnan(gps_data.fix.latitude) && 
-                    !isnan(gps_data.fix.longitude)) {
+                if ((myGPS_Data.status == STATUS_FIX) && 
+                    (myGPS_Data.fix.mode == MODE_2D || myGPS_Data.fix.mode == MODE_3D) &&
+                    !isnan(myGPS_Data.fix.latitude) && 
+                    !isnan(myGPS_Data.fix.longitude)) {
                         //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
-                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", gps_data.fix.latitude, gps_data.fix.longitude, gps_data.fix.speed, gps_data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
+                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
                 } else {
                     printf("no GPS data available\n");
                 }
@@ -517,8 +518,8 @@ int getGPSLocation(double &sLon,double &sLat){
         sleep(3);
     }
 	
-	sLon = gps_data.fix.longitude;
-	sLat = gps_data.fix.latitude;
+	sLon = myGPS_Data.fix.longitude;
+	sLat = myGPS_Data.fix.latitude;
 	
 	return CAR_OK;
 }
