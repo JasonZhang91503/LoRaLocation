@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NotificationDemo</string>
+    <string name="simple_notification_button_name">Create an Simple Notification</string>
+    <string name="expanded_notification_button_name">Create an Expanded Notification</string>
 </resources>
