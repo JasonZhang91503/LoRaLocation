@@ -18,7 +18,7 @@ using namespace std;
 #define DATABASE_NAME "postman"
 #define IP "192.168.0.116"
 #define PORT 3306
-int e,NodeAddress=1;
+int e,NodeAddress=2;
 
 MYSQL *database_initial(MYSQL *sql){
     sql=mysql_init(NULL);
@@ -90,7 +90,7 @@ int main(int argc, const char * argv[]) {
     e=setup(NodeAddress);
     cout<<"[State 0] Query state about the database"<<endl;
     mysql_query(mysql1, "Use postman");
-    if (mysql_query(mysql1, "SELECT state,start_id,des_id FROM transport ORDER BY _id DESC LIMIT 1")){finish_with_error(mysql1);}
+    if (mysql_query(mysql1, "SELECT state,start_id,des_id FROM transport order _id desc limit 1")){finish_with_error(mysql1);}
     else{
         MYSQL_RES *result = mysql_store_result(mysql1);
         if(result==NULL){finish_with_error(mysql1);}
@@ -143,7 +143,7 @@ int main(int argc, const char * argv[]) {
         if(recvMsg!=NULL){
             if(strcmp(recvMsg, "1")){
             send("2",e);
-            if (mysql_query(mysql1, "UPDATE transport SET state = 2 ORDER BY _id DESC LIMIT 1"))
+            if (mysql_query(mysql1, "UPDATE transport SET state = 2 order by _id desc limit 1"))
             {
                 finish_with_error(mysql1);
             }else{
@@ -158,12 +158,12 @@ int main(int argc, const char * argv[]) {
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
             if(strcmp(recvMsg, "3")){
-                if (mysql_query(mysql1, "UPDATE transport SET state = 3 ORDER BY _id DESC LIMIT 1"))
+                if (mysql_query(mysql1, "UPDATE transport SET state = 3 order by _id desc limit 1"))
                 {
                     finish_with_error(mysql1);
                 }else{
                     cout<<"update database to 3"<<endl;
-                    if (mysql_query(mysql1, "SELECT packetKey FROM transport")){finish_with_error(mysql1);}
+                    if (mysql_query(mysql1, "SELECT packetKey FROM transport order by _id desc limit 1")){finish_with_error(mysql1);}
                     else{
                         MYSQL_RES *result = mysql_store_result(mysql1);
                         if(result==NULL){finish_with_error(mysql1);}
@@ -190,7 +190,7 @@ int main(int argc, const char * argv[]) {
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
             if(strcmp(recvMsg, "4")){
-                if (mysql_query(mysql1, "UPDATE transport SET state = 4 ORDER BY _id DESC LIMIT 1"))
+                if (mysql_query(mysql1, "UPDATE transport SET state = 4 order by _id desc limit 1"))
                 {
                     finish_with_error(mysql1);
                 }else{
