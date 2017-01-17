@@ -11,7 +11,11 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    private int mId1, mId2;
+    private final int notifyId = 1;
+    private final int mId2 = 2;
+
+    private int numMessages = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
         createExpandedNotification();
     }
 
+    public void updateNotificationButtonOnClick(View view) {
+        updateNotification();
+    }
+
     /**
          *  This function create an simple notification.
          */
@@ -34,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+                        .setContentText("Hello World!")
+                        .setAutoCancel(true);
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -56,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(mId1, mBuilder.build());
+        mNotificationManager.notify(notifyId, mBuilder.build());
     }
 
     /**
@@ -103,5 +112,27 @@ public class MainActivity extends AppCompatActivity {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(mId2, mBuilder.build());
+    }
+    /**
+         *  This function update notification.
+         */
+    private void updateNotification() {
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // Sets an ID for the notification, so it can be updated
+        NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("New Message")
+                .setContentText("You've received new messages.")
+                .setSmallIcon(R.drawable.ic_launcher);
+
+        // Start of a loop that processes data and then notifies the user
+        String currentText = "Updated";
+        mNotifyBuilder.setContentText(currentText)
+                .setNumber(++numMessages);
+        // Because the ID remains unchanged, the existing notification is
+        // updated.
+        mNotificationManager.notify(
+                notifyId,
+                mNotifyBuilder.build());
     }
 }
