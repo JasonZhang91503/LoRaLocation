@@ -358,7 +358,7 @@ int beginTransport(double *longitude,double *latitude){
 
 int moveToReceiver(double dLon,double dLat,string *packetKey){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = dest_range	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
