@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <string>
 #include "arduPiLoRa.h"
 #include "Lora_Setup.h"
 
