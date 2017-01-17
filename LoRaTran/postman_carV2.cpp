@@ -85,6 +85,7 @@ int rc; //GPS的return code
 struct gps_data_t myGPS_Data;	//GPS的端口
 //GPS_Data gps_data;
 int pw_size = 4;
+double dest_range = 0.02;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
 
@@ -227,7 +228,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 			cout << recv_packet[i];
 		}
 		cout << endl;
-	
+		break;
 	}
 
 	//剖析state 與 經緯度
@@ -256,7 +257,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 
 int moveToSender(double dLon,double dLat){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
@@ -326,7 +327,7 @@ int beginTransport(double *longitude,double *latitude){
 			cout << recv_packet[i];
 		}
 		cout << endl;
-	
+		break;
 	}
 	
 	//分析state	
@@ -357,7 +358,7 @@ int beginTransport(double *longitude,double *latitude){
 
 int moveToReceiver(double dLon,double dLat,string *packetKey){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
@@ -578,13 +579,13 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	int rState = atoi(statePtr);
 	printf("rState :%d",rState);
 	*sLon = atof(sLonPtr);
-	printf("rState :%f",*sLon);
+	printf("sLon :%f",*sLon);
 	*sLat = atof(sLatPtr);
-	printf("rState :%f",*sLat);
+	printf("sLat :%f",*sLat);
 	*dLon = atof(dLonPtr);
-	printf("rState :%f",*dLon);
+	printf("dLon :%f",*dLon);
 	*dLat = atof(dLatPtr);
-	printf("rState :%f",*dLat);
+	printf("dLat :%f",*dLat);
 	
 	/*
 	int rState = 0;
