@@ -566,26 +566,26 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	char* dLatPtr;
 	
 	statePtr = strtok(recv_packet,d);	//state
-	printf("split state :%s",statePtr);
+	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(recv_packet,d);
-	printf("split sLon :%s",sLonPtr);
+	printf("split sLon :%s\n",sLonPtr);
 	sLatPtr = strtok(recv_packet,d);
-	printf("split sLat :%s",sLatPtr);
+	printf("split sLat :%s\n",sLatPtr);
 	dLonPtr = strtok(recv_packet,d);
-	printf("split dLon :%s",dLonPtr);
+	printf("split dLon :%s\n",dLonPtr);
 	dLatPtr = strtok(recv_packet,d);
-	printf("split dLat :%s",dLatPtr);
+	printf("split dLat :%s\n",dLatPtr);
 	
 	int rState = atoi(statePtr);
-	printf("rState :%d",rState);
+	printf("rState :%d\n",rState);
 	*sLon = atof(sLonPtr);
-	printf("sLon :%f",*sLon);
+	printf("sLon :%f\n",*sLon);
 	*sLat = atof(sLatPtr);
-	printf("sLat :%f",*sLat);
+	printf("sLat :%f\n",*sLat);
 	*dLon = atof(dLonPtr);
-	printf("dLon :%f",*dLon);
+	printf("dLon :%f\n",*dLon);
 	*dLat = atof(dLatPtr);
-	printf("dLat :%f",*dLat);
+	printf("dLat :%f\n",*dLat);
 	
 	/*
 	int rState = 0;
