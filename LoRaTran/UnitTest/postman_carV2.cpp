@@ -563,7 +563,7 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	char* sLatPtr;
 	char* dLonPtr;
 	char* dLatPtr;
-	/*
+	
 	statePtr = strtok(recv_packet,d);	//state
 	printf("split state :%s",statePtr);
 	sLonPtr = strtok(recv_packet,d);
@@ -585,7 +585,8 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	printf("rState :%f",*dLon);
 	*dLat = atof(dLatPtr);
 	printf("rState :%f",*dLat);
-	*/
+	
+	/*
 	int rState = 0;
 	printf("rState :%d",rState);
 	*sLon = 121.369862;
@@ -596,7 +597,7 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	printf("rState :%f",*dLon);
 	*dLat = 24.944185;
 	printf("rState :%f",*dLat);
-	
+	*/
 	
 	return rState;
 }
