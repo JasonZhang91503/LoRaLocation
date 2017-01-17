@@ -227,7 +227,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 			cout << recv_packet[i];
 		}
 		cout << endl;
-	
+		break;
 	}
 
 	//剖析state 與 經緯度
@@ -326,7 +326,7 @@ int beginTransport(double *longitude,double *latitude){
 			cout << recv_packet[i];
 		}
 		cout << endl;
-	
+		break;
 	}
 	
 	//分析state	
