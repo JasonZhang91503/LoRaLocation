@@ -81,10 +81,9 @@ int state = -1;//用-1表示此車剛啟動,idle狀態
 char recv_packet[100];	//車子接收資料的buffer
 char send_packet[100];	//車子送出資料的buffer
 int rc; //GPS的return code
-//typedef struct gps_data_t GPS_Data;	//GPS的端口
 struct gps_data_t myGPS_Data;	//GPS的端口
-//GPS_Data gps_data;
 int pw_size = 4;
+double dest_range = 0.02;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
 
@@ -164,25 +163,25 @@ int main(){
 	}
 	
 	//state 0->1 = 行走->到達sender指定地點
-	moveToSender(*src_longitude,*src_latitude);
+	e = moveToSender(*src_longitude,*src_latitude);
 	if(e != CAR_OK){
 		cout << "main : moveToSender method error, code = " << e << endl;
 	}
 	
 	//state 1->2 = 抵達->sender放入文件，開始前往recv點
-	beginTransport(dest_longitude,dest_latitude);
+	e = beginTransport(dest_longitude,dest_latitude);
 	if(e != CAR_OK){
 		cout << "main : beginTransport method error, code = " << e << endl;
 	}
 	
 	//state 2->3 = 抵達->告知抵達，並且接收packetKey
-	moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
+	e = moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
 	if(e != CAR_OK){
 		cout << "main : moveToReceiver method error, code = " << e << endl;
 	}
 	
 	//state 3->4 = 等待領或->輸入密碼成功，取貨完畢
-	endTransport(packetKey);
+	e = endTransport(packetKey);
 	if(e != CAR_OK){
 		cout << "main : endTransport method error, code = " << e << endl;
 	}
@@ -256,7 +255,7 @@ int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
 
 int moveToSender(double dLon,double dLat){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
@@ -357,7 +356,7 @@ int beginTransport(double *longitude,double *latitude){
 
 int moveToReceiver(double dLon,double dLat,string *packetKey){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = 0.1;	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
@@ -565,26 +564,26 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	char* dLatPtr;
 	
 	statePtr = strtok(recv_packet,d);	//state
-	printf("split state :%s",statePtr);
+	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(recv_packet,d);
-	printf("split sLon :%s",sLonPtr);
+	printf("split sLon :%s\n",sLonPtr);
 	sLatPtr = strtok(recv_packet,d);
-	printf("split sLat :%s",sLatPtr);
+	printf("split sLat :%s\n",sLatPtr);
 	dLonPtr = strtok(recv_packet,d);
-	printf("split dLon :%s",dLonPtr);
+	printf("split dLon :%s\n",dLonPtr);
 	dLatPtr = strtok(recv_packet,d);
-	printf("split dLat :%s",dLatPtr);
+	printf("split dLat :%s\n",dLatPtr);
 	
 	int rState = atoi(statePtr);
-	printf("rState :%d",rState);
+	printf("rState :%d\n",rState) ;
 	*sLon = atof(sLonPtr);
-	printf("rState :%f",*sLon);
+	printf("sLon :%f\n",*sLon);
 	*sLat = atof(sLatPtr);
-	printf("rState :%f",*sLat);
+	printf("sLat :%f\n",*sLat);
 	*dLon = atof(dLonPtr);
-	printf("rState :%f",*dLon);
+	printf("dLon :%f\n",*dLon);
 	*dLat = atof(dLatPtr);
-	printf("rState :%f",*dLat);
+	printf("dLat :%f\n",*dLat);
 	
 	/*
 	int rState = 0;
@@ -604,7 +603,7 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 
 int parseStateData(){
 	int rState = atoi(recv_packet);
-	printf("rState :%d",rState);
+	printf("rState :%d\n",rState);
 	
 	return rState;
 }
