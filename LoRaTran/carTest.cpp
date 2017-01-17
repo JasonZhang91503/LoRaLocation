@@ -59,7 +59,7 @@ int main(int argc, const char * argv[]) {
     string key;
     e=setup(NodeAddress);
     
-    sendMsg="0"+" "+"24.5"+","+"24.6"+" "+"24.7"+","+"24.8";
+    sendMsg="0 24.5,24.6 24.7,24.8";
     cout<<"Send_Msg:"<<endl;
     cout<<sendMsg<<endl;
     send(sendMsg,e);//還要給經緯度
