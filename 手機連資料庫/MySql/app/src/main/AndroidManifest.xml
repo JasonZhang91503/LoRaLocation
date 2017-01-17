@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.huyuxuan.mysql">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".NewUserActivity"
+            android:label="New User" >
+        </activity>
+        <activity
+            android:name=".NewTransportActivity"
+            android:label="New Transport" >
+        </activity>
+        <activity
+            android:name=".FeaturesActivity"
+            android:label="Features" >
+        </activity>
+        <activity
+            android:name=".CheckReceiveActivity"
+            android:label="CheckReceive">
+
+        </activity>
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
