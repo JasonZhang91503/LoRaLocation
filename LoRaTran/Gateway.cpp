@@ -141,7 +141,7 @@ int main(int argc, const char * argv[]) {
     while(1){
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
-            if(strcmp(recvMsg, "1")){
+            if(!strcmp(recvMsg, "1")){
             send("2",e);
             if (mysql_query(mysql1, "UPDATE transport SET state = 2 order by _id desc limit 1"))
             {
@@ -157,7 +157,7 @@ int main(int argc, const char * argv[]) {
     while(1){
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
-            if(strcmp(recvMsg, "3")){
+            if(!strcmp(recvMsg, "3")){
                 if (mysql_query(mysql1, "UPDATE transport SET state = 3 order by _id desc limit 1"))
                 {
                     finish_with_error(mysql1);
@@ -179,6 +179,8 @@ int main(int argc, const char * argv[]) {
                             }
                         }
                     }
+                    cout<<"Press the button and send the password !"<<endl;
+                    getchar();
                     send(key, e);
                 }
                 break;
@@ -189,7 +191,7 @@ int main(int argc, const char * argv[]) {
     while(1){
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
-            if(strcmp(recvMsg, "4")){
+            if(!strcmp(recvMsg, "4")){
                 if (mysql_query(mysql1, "UPDATE transport SET state = 4 order by _id desc limit 1"))
                 {
                     finish_with_error(mysql1);
