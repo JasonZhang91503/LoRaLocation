@@ -142,6 +142,20 @@ int main(int argc, const char * argv[]) {
         recvMsg = recvMessage();
         if(recvMsg!=NULL){
             if(!strcmp(recvMsg, "1")){
+            if (mysql_query(mysql1, "UPDATE transport SET state = 1 order by _id desc limit 1"))
+            {
+                finish_with_error(mysql1);
+            }else{
+                cout<<"update database to 1"<<endl;
+            }
+                break;
+            }
+        }
+    }
+    while(1){
+        recvMsg = recvMessage();
+        if(recvMsg!=NULL){
+            if(!strcmp(recvMsg, "2")){
             send("2",e);
             if (mysql_query(mysql1, "UPDATE transport SET state = 2 order by _id desc limit 1"))
             {
