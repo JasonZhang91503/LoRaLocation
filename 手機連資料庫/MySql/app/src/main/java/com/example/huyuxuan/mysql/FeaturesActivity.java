@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.huyuxuan.mysql.alarm.MyAlarmReceiver;
+
 /**
  * Created by huyuxuan on 2016/12/28.
  */
@@ -18,6 +20,7 @@ public class FeaturesActivity extends Activity {
     Button mCheckSendBtn;
     int id;
     int type;
+    MyAlarmReceiver alarm = new MyAlarmReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -65,6 +68,9 @@ public class FeaturesActivity extends Activity {
                 startActivityForResult(intent,200);
             }
         });
+        alarm.setID(id);
+        Log.d("Features:","set alarm id = "+String.valueOf(id));
+        alarm.setAlarm(this);
     }
 
     @Override
@@ -86,6 +92,12 @@ public class FeaturesActivity extends Activity {
 
         }
 
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+       // alarm.cancelAlarm(this);
     }
 
 }
