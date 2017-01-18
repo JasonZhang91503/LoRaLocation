@@ -557,13 +557,13 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	
 	statePtr = strtok(recv_packet,d);	//state
 	printf("split state :%s\n",statePtr);
-	sLonPtr = strtok(recv_packet,d);
+	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",sLonPtr);
-	sLatPtr = strtok(recv_packet,d);
+	sLatPtr = strtok(NULL,d);
 	printf("split sLat :%s\n",sLatPtr);
-	dLonPtr = strtok(recv_packet,d);
+	dLonPtr = strtok(NULL,d);
 	printf("split dLon :%s\n",dLonPtr);
-	dLatPtr = strtok(recv_packet,d);
+	dLatPtr = strtok(NULL,d);
 	printf("split dLat :%s\n",dLatPtr);
 	
 	int rState = atoi(statePtr);
