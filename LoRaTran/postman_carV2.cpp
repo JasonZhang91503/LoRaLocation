@@ -165,25 +165,25 @@ int main(){
 	}
 	
 	//state 0->1 = 行走->到達sender指定地點
-	moveToSender(*src_longitude,*src_latitude);
+	e = moveToSender(*src_longitude,*src_latitude);
 	if(e != CAR_OK){
 		cout << "main : moveToSender method error, code = " << e << endl;
 	}
 	
 	//state 1->2 = 抵達->sender放入文件，開始前往recv點
-	beginTransport(dest_longitude,dest_latitude);
+	e = beginTransport(dest_longitude,dest_latitude);
 	if(e != CAR_OK){
 		cout << "main : beginTransport method error, code = " << e << endl;
 	}
 	
 	//state 2->3 = 抵達->告知抵達，並且接收packetKey
-	moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
+	e = moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
 	if(e != CAR_OK){
 		cout << "main : moveToReceiver method error, code = " << e << endl;
 	}
 	
 	//state 3->4 = 等待領或->輸入密碼成功，取貨完畢
-	endTransport(packetKey);
+	e = endTransport(packetKey);
 	if(e != CAR_OK){
 		cout << "main : endTransport method error, code = " << e << endl;
 	}
@@ -317,7 +317,7 @@ int beginTransport(double *longitude,double *latitude){
 		e = sx1272.receivePacketTimeout(10000);
 	
 		if(e != 0){
-			cout << "recvSenderRequest : no data received, receive again" << endl;
+			cout << "beginTransport : no data received, receive again" << endl;
 			continue;
 		}
 		
@@ -347,7 +347,7 @@ int beginTransport(double *longitude,double *latitude){
 	//確認state是否正確
 	StateCode = checkState(1);
 	if(StateCode != CAR_OK){
-		cout << "recvSenderRequest : retrun error in method checkState after recv data" << endl;
+		cout << "beginTransport : retrun error in method checkState after recv data" << endl;
 		return StateCode;
 	}
 	
@@ -418,16 +418,6 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 		存入packetKey內
 	*/
 	*packetKey = parsePassword();
-	
-	//目前先用9487來代替
-	//*packetKey = "9487";
-	
-	
-	
-	
-	/*task
-		send 新state資訊給gateway(主動)
-	*/
 	
 	
 	return CAR_OK;
@@ -531,7 +521,7 @@ int getGPSLocation(double &sLon,double &sLat){
                     !isnan(myGPS_Data.fix.latitude) && 
                     !isnan(myGPS_Data.fix.longitude)) {
                         //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
-                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
+                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld,", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
 						break;
                } else {
                     printf("no GPS data available\n");
