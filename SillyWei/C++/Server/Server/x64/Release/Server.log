@@ -1,0 +1,26 @@
+﻿  Server.cpp
+c:\program files\mysql\connector.c++ 1.1\include\cppconn\sqlstring.h(39): warning C4251: 'sql::SQLString::realStr': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 必須有 DLL 介面，才能被為 class 'sql::SQLString' 的用戶端使用
+  D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xstring(2633): note: 請參閱 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 的宣告
+c:\program files\mysql\connector.c++ 1.1\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 必須有 DLL 介面，才能被為 class 'sql::SQLException' 的用戶端使用
+  D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xstring(2633): note: 請參閱 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 的宣告
+c:\program files\mysql\connector.c++ 1.1\include\cppconn\exception.h(145): warning C4251: 'sql::SQLUnsupportedOptionException::option': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 必須有 DLL 介面，才能被為 struct 'sql::SQLUnsupportedOptionException' 的用戶端使用
+  D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xstring(2633): note: 請參閱 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 的宣告
+C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(175): warning C4251: 'sql::mysql::MySQL_Connection::proxy': class 'boost::shared_ptr<sql::mysql::NativeAPI::NativeConnectionWrapper>' 必須有 DLL 介面，才能被為 class 'sql::mysql::MySQL_Connection' 的用戶端使用
+  C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(175): note: 請參閱 'boost::shared_ptr<sql::mysql::NativeAPI::NativeConnectionWrapper>' 的宣告
+C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(179): warning C4251: 'sql::mysql::MySQL_Connection::service': class 'boost::scoped_ptr<sql::mysql::MySQL_Statement>' 必須有 DLL 介面，才能被為 class 'sql::mysql::MySQL_Connection' 的用戶端使用
+  C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(179): note: 請參閱 'boost::scoped_ptr<sql::mysql::MySQL_Statement>' 的宣告
+C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(181): warning C4251: 'sql::mysql::MySQL_Connection::intern': class 'boost::scoped_ptr<sql::mysql::MySQL_ConnectionData>' 必須有 DLL 介面，才能被為 class 'sql::mysql::MySQL_Connection' 的用戶端使用
+  C:\Program Files\MySQL\Connector.C++ 1.1\include\mysql_connection.h(181): note: 請參閱 'boost::scoped_ptr<sql::mysql::MySQL_ConnectionData>' 的宣告
+Server.cpp(130): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(133): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(155): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(158): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(161): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(164): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+  正在產生程式碼
+  1 of 222 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  已完成程式碼產生
+  Server.vcxproj -> E:\Programming\C++\MySQL\Server\x64\Release\Server.exe
+  Server.vcxproj -> E:\Programming\C++\MySQL\Server\x64\Release\Server.pdb (Full PDB)
