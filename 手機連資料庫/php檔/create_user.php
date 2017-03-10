@@ -34,6 +34,11 @@ if (isset($DATA["name"]) && isset($DATA["account"]) && isset($DATA["password"]) 
     if ($result) {
         // successfully inserted into database
         $response["success"] = 1;
+        $result = $db->query("SELECT *FROM user where account = '$account'");
+        if(!empty($result)){
+            $result = $result->fetch(PDO::FETCH_ASSOC);
+            $response["data"] = $result["_id"];
+        }
         $response["message"] = "row successfully created.";
  
         // echoing JSON response

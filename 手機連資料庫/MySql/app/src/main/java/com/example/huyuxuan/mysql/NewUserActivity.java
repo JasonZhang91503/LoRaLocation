@@ -35,7 +35,7 @@ public class NewUserActivity extends Activity{
     private ProgressDialog pDialog;
 
     String json = "";
-
+    int id;
     EditText inputName;
     EditText inputAccount;
     EditText inputPass;
@@ -48,6 +48,7 @@ public class NewUserActivity extends Activity{
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
+    private static final String TAG_DATA = "data";
     int success=0;
 
     @Override
@@ -151,11 +152,15 @@ public class NewUserActivity extends Activity{
             try {
                 JSONObject tmpObj = new JSONObject(json);
                 success = tmpObj.getInt(TAG_SUCCESS);
+                id = tmpObj.getInt(TAG_DATA);
 
                 if (success == 1) {
                     // successfully created user
                      Intent i = new Intent(getApplicationContext(), FeaturesActivity.class);
-                       startActivity(i);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("id",id);
+                    i.putExtras(bundle);
+                    startActivity(i);
 
                     // closing this screen
                     finish();
