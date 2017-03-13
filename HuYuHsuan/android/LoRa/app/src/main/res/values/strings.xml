@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">LoRa</string>
-    <string name="ip">127.0.0.1</string>
-    <string name="port">3306</string>
+    <string name="ip">192.168.0.12</string>
+    <string name="port">3490</string>
 </resources>

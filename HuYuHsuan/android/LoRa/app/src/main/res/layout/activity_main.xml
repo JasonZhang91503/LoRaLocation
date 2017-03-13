@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,15 +20,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        tools:layout_editor_absoluteX="135dp"
-        tools:layout_editor_absoluteY="200dp" />
+        tools:layout_editor_absoluteX="25dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <Button
         android:id="@+id/btnSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="註冊"
-        tools:layout_editor_absoluteX="230dp"
-        tools:layout_editor_absoluteY="198dp" />
+        tools:layout_editor_absoluteX="113dp"
+        tools:layout_editor_absoluteY="-5dp" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
