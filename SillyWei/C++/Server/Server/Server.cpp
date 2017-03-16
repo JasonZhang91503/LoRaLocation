@@ -290,7 +290,7 @@ void handleCellphoneTask(SOCKET clientSocket) {
 				char message1[] = "you already login";
 				send(clientSocket, message1, 18, 0);
 				break;
-			case 4:
+			/*case 4:
 				break;
 			case 5:
 				break;
@@ -303,7 +303,7 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 9:
 				break;
 			case 10:
-				break;
+				break;*/
 			}
 		}
 		
