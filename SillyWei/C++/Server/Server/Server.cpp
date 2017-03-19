@@ -43,12 +43,100 @@ void handleGatewayTask(SOCKET clientSocket);
 void testFunction() {
 
 	stmt = con->createStatement();
-	res = stmt->executeQuery("SELECT name FROM location WHERE _id = 1");
+	/*res = stmt->executeQuery("SELECT * FROM transport WHERE requireTime >= CURDATE()");
 	res->next();
-	sql::SQLString ss = res->getString("name");
+	sql::SQLString ss = res->getString("requireTime");
+	double i = res->getDouble("requireTime");
 	char cc[] = "圖a書a館a門a口";
 	cout << cc << endl;
 	cout << ss << endl;
+	cout << i << endl;*/
+	
+	string tempStr = "123";
+	string a = " ";
+	a[0] = 100;
+	tempStr.append("123\n97" + a);
+	cout << tempStr << endl;
+
+	string stmtStr;
+	string dateStr;
+	string dataStr;
+	string buffStr;
+	int tempInt, tempInt1, tempInt2;
+	int index;
+	int id = 4;
+	tempStr = "20170318,";
+	stmtStr = "SELECT * FROM transport WHERE sender=" + to_string(id) + " AND requireTime>=";
+
+	tempInt = tempStr.find(",");
+	dateStr = tempStr.substr(0, tempInt);
+	cout << dateStr << endl;
+
+	stmtStr.append(dateStr + " AND requireTime<ADDDATE(" + dateStr + ",1) ORDER BY requireTime");
+
+	res = stmt->executeQuery(stmtStr);
+
+	index = 0;
+	tempStr = "";
+	while (res->next()) {
+		tempStr.append(res->getString("sender") + ",");
+		tempStr.append(res->getString("receiver") + ",");
+		tempStr.append(res->getString("requireTime") + ",");
+		tempStr.append(res->getString("arriveTime") + ",");
+		tempStr.append(res->getString("start_id") + ","); 
+		tempStr.append(res->getString("des_id") + ",");
+		tempStr.append(res->getString("state") + ",");
+		tempStr.append(res->getString("key") + ",");
+
+	}
+	cout << tempStr << endl;
+
+	// get sender
+	tempInt2 = tempStr.find(",");
+	dataStr = tempStr.substr(0, tempInt2);
+	stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+	res = stmt->executeQuery(stmtStr);
+	res->next();
+	buffStr.append(res->getString("name") + ",");
+	delete res;
+	// get receiver
+	tempInt1 = tempStr.find(",", tempInt2 + 1);
+	dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
+	stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+	res = stmt->executeQuery(stmtStr);
+	res->next();
+	buffStr.append(res->getString("name") + ",");
+	delete res;
+	//get requireTime
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+	// get arriveTime
+	tempInt1 = tempStr.find(",", tempInt2 + 1);
+	buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+	// get startLocation
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
+	stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+	res = stmt->executeQuery(stmtStr);
+	res->next();
+	buffStr.append(res->getString("name") + ",");
+	delete res;
+	// get DesLocation
+	tempInt1 = tempStr.find(",", tempInt2 + 1);
+	dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
+	stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+	res = stmt->executeQuery(stmtStr);
+	res->next();
+	buffStr.append(res->getString("name") + ",");
+	delete res;
+	// get state
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+	// get key
+	tempInt1 = tempStr.find(",", tempInt2 + 1);
+	buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+
+	cout << buffStr;
 }
 
 int main(void) {
@@ -59,6 +147,8 @@ int main(void) {
 
 		initializeMySQL();
 		cout << "Initialize database." << endl;
+
+		testFunction();
 
 		// Initialize Socket Listener
 		listenSocket = getInitializeListenSocket();
@@ -192,9 +282,267 @@ int createAccount(char* buff) {
 	}
 }
 
+bool askTransportSend(int id, char* buff, string &buffStr) {
+	try {
+		string tempStr;
+		string stmtStr;
+		string dataStr;
+		int tempInt1, tempInt2;
+		int index;
+
+		tempStr = buff;
+		stmtStr = "SELECT * FROM transport WHERE sender=" + to_string(id) + " AND requireTime>=";
+
+		tempInt1 = tempStr.find(",");
+		dataStr = tempStr.substr(0, tempInt1);
+		cout << dataStr << endl;
+
+		stmtStr.append(dataStr + " AND requireTime<ADDDATE(" + dataStr + ",1) ORDER BY requireTime");
+
+		res = stmt->executeQuery(stmtStr);
+
+		index = 0;
+		tempStr = "";
+		while (res->next()) {
+			tempStr.append(res->getString("receiver") + ",");
+			tempStr.append(res->getString("requireTime") + ",");
+			tempStr.append(res->getString("arriveTime") + ",");
+			tempStr.append(res->getString("start_id") + ",");
+			tempStr.append(res->getString("des_id") + ",");
+			tempStr.append(res->getString("state") + ",");
+			tempStr.append(res->getString("key") + ",");
+			index++;
+		}
+		buffStr[1] = index;
+		delete res;
+		for (int i = 0; i < index; i++) {
+			// get receiver
+			tempInt1 = tempStr.find(",");
+			dataStr = tempStr.substr(0, tempInt1);
+			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			//get requireTime
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get arriveTime
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+			// get startLocation
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get DesLocation
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get state
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get key
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+		}
+		return true;
+	}catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+		return false;
+	}
+}
+
+bool askTransportRec(int id, char* buff, string &buffStr) {
+	try {
+		string tempStr;
+		string stmtStr;
+		string dataStr;
+		int tempInt1, tempInt2;
+		int index;
+
+		tempStr = buff;
+		stmtStr = "SELECT * FROM transport WHERE receiver=" + to_string(id) + " AND requireTime>=";
+
+		tempInt1 = tempStr.find(",");
+		dataStr = tempStr.substr(0, tempInt1);
+		cout << dataStr << endl;
+
+		stmtStr.append(dataStr + " AND requireTime<ADDDATE(" + dataStr + ",1) ORDER BY requireTime");
+
+		res = stmt->executeQuery(stmtStr);
+
+		index = 0;
+		tempStr = "";
+		while (res->next()) {
+			tempStr.append(res->getString("sender") + ",");
+			tempStr.append(res->getString("requireTime") + ",");
+			tempStr.append(res->getString("arriveTime") + ",");
+			tempStr.append(res->getString("start_id") + ",");
+			tempStr.append(res->getString("des_id") + ",");
+			tempStr.append(res->getString("state") + ",");
+			tempStr.append(res->getString("key") + ",");
+			index++;
+		}
+		buffStr[1] = index;
+		delete res;
+		for (int i = 0; i < index; i++) {
+			// get receiver
+			tempInt1 = tempStr.find(",");
+			dataStr = tempStr.substr(0, tempInt1);
+			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			//get requireTime
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get arriveTime
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+			// get startLocation
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get DesLocation
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get state
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get key
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+		}
+		return true;
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+		return false;
+	}
+}
+
+bool askTransportSendRec(int id, char* buff, string &buffStr) {
+	try {
+		string tempStr;
+		string stmtStr;
+		string dataStr;
+		int tempInt1, tempInt2;
+		int index;
+
+		tempStr = buff;
+		stmtStr = "SELECT * FROM transport WHERE requireTime>=";
+
+		tempInt1 = tempStr.find(",");
+		dataStr = tempStr.substr(0, tempInt1);
+		cout << dataStr << endl;
+
+		stmtStr.append(dataStr + " AND requireTime<ADDDATE(" + dataStr + ",1) ORDER BY requireTime");
+
+		res = stmt->executeQuery(stmtStr);
+
+		index = 0;
+		tempStr = "";
+		while (res->next()) {
+			tempStr.append(res->getString("sender") + ",");
+			tempStr.append(res->getString("receiver") + ",");
+			tempStr.append(res->getString("requireTime") + ",");
+			tempStr.append(res->getString("arriveTime") + ",");
+			tempStr.append(res->getString("start_id") + ",");
+			tempStr.append(res->getString("des_id") + ",");
+			tempStr.append(res->getString("state") + ",");
+			tempStr.append(res->getString("key") + ",");
+			index++;
+		}
+		buffStr[1] = index;
+		delete res;
+		for (int i = 0; i < index; i++) {
+			// get sender
+			tempInt2 = tempStr.find(",");
+			dataStr = tempStr.substr(0, tempInt2);
+			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get receiver
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 -tempInt2 - 1);
+			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			//get requireTime
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get arriveTime
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+			// get startLocation
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get DesLocation
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
+			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
+			res = stmt->executeQuery(stmtStr);
+			res->next();
+			buffStr.append(res->getString("name") + ",");
+			delete res;
+			// get state
+			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
+			// get key
+			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
+		}
+		return true;
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+		return false;
+	}
+}
+
 void handleCellphoneTask(SOCKET clientSocket) {
 	cout << "Start cellphone task" << endl;
 	char buff[BUFFSIZE] = {'\0'};
+	string buffStr;
 	int errorCode;
 
 	// User Info
@@ -212,40 +560,42 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			return;
 		}
 		cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << (int)buff[0] << buff << endl;
+
 		// error message
 		if (buff[0] == 1) {
 			cout << "error info: "<< &buff[1] << endl;
 			return;
 		}
 
+		buffStr;
 		if (!isLogin) {
 			// buff for send
-			char c[2];
 
 			switch (buff[0]) {
 			case 2:
+				buffStr = "  \n";
+				buffStr[0] = 1;
 				// create acount
-				c[0] = 2;
 				switch (createAccount(&buff[1])) {
 				case 1:
 					cout << "account: " << account << " create success" << endl;
-					c[1] = 1;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 1;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 2:
 					cout << "account: " << account << " create fail" << endl;
-					c[1] = 2;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 2;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 3:
 					cout << "account: " << account << " create fail" << endl;
-					c[1] = 3;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 3;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 4:
 					cout << "account: " << account << " create fail" << endl;
-					c[1] = 4;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 4;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				default:
 					break;
@@ -254,15 +604,16 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 3:
 				// log in
 				isLogin = login(&buff[1], account, id);
-				c[0] = 3;
+				buffStr = "  \n";
+				buffStr[0] = 3;
 				if (isLogin) {
 					cout << "account: " << account << " login success, id = " << id << endl;
-					c[1] = 1;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 1;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				}else {
 					cout << "account: " << account << " login fail" << endl;
-					c[1] = 0;
-					send(clientSocket, c, 2, 0);
+					buffStr[1] = 0;
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				}
 				break;
 			case 4:
@@ -272,14 +623,14 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 8:
 			case 9:
 			case 10:
-			{
-				char message1[] = "you need to login first";
-				send(clientSocket, message1, 24, 0);
+				buffStr = " you need to login first\n";
+				buffStr[0] = 1;
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
-			}
 			default:
-				char message2[] = "wrong state";
-				send(clientSocket, message2, 12, 0);
+				buffStr = " wrong state\n";
+				buffStr[0] = 1;
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			}
 		}
@@ -287,23 +638,34 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			switch (buff[0]) {
 			case 2:
 			case 3:
-				char message1[] = "you already login";
-				send(clientSocket, message1, 18, 0);
+				buffStr = " you already login\n";
+				buffStr[0] = 1;
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			/*case 4:
 				break;
 			case 5:
 				break;
 			case 6:
-				break;
+				break;*/
 			case 7:
+				buffStr = "  ";
+				buffStr[0] = 7;
+				askTransportSend(id, &buff[1], buffStr);
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			case 8:
+				buffStr = "  ";
+				buffStr[0] = 8;
+				askTransportRec(id, &buff[1], buffStr);
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			case 9:
+				buffStr = "  ";
+				buffStr[0] = 9;
 				break;
 			case 10:
-				break;*/
+				break;
 			}
 		}
 		
