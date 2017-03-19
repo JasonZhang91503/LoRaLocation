@@ -80,7 +80,8 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include <pthread.h>
 
 //class library
-#include"postman_class.h"
+#include"postman_request.h"
+#include"postman_GPS.h"
 
 #ifndef NO_CAR_MODE
 #include <string>
@@ -90,12 +91,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 using namespace std;
 
-
-
-
-
 int e;
-int state = -1;//用-1表示此車待命,idle狀態
 char recv_packet[100];	//車子接收資料的buffer
 char send_packet[100];	//車子送出資料的buffer
 int rc; //GPS的return code
@@ -109,18 +105,19 @@ double dest_range = 0.02;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 
-bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
+RequestManager ReqManger;
 
-void init(double *sLon,double *sLat,double *dLon,double *dLat,string *packetKey);
-int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat);
-int moveToSender(double dLon,double dLat);
-int beginTransport(double *longitude,double *latitude);
-int moveToReceiver(double dLon,double dLat,string *packetKey);
-int endTransport(string *packetKey);
+bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
+UserRequest* waitRequest(RequestObserver *reqObserver);
+int recvSenderRequest(UserRequest*);
+int moveToSender(UserRequest*);
+int beginTransport(UserRequest*);
+int moveToReceiver(UserRequest*);
+int endTransport(UserRequest*);
 int checkState(int tarState);
 int getGPSLocation(double &sLon,double &sLat);
 int sendPacket();
-int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat);
+int parseRequestData(UserRequest*);
 int parseStateData();
 string parsePassword();
 
@@ -150,11 +147,12 @@ int GPSsetup(){
 #endif
 
 void* asyncRecv(void *arg){
-	cout << " thread success" << endl;
+	cout << " thread success\n";
 	
 	while(true){
-		#ifndef NO_CAR_MODE
 
+
+#ifndef NO_CAR_MODE
 		e = sx1272.receivePacketTimeout(10000);
 	
 		if(e != 0){
@@ -172,7 +170,9 @@ void* asyncRecv(void *arg){
 		switch(recv_packet[0]){
 			//case 1 = Gateway更改State(給車子訂單)，Index[2]後為state、寄件經度、寄件緯度、收件經度、收件緯度，各資料間用 ',' 隔開
 			case 1:
-				//實作存入Queue
+				UserRequest *req = new UserRequest;
+				parseRequestData(req);
+				ReqManger.add(req);
 				break;
 			//case 2 = Gateway傳遞密碼，Index[2]後為密碼
 			case 2:
@@ -192,9 +192,15 @@ void* asyncRecv(void *arg){
 				stopCar();
 				break;
 		}
-
-
-		#endif
+#else
+		cin.get();
+		UserRequest *req = new UserRequest;
+		ReqManger.add(req);
+		cin.get();
+		while(true){
+			
+		}
+#endif
 	}
 	
 }
@@ -203,14 +209,9 @@ void* asyncRecv(void *arg){
 
 int main(int argc, const char * argv[]){
 	int error;	//
-	
-	double *src_longitude = NULL;
-	double *src_latitude = NULL;
-	double *dest_longitude = NULL;
-	double *dest_latitude = NULL;
-	string *packetKey = NULL;
 
-	UserRequest *req = new UserRequest;
+	//UserRequest *req = new UserRequest;
+	UserRequest *req;
 
 	#ifndef NO_CAR_MODE
 	//有車子則確認天線與LoRa狀態
@@ -243,50 +244,45 @@ int main(int argc, const char * argv[]){
 		剩下的state都是車子本身修改自身state並且傳送出去給gateway和server知道
 	*/
 	
-
-	src_longitude = new double;
-	src_latitude = new double;
-	dest_longitude = new double;
-	dest_latitude = new double;
-	packetKey = new string;
+	RequestObserver *reqObserver = new RequestObserver(1);
+	ReqManger.addReqestListener(reqObserver);
 
 	//建造一條用作recv的thread
 	pthread_t recvThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
 
-
 	//開始送貨循環
 	while(1){
-		state = -1;
-		
 		cout << "Begin transport" << endl;
 		
+		req = waitRequest(reqObserver);
+
 		//state -1->0 = idle - >接收到經緯度,開始到sender地點
-		e = recvSenderRequest(src_longitude,src_latitude,dest_longitude,dest_latitude);
+		e = recvSenderRequest(req);
 		if(e != CAR_OK){
 			cout << "main : recvSenderRequest method error, code = " << e << endl;
 		}
 		
 		//state 0->1 = 行走->到達sender指定地點
-		e = moveToSender(*src_longitude,*src_latitude);
+		e = moveToSender(req);
 		if(e != CAR_OK){
 			cout << "main : moveToSender method error, code = " << e << endl;
 		}
 		
 		//state 1->2 = 抵達->sender放入文件，開始前往recv點
-		e = beginTransport(dest_longitude,dest_latitude);
+		e = beginTransport(req);
 		if(e != CAR_OK){
 			cout << "main : beginTransport method error, code = " << e << endl;
 		}
 		
 		//state 2->3 = 抵達->告知抵達，並且接收packetKey
-		e = moveToReceiver(*dest_longitude,*dest_latitude,packetKey);
+		e = moveToReceiver(req);
 		if(e != CAR_OK){
 			cout << "main : moveToReceiver method error, code = " << e << endl;
 		}
 		
 		//state 3->4 = 等待領貨->輸入密碼成功，取貨完畢
-		e = endTransport(packetKey);
+		e = endTransport(req);
 		if(e != CAR_OK){
 			cout << "main : endTransport method error, code = " << e << endl;
 		}	
@@ -295,98 +291,52 @@ int main(int argc, const char * argv[]){
 	return 0;
 }
 
-void init(double *sLon,double *sLat,double *dLon,double *dLat,string *packetKey){
-	sLon = new double;
-	sLat = new double;
-	dLon = new double;
-	dLat = new double;
-	packetKey = new string;
-	state = -1;
+UserRequest* waitRequest(RequestObserver *reqObserver){
+	cout<<"waitRequest : Wait for SenderRequest..."<<endl;
+	while(!reqObserver->HasRequest()){
+		
+	}
+	return reqObserver->RequestPop();
 }
 
-int recvSenderRequest(double *sLon,double *sLat,double *dLon,double *dLat){
+
+int recvSenderRequest(UserRequest* req){
 	int StateCode;
-	
-	//確認state是否正確
-	StateCode = checkState(-1);
-	if(StateCode != CAR_OK){
-		cout << "recvSenderRequest : return error in method checkState before recv data" << endl;
-		return StateCode;
-	}
-	
-	
-	cout<<"recvSenderRequest : Wait for SenderRequest..."<<endl;
-	
-	#ifndef NO_CAR_MODE
-	while(true){
-		e = sx1272.receivePacketTimeout(10000);
-	
-		if(e != 0){
-			cout << "recvSenderRequest : no data received, receive again" << endl;
-			continue;
-		}
-		
-		for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
-		{
-			recv_packet[i] = (char)sx1272.packet_received.data[i];
-			cout << recv_packet[i];
-		}
-		cout << endl;
-		break;
-	}
-	#endif
 
 	//剖析state 與 經緯度
-	int rState = parseRequestData(sLon,sLat,dLon,dLat);
+	int rState = parseRequestData(req);
 	if(rState != 0){
 		cout << "recvSenderRequest : recv state data error! tarState = " << 0 << ",Recv_state = " << rState << endl;
 		return CAR_STATE_0_ERROR;
 	}
 	
-	cout << "recvSenderRequest : recv source longitude = " << *sLon << ", latitude = " << *sLat << endl;
-	cout << "recvSenderRequest : recv destnation longitude = " << *dLon << ", latitude = " << *dLat << endl;
-	cout << "recvSenderRequest : recv state = " << rState << endl;
-	
-	
-	//確認state是否正確
-	StateCode = checkState(-1);
-	if(StateCode != CAR_OK){
-		cout << "recvSenderRequest : retrun error in method checkState after recv data" << endl;
-		return StateCode;
-	}
-	
-	state = rState;
+	cout << "recvSenderRequest : recv source longitude = " << req->src_lon << ", latitude = " << req->src_lat << endl;
+	cout << "recvSenderRequest : recv destnation longitude = " << req->dest_lon << ", latitude = " << req->dest_lat << endl;
+	cout << "recvSenderRequest : recv state = " << req->state << endl;
 	
 	return CAR_OK;
 }
 
-int moveToSender(double dLon,double dLat){
+int moveToSender(UserRequest* req){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
 	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
-    
 	
-	//確認state是否正確
-	StateCode = checkState(0);
-	if(StateCode != CAR_OK){
-		cout << "moveToSender : retrun error in method checkState before reach destnation" << endl;
-		return StateCode;
-	}
-	
-	
+	cout << "moveToSender : Begin go to sender location" << endl;
+
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		getGPSLocation(sLon,sLat);
 		#else
-		sLon = dLon;
-		sLat = dLat;
+		sLon = req->dest_lon;
+		sLat = req->dest_lat;
 		#endif
 		
 		//去計算是否到達目標
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, dLon, dLat);
+		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, req->dest_lon, req->dest_lat);
 		
 		if (isCarReach) {
 			cout << "moveToSender : reach destnation!" << endl;
@@ -399,115 +349,54 @@ int moveToSender(double dLon,double dLat){
 		#endif
 	} while ( -180 < sLon && sLon < 180);
 	
+	req->state = 1;
 	
-	//確認state是否正確
-	StateCode = checkState(0);
-	if(StateCode != CAR_OK){
-		cout << "moveToSender : retrun error in method checkState after reach destnation" << endl;
-		return StateCode;
-	}
-	state = 1;
-	
-	#ifndef NO_CAR_MODE
+#ifndef NO_CAR_MODE
 	sendPacket();
-	#endif
+#endif
 	
 	return CAR_OK;
 }
 
-int beginTransport(double *longitude,double *latitude){
-	int StateCode;
+int beginTransport(UserRequest* req){
 	
-	//確認state是否正確
-	StateCode = checkState(1);
-	if(StateCode != CAR_OK){
-		cout << "beginTransport : retrun error in method checkState before recv data" << endl;
-		return StateCode;
-	}
+	cout << "beginTransport : Wait for sender place the file" << endl;
 	
-	#ifndef NO_CAR_MODE	
-	cout<<"beginTransport : Wait for Receiver location..."<<endl;
-	while(true){
-		e = sx1272.receivePacketTimeout(10000);
-	
-		if(e != 0){
-			cout << "beginTransport : no data received, receive again" << endl;
-			continue;
-		}
-		
-		for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
-		{
-			recv_packet[i] = (char)sx1272.packet_received.data[i];
-			cout << recv_packet[i];
-		}
-		cout << endl;
-		break;
-	}
-	#endif
-	
-	//分析state
-	#ifndef NO_CAR_MODE	
-	int rState = parseStateData();
-	#else
-	int rState = 2;
-	#endif
-	if(rState != 2){
-		cout << "beginTransport : recv state data error! tarState = " << 2 << ",Recv_state = " << rState << endl;
-		return CAR_STATE_2_ERROR;
-	}
+	//改成偵測是否recv到收到寄件?
 	
 	//判定使用者放入文件，目前使用enter做為判定
-	cout << "beginTransport : Wait for sender place the file" << endl;
-	cout << "beginTransport :Press enter to start transport" << endl;
 	getchar();
 	
-	cout << "beginTransport : goto longitude = " << *longitude << ", latitude = " << *latitude << endl;
+	cout << "beginTransport : Sender placed file" << endl;
+	cout << "beginTransport : goto longitude = " << req->dest_lon << ", latitude = " << req->dest_lat << endl;
 	
-	//確認state是否正確
-	StateCode = checkState(1);
-	if(StateCode != CAR_OK){
-		cout << "beginTransport : retrun error in method checkState after recv data" << endl;
-		return StateCode;
-	}
-	
-	state = 2;
+	req->state = 2;
 
-	//等待楷甯那邊改好
-	/*
-	#ifndef NO_CAR_MODE
+#ifndef NO_CAR_MODE
 	sendPacket();
-	#endif
-	*/
-	
+#endif
+
 	return CAR_OK;
 }
 
-int moveToReceiver(double dLon,double dLat,string *packetKey){
+int moveToReceiver(UserRequest* req){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
 	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
 	
-	//確認state是否正確
-	StateCode = checkState(2);
-	if(StateCode != CAR_OK){
-		cout << "moveToReceiver : retrun error in method checkState before reach destnation" << endl;
-		return StateCode;
-	}
-	
 	do {
-		
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		getGPSLocation(sLon,sLat);
 		#else
-		sLon = dLon;
-		sLat = dLat;
+		sLon = req->dest_lon;
+		sLat = req->dest_lat;
 		#endif
 		
 		//去計算是否到達目標
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, dLon, dLat);
+		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, req->dest_lon, req->dest_lat);
 		
 		if (isCarReach) {
 			cout << "moveToReceiver : reach destnation!" << endl;
@@ -520,65 +409,31 @@ int moveToReceiver(double dLon,double dLat,string *packetKey){
 		#endif
 	} while ( -180 < sLon && sLon < 180);
 	
-	//確認state是否正確
-	StateCode = checkState(2);
-	if(StateCode != CAR_OK){
-		cout << "moveToReceiver : retrun error in method checkState after reach destnation" << endl;
-		return StateCode;
-	}
-	state = 3;
-	
-	#ifndef NO_CAR_MODE
-	sendPacket();
-	#endif
-	
-	#ifndef NO_CAR_MODE
-	//recv一組密碼
-	cout<<"moveToReceiver : Wait for PacketKey..."<<endl;
-	e = sx1272.receivePacketTimeout(10000);
-	
-	if(e != 0){
-		cout << "moveToReceiver : error! receive data error occur" << endl;
-		return e;
-	}
-	
-	for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
-    {
-        recv_packet[i] = (char)sx1272.packet_received.data[i];
-		cout << recv_packet[i];
-    }
-	cout << endl;
-	#endif
 
-	/*task
-		將recv的密碼分析成字串
-		存入packetKey內
-	*/
-	*packetKey = parsePassword();
+	req->state = 3;
 	
+#ifndef NO_CAR_MODE
+	sendPacket();
+#endif
 	
 	return CAR_OK;
 }
 
-int endTransport(string *packetKey){
+int endTransport(UserRequest* req){
 	string input;
 	bool isCorrect = false;
 	int StateCode;
-	
-	//確認state是否正確
-	StateCode = checkState(3);
-	if(StateCode != CAR_OK){
-		cout << "endTransport : retrun error in method checkState after reach destnation" << endl;
-		return StateCode;
-	}
-	
+
+	//等packetKey
+	//!!!以後可能直接用Request直接有
+	req->packetKey = parsePassword();
 	
 	cout << "endTransport : Wait for password input" << endl << endl;
 	do{
 		cout << "Password :";
 		getline(cin,input,'\n');
 		
-		if(input != *packetKey){
+		if(input != req->packetKey){
 			cout << "Error! Please enter password again" << endl;
 		}
 		else{isCorrect = true;}
@@ -591,59 +446,17 @@ int endTransport(string *packetKey){
 		密碼箱打開後
 		要判定東西被拿走
 		這裡用按下enter來當作拿了
+		~~~~以後要改成RFID
 	*/
 	getchar();
 	
+	req->state = 4;
 	
-	//確認state是否正確
-	StateCode = checkState(3);
-	if(StateCode != CAR_OK){
-		cout << "endTransport : retrun error in method checkState after reach destnation" << endl;
-		return StateCode;
-	}
-	state = 4;
-	
-	/*task
-		send 新state資訊給gateway(主動)
-	*/
 	#ifndef NO_CAR_MODE
 	sendPacket();
 	#endif
 	
 	return CAR_OK;
-}
-
-
-int checkState(int tarState){
-	int returnCode;
-	switch(tarState){
-		case -1:
-			returnCode = CAR_STATE_999_ERROR;
-			break;
-		case 0:
-			returnCode = CAR_STATE_0_ERROR;
-			break;
-		case 1:
-			returnCode = CAR_STATE_1_ERROR;
-			break;			
-		case 2:
-			returnCode = CAR_STATE_2_ERROR;
-			break;
-		case 3:
-			returnCode = CAR_STATE_3_ERROR;
-			break;
-		case 4:
-			returnCode = CAR_STATE_4_ERROR;
-			break;			
-	}
-	
-	if(state != tarState){
-		cout << "checkState : error! state not correct, currentState = " << state << ", targetState = " << tarState << endl;
-		return returnCode;
-	}
-	else{
-		return CAR_OK;
-	}
 }
 
 #ifndef NO_CAR_MODE
@@ -690,15 +503,18 @@ int sendPacket(){
 }
 #endif
 
-int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
+int parseRequestData(UserRequest* req){
 	const char *d = " ,";
 	char* statePtr;
 	char* sLonPtr;
 	char* sLatPtr;
 	char* dLonPtr;
 	char* dLatPtr;
+	char* packetKeyPtr;
 	
 	#ifndef NO_CAR_MODE
+
+	/*
 	statePtr = strtok(recv_packet,d);	//state
 	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(NULL,d);
@@ -710,30 +526,64 @@ int parseRequestData(double *sLon,double *sLat,double *dLon,double *dLat){
 	dLatPtr = strtok(NULL,d);
 	printf("split dLat :%s\n",dLatPtr);
 	
-	int rState = atoi(statePtr);
-	printf("rState :%d\n",rState);
-	*sLon = atof(sLonPtr);
-	printf("sLon :%f\n",*sLon);
-	*sLat = atof(sLatPtr);
-	printf("sLat :%f\n",*sLat);
-	*dLon = atof(dLonPtr);
-	printf("dLon :%f\n",*dLon);
-	*dLat = atof(dLatPtr);
-	printf("dLat :%f\n",*dLat);
+	req->state = atoi(statePtr);
+	printf("rState :%d\n",req->state);
+	req->src_lon = atof(sLonPtr);
+	printf("sLon :%f\n",req->src_lon);
+	req->src_lat = atof(sLatPtr);
+	printf("sLat :%f\n",req->src_lat);
+	req->dest_lon = atof(dLonPtr);
+	printf("dLon :%f\n",req->dest_lon);
+	req->dest_lat = atof(dLatPtr);
+	printf("dLat :%f\n",req->dest_lat);
+	*/
+
+	//有識別碼版
+	statePtr = strtok(recv_packet + 2 ,d);	//index[2]後開始為資料
+	printf("split state :%s\n",statePtr);
+	sLonPtr = strtok(NULL,d);
+	printf("split sLon :%s\n",sLonPtr);
+	sLatPtr = strtok(NULL,d);
+	printf("split sLat :%s\n",sLatPtr);
+	dLonPtr = strtok(NULL,d);
+	printf("split dLon :%s\n",dLonPtr);
+	dLatPtr = strtok(NULL,d);
+	printf("split dLat :%s\n",dLatPtr);
+	packetKeyPtr = strtok(NULL,d);
+	printf("split packetKey :%s\n",packetKeyPtr);
+	
+	req->state = atoi(statePtr);
+	printf("rState :%d\n",req->state);
+	req->src_lon = atof(sLonPtr);
+	printf("sLon :%f\n",req->src_lon);
+	req->src_lat = atof(sLatPtr);
+	printf("sLat :%f\n",req->src_lat);
+	req->dest_lon = atof(dLonPtr);
+	printf("dLon :%f\n",req->dest_lon);
+	req->dest_lat = atof(dLatPtr);
+	printf("dLat :%f\n",req->dest_lat);
+	req->packetKey.assign(packetKeyPtr);
+	printf("packetKey :%s\n",req->packetKey);
 	#else
-	int rState = 0;
-	printf("rState :%d\n",rState);
-	*sLon = 121.369862;
-	printf("sLon :%f\n",*sLon);
-	*sLat = 24.944185;
-	printf("sLat :%f\n",*sLat);
-	*dLon = 121.369862;
-	printf("dLon :%f\n",*dLon);
-	*dLat = 24.944185;
-	printf("dLat :%f\n",*dLat);
+	req->state = 0;
+	printf("rState :%d\n",req->state);
+	req->src_lon = 121.369862;
+	printf("sLon :%f\n",req->src_lon);
+	req->src_lat = 24.944185;
+	printf("sLat :%f\n",req->src_lat);
+	req->dest_lon = 121.369862;
+	printf("dLon :%f\n",req->dest_lon);
+	req->dest_lat = 24.944185;
+	printf("dLat :%f\n",req->dest_lat);
+	req->dest_lat = 24.944185;
+	printf("dLat :%f\n",req->dest_lat);
+	char* pw = new char[pw_size];
+	pw[0] = '\0';
+	req->packetKey.assign(pw);
+	printf("packetKey :%s\n",req->packetKey);
 	#endif
 	
-	return rState;
+	return req->state;
 }
 
 int parseStateData(){
@@ -742,6 +592,8 @@ int parseStateData(){
 	
 	return rState;
 }
+
+
 
 
 //無識別碼版
