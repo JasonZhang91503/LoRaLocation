@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -20,8 +21,14 @@
             </intent-filter>
         </activity>
         
-        <service android:name=".ConnectService" >
+        <service android:name=".ConnectService" android:enabled="true">
         </service>
+        <receiver android:name="com.example.huyuxuan.lora.Background.BackgroundReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
