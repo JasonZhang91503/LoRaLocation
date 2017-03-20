@@ -1,5 +1,8 @@
 package com.example.huyuxuan.lora;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCheckSR;
     private Button btnSetAlarm;
 
+
+    
     static ConnectService mBoundService;
     static boolean isBind;
     MyAlarmReceiver alarm = new MyAlarmReceiver();
@@ -218,6 +224,21 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new ConnectServiceReceiver();
+        registerReceiver(receiver, filter);
+    }
+
     //接收广播类
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
@@ -252,5 +273,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
 
 }

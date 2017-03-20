@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
@@ -19,10 +20,14 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
 
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+
     static private int serviceCounter = 0;
+    private BgServiceRecver mServiceBroadcastReceiver;
+    private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.i("MyAlarmReceiver","onReceive");
         if(serviceCounter == 0){
             Intent service = new Intent(context, BackgroundRecvService.class);
             startWakefulService(context, service);
@@ -31,6 +36,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public void setAlarm(Context context) {
+        Log.i("MyAlarmReceiver","setAlarm");
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, MyAlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
@@ -46,6 +52,12 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
+
+        //动态注册receiver
+        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        mServiceBroadcastReceiver = new BgServiceRecver();
+        context.getApplicationContext().registerReceiver(mServiceBroadcastReceiver, filter);
     }
     /*
     public void cancelAlarm(Context context) {
@@ -71,11 +83,9 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 String state = intent.getStringExtra("state");
                 // 如果傳回成功
                 if(state.equals("true")){
-                    Log.d("ConnectServiceReceiver:","state-> "+ state);
+                    Log.d("BgServiceReceiver:","state-> "+ state);
                     //開啟notification
-
-
-
+                    serviceCounter--;
 
                 }
             }

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -23,12 +24,17 @@
         
         <service android:name=".ConnectService" android:enabled="true">
         </service>
+
+        <service android:name=".Background.BackgroundRecvService" android:exported="false"></service>
+
         <receiver android:name="com.example.huyuxuan.lora.Background.BackgroundReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT"></action>
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".Background.MyAlarmReceiver"/>
     </application>
 
 </manifest>
