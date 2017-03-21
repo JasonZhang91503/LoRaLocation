@@ -28,7 +28,7 @@
 */
 
 
-#define NO_CAR_MODE
+//#define NO_CAR_MODE
 
 /*
 
@@ -580,7 +580,7 @@ int parseRequestData(UserRequest* req){
 	char* pw = new char[pw_size];
 	pw[0] = '\0';
 	req->packetKey.assign(pw);
-	printf("packetKey :%s\n",req->packetKey);
+	printf("packetKey :%s\n",req->packetKey.c_str());
 	#endif
 	
 	return req->state;
