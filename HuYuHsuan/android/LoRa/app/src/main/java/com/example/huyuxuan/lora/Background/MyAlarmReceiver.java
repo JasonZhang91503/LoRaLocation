@@ -23,7 +23,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
 
     static private int serviceCounter = 0;
     private BgServiceRecver mServiceBroadcastReceiver;
-    private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -54,7 +54,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 PackageManager.DONT_KILL_APP);
 
         //动态注册receiver
-        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
+        IntentFilter filter = new IntentFilter(ACTION_RECV_SER_BROD);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         mServiceBroadcastReceiver = new BgServiceRecver();
         context.getApplicationContext().registerReceiver(mServiceBroadcastReceiver, filter);
@@ -79,16 +79,16 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     public class BgServiceRecver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("service").equals("BackgroundRecvService")){
-                String state = intent.getStringExtra("state");
-                // 如果傳回成功
-                if(state.equals("true")){
-                    Log.d("BgServiceReceiver:","state-> "+ state);
-                    //開啟notification
-                    serviceCounter--;
 
-                }
+            String state = intent.getStringExtra("state");
+                // 如果傳回成功
+            if(state.equals("true")){
+                Log.d("BgServiceReceiver:","state-> "+ state);
+                //開啟notification
+                serviceCounter--;
+
             }
+
         }
     }
 }

@@ -3,6 +3,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -15,6 +16,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by huyuxuan on 2017/3/11.
@@ -160,8 +163,7 @@ public class ConnectService extends Service {
                 broadcastIntent.setAction(ACTION_RECV_MSG);
                 broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
                 broadcastIntent.putExtra("result", flag.toString());
-                broadcastIntent.putExtra("message",rcvMessage);
-                broadcastIntent.putExtra("service","ConnectService");
+                broadcastIntent.putExtra("activity","MainActivity");//定要傳給哪個activity
                 sendBroadcast(broadcastIntent);
 
                 return  null;
@@ -169,5 +171,85 @@ public class ConnectService extends Service {
         }.execute();
 
         rcvMessage=null;
+    }
+
+    public Bundle getData(String mes){
+        Bundle dataBundle = new Bundle();
+        int commaIndex = mes.indexOf(',');
+        String RcvId = mes.substring(0,commaIndex);
+        dataBundle.putString("id",RcvId);
+        Log.d("ConnectService","receive id="+RcvId);
+        switch (RcvId){
+            case "2":   //註冊是否成功
+            case "3":   //登入是否成功
+            case "4":   //登記寄件是否成功
+                String type=mes.substring(commaIndex+1,3);
+                dataBundle.putString("type",type);
+                break;
+            case "5":   //車子有空時段
+                dataBundle.putString("message",mes.substring(commaIndex+1));
+                break;
+            case "6":   //使用者資料
+                String name = mes.substring(commaIndex+1,mes.indexOf(':'));
+                String email = mes.substring(mes.indexOf(':')+1,mes.indexOf('*'));
+                dataBundle.putString(getString(R.string.name),name);
+                dataBundle.putString(getString(R.string.email),email);
+                break;
+            case "7":   //寄件資料
+                String numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                int num = Integer.valueOf(numStr);
+                ArrayList<HashMap<String, String>> DataList = new ArrayList<HashMap<String, String>>();
+                String[] mesAray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                for(int i = 0; i < num ; i++){
+                    String curStr = mesAray[i]; //抓每筆資料
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    if(i==0){
+                        map.put(getString(R.string.receiver),curStr.substring(3,curStr.indexOf('~')));
+                    }
+                    else{
+                        map.put(getString(R.string.receiver),curStr.substring(0,curStr.indexOf('~')));
+                    }
+                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':')));
+                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf(':')+1,curStr.indexOf(';')));
+                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
+                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
+                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
+                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('*')));
+                    DataList.add(map);
+                }
+                dataBundle.putSerializable("arrayList",DataList);
+                break;
+            case "8":   //收件資料
+                numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                num = Integer.valueOf(numStr);
+                DataList = new ArrayList<HashMap<String, String>>();
+                mesAray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                for(int i = 0; i < num ; i++){
+                    String curStr = mesAray[i]; //抓每筆資料
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    if(i==0){
+                        map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));
+                    }
+                    else{
+                        map.put(getString(R.string.sender),curStr.substring(0,curStr.indexOf('~')));
+                    }
+                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':')));
+                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf(':')+1,curStr.indexOf(';')));
+                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
+                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
+                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
+                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('*')));
+                    DataList.add(map);
+                }
+                dataBundle.putSerializable("arrayList",DataList);
+                break;
+        }
+
+
+
+
+
+
+        return  dataBundle;
     }
 }

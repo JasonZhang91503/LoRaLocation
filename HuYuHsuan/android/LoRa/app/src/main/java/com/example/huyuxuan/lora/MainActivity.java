@@ -244,12 +244,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             //String result = intent.getStringExtra("result");
-            if(intent.getStringExtra("service").equals("ConnectService")){
-                String message = intent.getStringExtra("message");
-                // 如果傳回成功
-                if(message.equals("true")){
-                    Log.d("ConnectServiceReceiver:","receive-> "+ message);
-                }
+            if(intent.getStringExtra("activity").equals("MainActivity")){
+
             }
         }
     }
