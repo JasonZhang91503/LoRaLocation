@@ -147,6 +147,8 @@ int GPSsetup(){
 #endif
 
 void* asyncRecv(void *arg){
+	UserRequest *req;
+	
 	cout << " thread success\n";
 	
 	while(true){
@@ -170,7 +172,7 @@ void* asyncRecv(void *arg){
 		switch(recv_packet[0]){
 			//case 1 = Gateway更改State(給車子訂單)，Index[2]後為state、寄件經度、寄件緯度、收件經度、收件緯度，各資料間用 ',' 隔開
 			case 1:
-				UserRequest *req = new UserRequest;
+				*req = new UserRequest;
 				parseRequestData(req);
 				ReqManger.add(req);
 				break;
