@@ -116,7 +116,7 @@ int moveToReceiver(UserRequest*);
 int endTransport(UserRequest*);
 int checkState(int tarState);
 int getGPSLocation(double &sLon,double &sLat);
-int sendPacket();
+int sendPacket(UserRequest*);
 int parseRequestData(UserRequest*);
 int parseStateData();
 string parsePassword();
@@ -352,7 +352,7 @@ int moveToSender(UserRequest* req){
 	req->state = 1;
 	
 #ifndef NO_CAR_MODE
-	sendPacket();
+	sendPacket(req);
 #endif
 	
 	return CAR_OK;
@@ -373,7 +373,7 @@ int beginTransport(UserRequest* req){
 	req->state = 2;
 
 #ifndef NO_CAR_MODE
-	sendPacket();
+	sendPacket(req);
 #endif
 
 	return CAR_OK;
@@ -413,7 +413,7 @@ int moveToReceiver(UserRequest* req){
 	req->state = 3;
 	
 #ifndef NO_CAR_MODE
-	sendPacket();
+	sendPacket(req);
 #endif
 	
 	return CAR_OK;
@@ -453,7 +453,7 @@ int endTransport(UserRequest* req){
 	req->state = 4;
 	
 	#ifndef NO_CAR_MODE
-	sendPacket();
+	sendPacket(req);
 	#endif
 	
 	return CAR_OK;
@@ -496,8 +496,8 @@ int getGPSLocation(double &sLon,double &sLat){
 #endif
 
 #ifndef NO_CAR_MODE
-int sendPacket(){
-	sprintf(send_packet,"%d",state);
+int sendPacket(UserRequest *req){
+	sprintf(send_packet,"%d",req->state);
     e = sx1272.sendPacketTimeout(0, send_packet);
     printf("Packet sent, state :%d, code :%d\n",state,e);
 }
@@ -563,7 +563,7 @@ int parseRequestData(UserRequest* req){
 	req->dest_lat = atof(dLatPtr);
 	printf("dLat :%f\n",req->dest_lat);
 	req->packetKey.assign(packetKeyPtr);
-	printf("packetKey :%s\n",req->packetKey);
+	printf("packetKey :%s\n",req->packetKey.c_str());
 	#else
 	req->state = 0;
 	printf("rState :%d\n",req->state);
