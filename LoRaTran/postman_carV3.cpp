@@ -75,7 +75,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <math.h>
+//#include <math.h>
 #include <iostream>
 #include <pthread.h>
 
@@ -172,7 +172,7 @@ void* asyncRecv(void *arg){
 		switch(recv_packet[0]){
 			//case 1 = Gateway更改State(給車子訂單)，Index[2]後為state、寄件經度、寄件緯度、收件經度、收件緯度，各資料間用 ',' 隔開
 			case 1:
-				*req = new UserRequest;
+				req = new UserRequest;
 				parseRequestData(req);
 				ReqManger.add(req);
 				break;
@@ -501,7 +501,7 @@ int getGPSLocation(double &sLon,double &sLat){
 int sendPacket(UserRequest *req){
 	sprintf(send_packet,"%d",req->state);
     e = sx1272.sendPacketTimeout(0, send_packet);
-    printf("Packet sent, state :%d, code :%d\n",state,e);
+    printf("Packet sent, state :%d, code :%d\n",req->state,e);
 }
 #endif
 
