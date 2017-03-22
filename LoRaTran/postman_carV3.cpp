@@ -81,6 +81,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 //class library
 #include"postman_request.h"
+#include"postman_packet.h"
 //#include"postman_GPS.h"
 
 #ifndef NO_CAR_MODE
@@ -106,6 +107,7 @@ int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 
 RequestManager ReqManger;
+PacketManager PacManager;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
 UserRequest* waitRequest(RequestObserver *reqObserver);
@@ -148,6 +150,7 @@ int GPSsetup(){
 
 void* asyncRecv(void *arg){
 	UserRequest *req;
+	int result;
 	
 	cout << " thread success\n";
 	
@@ -155,10 +158,11 @@ void* asyncRecv(void *arg){
 
 
 #ifndef NO_CAR_MODE
+		/*
 		e = sx1272.receivePacketTimeout(10000);
 	
 		if(e != 0){
-			cout << "asyncRecv : no data received, receive again" << endl;
+			cout << "asyncRecv : no data received, receive again\n";
 			continue;
 		}
 		
@@ -166,34 +170,80 @@ void* asyncRecv(void *arg){
 		{
 			recv_packet[i] = (char)sx1272.packet_received.data[i];
 		}
+		*/
+
+		while(PacManager.recvData()){
+			cout << "asyncRecv : no data received, receive again\n";
+		}
+
+		/*
+		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
+		*	Index[0] : 類別碼, 0=gateway,1=車子,2=ACK0事件,3=ACK1事件
+		*	Index[1] : 車子ID, 車子所代表ID
+		*	Index[2] : ACK,	以0與1表示ACK0與ACK1
+		*	Index[3] : 事件識別碼, 1 = 新增訂單
+		*	Index[4] : 事件資料, 事件所傳送的資料
+		*
+		*/
+		
+		//若收到gateway的資料則捨棄
+		if(PacManager.isGatewayPacket()){
+			cout << "asyncRecv : recvive gateway data, discard it"<< endl;
+			continue;
+		}
+		else if(PacManager.isACK()){
+			//isCorrectACK
+			if(!PacManager.isCorrectACK()){
+				cout << "asyncRecv : recvive incorrect ACK, discard it"<< endl;
+				cout << "asyncRecv : resend last sended packet"<< endl;
+				continue;
+			}
+		}
+
+		/*
+			//做recv_packet[1]的判斷
+		*/
+
 		cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 		
 		//判斷封包的識別碼
-		switch(recv_packet[0]){
+		switch(recv_packet[3]){
 			//case 1 = Gateway更改State(給車子訂單)，Index[2]後為state、寄件經度、寄件緯度、收件經度、收件緯度，各資料間用 ',' 隔開
 			case 1:
+				cout << "asyncRecv : recvive UserRequest, begin parse"<< endl;
+
 				req = new UserRequest;
 				parseRequestData(req);
 				ReqManger.add(req);
 				break;
 			//case 2 = Gateway傳遞密碼，Index[2]後為密碼
 			case 2:
+				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+
 				//需要決定丟到哪個訂單上面
 				parsePassword();
 				break;
 			//case 3 = 暫停車子送件
 			case 3:
+				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+
 				pauseCar();
 				break;
 			//case 4 = 開始車子送件
 			case 4:
+				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+
 				restartCar();
 				break;
 			//case 5 = 終止車子送件
 			case 5:
+				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+
 				stopCar();
 				break;
 		}
+
+		result = PacManager.sendBackACK();
 #else
 		cin.get();
 		UserRequest *req = new UserRequest;
@@ -212,7 +262,6 @@ void* asyncRecv(void *arg){
 int main(int argc, const char * argv[]){
 	int error;	//
 
-	//UserRequest *req = new UserRequest;
 	UserRequest *req;
 
 	#ifndef NO_CAR_MODE

@@ -142,7 +142,7 @@ int main(){
 	state0. 向 Server 詢問是否有要寄件 - 檢查是否有寄件資訊的 state 為 0 的，有的話在預定時間到寄件地點。
 	state1. 抵達指定地點 - 將 state 的狀態設為 1。
 	state2. 寄件者放入信件並在板子上按 Enter ，並向收件地點前進 - 將 state 的狀態設為 2 。
-	state3. 打達寄件地點，產生一組取件密碼 - 將 state 設為 3 。
+	state3. 到達寄件地點，產生一組取件密碼 - 將 state 設為 3 。
 	state4. 使用者輸入密碼並取件 - 將 state 設為  4 。
 	*/
 	
@@ -521,6 +521,7 @@ int getGPSLocation(double &sLon,double &sLat){
                     !isnan(myGPS_Data.fix.latitude) && 
                     !isnan(myGPS_Data.fix.longitude)) {
                         //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
+                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
 						break;
                } else {
                     printf("no GPS data available\n");

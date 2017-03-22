@@ -1,0 +1,40 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                "C:/Users/HandsomeBoy/Desktop/LoRaData/cooking/arduPi/*",
+                "C:/Users/HandsomeBoy/Desktop/LoRaData/cooking/arduPi-api/*",
+                "C:/Users/HandsomeBoy/Desktop/LoRaData/cooking/libraries/arduPiLoRa/*",
+                "C:/Users/HandsomeBoy/Documents/GitHub/LoRaLocation/LoRaTran/*"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ]
+}
