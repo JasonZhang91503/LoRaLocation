@@ -21,7 +21,7 @@ import com.example.huyuxuan.lora.R;
 
 public class BackgroundRecvService extends Service {
 
-    private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
     Boolean flag = false;
     private final int notifyId = 1;
     PowerManager.WakeLock mWakeLock;
@@ -59,12 +59,10 @@ public class BackgroundRecvService extends Service {
         acquireWakeLock(2);
 
         //接收完
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(ACTION_RECV_MSG);
+        Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
         broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
         broadcastIntent.putExtra("result", flag.toString());
         broadcastIntent.putExtra("state","true");
-        broadcastIntent.putExtra("service","BackgroundRecvService");
         sendBroadcast(broadcastIntent);
 
 

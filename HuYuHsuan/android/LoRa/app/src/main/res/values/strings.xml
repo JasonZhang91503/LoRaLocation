@@ -10,6 +10,7 @@
     <string name="name">name</string>
     <string name="email">email</string>
     <string name="requireTime">requireTime</string>
+    <string name="arriveTime">arriveTime</string>
     <string name="sender">sender</string>
     <string name="receiver">receiver</string>
     <string name="startLocation">startLocation</string>
