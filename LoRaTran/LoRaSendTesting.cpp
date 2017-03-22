@@ -71,14 +71,27 @@ void setup()
   delay(1000);
 }
 
+void sendRequest(){
+    char buffer[256];
+    sprintf(buffer, "1 0,123.121212,24.252525,123.121212,24.252525,1234,");
+    e = sx1272.sendPacketTimeout(0, buffer);
+    printf("Packet sent, state %d\n",e);
+}
+
 void loop(void)
 {
+    int mode;
     printf("Input : ");
-    scanf("%s",message1);
+    scanf("%d",mode);
 
- 	// Send message1 broadcast and print the result
-    e = sx1272.sendPacketTimeout(0, message1);
-    printf("Packet sent, state %d\n",e);
+    switch(mode){
+        case 1:
+            sendRequest();
+            break;
+        case 2:
+            break;
+    }
+    
 }
 
 int main (){
