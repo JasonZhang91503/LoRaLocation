@@ -82,7 +82,7 @@ void loop(void)
 {
     int mode;
     printf("Input : ");
-    scanf("%d",mode);
+    scanf("%d",&mode);
 
     switch(mode){
         case 1:
