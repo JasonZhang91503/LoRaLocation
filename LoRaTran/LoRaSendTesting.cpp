@@ -74,7 +74,8 @@ void setup()
 void sendRequest(){
     char buffer[256];
     int num1 = 1;
-    sprintf(buffer, "%d 0,123.121212,24.252525,123.121212,24.252525,1234,",num1);
+    sprintf(buffer, "0 0,123.121212,24.252525,123.121212,24.252525,1234,");
+    buffer[0] = 1;
     e = sx1272.sendPacketTimeout(0, buffer);
     printf("Packet sent, state %d\n",e);
 }
