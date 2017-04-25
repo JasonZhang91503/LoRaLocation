@@ -77,12 +77,6 @@
             android:layout_weight="1"
             android:text="詢問寄收件" />
 
-        <Button
-            android:id="@+id/btnSetAlarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="開啟alarm" />
     </LinearLayout>
 
     <Button

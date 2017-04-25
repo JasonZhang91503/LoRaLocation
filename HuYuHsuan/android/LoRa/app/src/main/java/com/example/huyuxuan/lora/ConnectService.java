@@ -67,6 +67,12 @@ public class ConnectService extends Service {
                     in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                     out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
                     Log.i("Service", "BufferedReader and PrintWriter ready.");
+                    out.write("1");
+                    out.flush();
+                    Log.d("Service", "write 1 to server");
+                    rcvMessage = in.readLine();
+                    Log.d("Service", "receive " + rcvMessage + " from server");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -191,20 +197,50 @@ public class ConnectService extends Service {
         dataBundle.putString("id",RcvId);
         Log.d("ConnectService","receive id="+RcvId);
         switch (RcvId){
+
             case "2":   //註冊是否成功
-            case "3":   //登入是否成功
-            case "4":   //登記寄件是否成功
                 String type=mes.substring(commaIndex+1,3);
+                Log.d("ana:","id="+id+"type="+type);
+                dataBundle.putString("type",type);
+                break;
+            case "3":   //登入是否成功
+                type=mes.substring(commaIndex+1,3);
+                if(type=="1"){
+                    String account = mes.substring(3,mes.indexOf('~'));
+                    String password = mes.substring(mes.indexOf('~'+1,mes.indexOf(':')));
+                    String name = mes.substring(mes.indexOf(':')+1,mes.indexOf(';'));
+                    String email = mes.substring(mes.indexOf(';')+1);
+                    dataBundle.putString(getString(R.string.name),name);
+                    dataBundle.putString(getString(R.string.email),email);
+                    Log.d("ana:","id="+id+"type="+type+"name="+name+"email="+email);
+                }
+                else{
+                    String error = mes.substring(3);
+                    dataBundle.putString(getString(R.string.errorMsg),error);
+                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }
+                dataBundle.putString("type",type);
+                break;
+            case "4":   //登記寄件是否成功
+                type=mes.substring(commaIndex+1,3);
+                if(type == "0"){
+                    String error = mes.substring(3);
+                    dataBundle.putString(getString(R.string.errorMsg),error);
+                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }
+                Log.d("ana:","id="+id+"type="+type);
                 dataBundle.putString("type",type);
                 break;
             case "5":   //車子有空時段
                 dataBundle.putString("message",mes.substring(commaIndex+1));
+                Log.d("ana:","id="+id+"msg="+mes.substring(commaIndex+1));
                 break;
             case "6":   //使用者資料
                 String name = mes.substring(commaIndex+1,mes.indexOf(':'));
                 String email = mes.substring(mes.indexOf(':')+1,mes.indexOf('*'));
                 dataBundle.putString(getString(R.string.name),name);
                 dataBundle.putString(getString(R.string.email),email);
+                Log.d("ana:","id="+id+"name="+name+"email="+email);
                 break;
             case "7":   //寄件資料
                 String numStr = mes.substring(commaIndex+1,3);//抓資料數量
@@ -227,6 +263,7 @@ public class ConnectService extends Service {
                     map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
                     map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
                     DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
                 dataBundle.putSerializable("arrayList",DataList);
                 break;
@@ -251,7 +288,9 @@ public class ConnectService extends Service {
                     map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
                     map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
                     DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
+
                 dataBundle.putSerializable("arrayList",DataList);
                 break;
             case "9":
@@ -276,6 +315,7 @@ public class ConnectService extends Service {
                     map.put(getString(R.string.state),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')));
                     map.put(getString(R.string.key),curStr.substring(curStr.indexOf('$')+1));
                     DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
                 dataBundle.putSerializable("arrayList",DataList);
                 break;
@@ -283,11 +323,13 @@ public class ConnectService extends Service {
                 mes = mes.substring(mes.indexOf(':')+1);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 dataBundle.putStringArray(getString(R.string.nameArray),mesArray);
+                Log.d("ana:","第二筆"+mesArray[2]);
                 break;
             case "11":
                 mes = mes.substring(mes.indexOf(':')+1);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
+                Log.d("ana:","第二筆"+mesArray[2]);
                 break;
         }
         return  dataBundle;

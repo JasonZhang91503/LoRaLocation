@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCheckSend;
     private Button btnCheckReceive;
     private Button btnCheckSR;
-    private Button btnSetAlarm;
     private Button btnGetReceiver;
     private Button btnGetBuilding;
 
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         btnCheckSend = (Button)findViewById(R.id.btnCheckSend);
         btnCheckReceive = (Button)findViewById(R.id.btnCheckReceive);
         btnCheckSR = (Button)findViewById(R.id.btnCheckSR);
-        btnSetAlarm = (Button)findViewById(R.id.btnSetAlarm);
         btnGetReceiver = (Button)findViewById(R.id.btnGetReceiver);
         btnGetBuilding = (Button)findViewById(R.id.btnGetBuilding);
 
@@ -79,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "login->sendToService");
                 }
+                setReceiver();
 
             }
         });
@@ -104,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "sign->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                setReceiver();
             }
         });
 
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "checkCar->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -178,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "checkSend->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -198,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "checkRcv->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -219,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "checkSR->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -238,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "getRcver->sendToService");
                 }
+                setReceiver();
             }
         });
 
@@ -257,23 +263,12 @@ public class MainActivity extends AppCompatActivity {
                     mBoundService.sendToServer(intent);
                     Log.d("MainActivity:", "getBuilding->sendToService");
                 }
-            }
-        });
-
-        btnSetAlarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alarm.setAlarm(MainActivity.this);
+                setReceiver();
             }
         });
 
 
 
-        //动态注册receiver
-        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new ConnectServiceReceiver();
-        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -285,10 +280,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
+        /*
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ConnectServiceReceiver();
         registerReceiver(receiver, filter);
+        */
     }
 
     //接收广播类
@@ -297,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             //String result = intent.getStringExtra("result");
             if(intent.getStringExtra("activity").equals("MainActivity")){
-
+                unregisterReceiver(receiver);
             }
         }
     }
@@ -322,5 +319,12 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-
+    private void setReceiver(){
+        //动态注册receiver
+        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new ConnectServiceReceiver();
+        registerReceiver(receiver, filter);
+        Log.d("MainActivity:","register receiver");
+    }
 }
