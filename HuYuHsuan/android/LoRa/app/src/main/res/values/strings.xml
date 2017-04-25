@@ -17,4 +17,8 @@
     <string name="desLocation">desLocation</string>
     <string name="state">state</string>
     <string name="key">key</string>
+    
+    <string name="activity">activity</string>
+    <string name="nameArray">nameArray</string>
+    <string name="buildingArray">buildingArray</string>
 </resources>

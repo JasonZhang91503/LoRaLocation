@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCheckReceive;
     private Button btnCheckSR;
     private Button btnSetAlarm;
+    private Button btnGetReceiver;
+    private Button btnGetBuilding;
 
-
+    private String userName;
     
     static ConnectService mBoundService;
     static boolean isBind;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         btnCheckReceive = (Button)findViewById(R.id.btnCheckReceive);
         btnCheckSR = (Button)findViewById(R.id.btnCheckSR);
         btnSetAlarm = (Button)findViewById(R.id.btnSetAlarm);
+        btnGetReceiver = (Button)findViewById(R.id.btnGetReceiver);
+        btnGetBuilding = (Button)findViewById(R.id.btnGetBuilding);
 
         isBind = false;
 
@@ -60,9 +64,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"3");
                 intent.putExtra(getString(R.string.account),"dfdf");
                 intent.putExtra(getString(R.string.password),"1123");
+                userName="dfdf";    //暫定
 
                 if(!isBind){
                     getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
@@ -82,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id), "2");
                 intent.putExtra(getString(R.string.account), "dfdf");
                 intent.putExtra(getString(R.string.password), "1123");
@@ -105,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"4");
                 intent.putExtra(getString(R.string.requireTime),"2017-03-15 10:30:00");
                 intent.putExtra(getString(R.string.sender),"我是寄件者");
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"5");
                 intent.putExtra(getString(R.string.requireTime),"2017-03-15");
 
@@ -156,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"7");
                 intent.putExtra(getString(R.string.requireTime),"2017-03-15");
 
@@ -175,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"8");
                 intent.putExtra(getString(R.string.requireTime),"2017-03-15");
 
@@ -192,8 +203,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnCheckSR.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {    //確認收寄件資料
                 Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
                 intent.putExtra(getString(R.string.id),"9");
                 intent.putExtra(getString(R.string.requireTime),"2017-03-15");
 
@@ -210,12 +222,52 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnGetReceiver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
+                intent.putExtra(getString(R.string.id),"10");
+                intent.putExtra(getString(R.string.name),userName);
+                if(!isBind){
+                    getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                    isBind=true;
+                    Log.d("MainActivity:", "getRcver->bind");
+                }
+                else{
+                    mBoundService.sendToServer(intent);
+                    Log.d("MainActivity:", "getRcver->sendToService");
+                }
+            }
+        });
+
+        btnGetBuilding.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"MainActivity");
+                intent.putExtra(getString(R.string.id),"11");
+
+                if(!isBind){
+                    getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                    isBind=true;
+                    Log.d("MainActivity:", "getBuilding->bind");
+                }
+                else{
+                    mBoundService.sendToServer(intent);
+                    Log.d("MainActivity:", "getBuilding->sendToService");
+                }
+            }
+        });
+
         btnSetAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alarm.setAlarm(MainActivity.this);
             }
         });
+
+
 
         //动态注册receiver
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
