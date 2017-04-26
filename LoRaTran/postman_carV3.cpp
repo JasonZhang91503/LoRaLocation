@@ -188,6 +188,7 @@ void* asyncRecv(void *arg){
 			}
 		}while(PacManager->recvData());
 
+		unistd::sleep(1);
 		PacManager->sendBackACK();
 		
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
