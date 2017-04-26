@@ -105,9 +105,11 @@ int pw_size = 4;
 double dest_range = 0.02;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
+int carID = 0;
+
+
 
 RequestManager ReqManger;
-PacketManager PacManager;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
 UserRequest* waitRequest(RequestObserver *reqObserver);
@@ -151,6 +153,8 @@ int GPSsetup(){
 void* asyncRecv(void *arg){
 	UserRequest *req;
 	int result;
+
+	PacketManager *PacManager = PacketManager::getInstance();
 	
 	cout << " thread success\n";
 	
@@ -172,9 +176,13 @@ void* asyncRecv(void *arg){
 		}
 		*/
 
-		while(PacManager.recvData()){
-			cout << "asyncRecv : no data received, receive again\n";
-		}
+		do{
+			if(!PacManager->isTimerAlive()){
+				if(PacManager->hasPacket()){
+					PacManager->sendQueuePacket();
+				}
+			}
+		}while(PacManager->recvData());
 
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
@@ -187,17 +195,20 @@ void* asyncRecv(void *arg){
 		*/
 		
 		//若收到gateway的資料則捨棄
-		if(PacManager.isGatewayPacket()){
+		if(PacManager->isGatewayPacket()){
 			cout << "asyncRecv : recvive gateway data, discard it"<< endl;
 			continue;
 		}
-		else if(PacManager.isACK()){
+		else if(PacManager->isACK()){
 			//isCorrectACK
-			if(!PacManager.isCorrectACK()){
+			if(!PacManager->isCorrectACK()){
 				cout << "asyncRecv : recvive incorrect ACK, discard it"<< endl;
 				cout << "asyncRecv : resend last sended packet"<< endl;
-				continue;
 			}
+			else{
+				PacManager->stopTimer();
+			}
+			continue;
 		}
 
 		/*
@@ -207,11 +218,11 @@ void* asyncRecv(void *arg){
 		cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 		
 		//判斷封包的識別碼
-		switch(recv_packet[3]){
-			//case 1 = Gateway更改State(給車子訂單)，Index[2]後為state、寄件經度、寄件緯度、收件經度、收件緯度，各資料間用 ',' 隔開
+		switch(PacManager->getEventCode()){
+			//case 1 = Gateway更改State(給車子訂單)，Index[4]後為訂單id、state、寄件經度、寄件緯度、收件經度、收件緯度、密碼，各資料間用 ',' 隔開
 			case 1:
 				cout << "asyncRecv : recvive UserRequest, begin parse"<< endl;
-
+				
 				req = new UserRequest;
 				parseRequestData(req);
 				ReqManger.add(req);
@@ -243,7 +254,7 @@ void* asyncRecv(void *arg){
 				break;
 		}
 
-		result = PacManager.sendBackACK();
+		result = PacManager->sendBackACK();
 #else
 		cin.get();
 		UserRequest *req = new UserRequest;
@@ -297,6 +308,9 @@ int main(int argc, const char * argv[]){
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
 	ReqManger.addReqestListener(reqObserver);
+
+	pthread_mutex_init(&timerMutex, NULL);
+	pthread_cond_init(&timerCond, NULL);
 
 	//建造一條用作recv的thread
 	pthread_t recvThread;

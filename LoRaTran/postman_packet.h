@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <queue>
+#include <errno.h>
+#include<sys/time.h>
 
 #ifndef NO_CAR_MODE
 //Include arduPi library
@@ -15,32 +18,53 @@
 
 enum PacketType{ Gateway = 1, car, ACK0, ACK1 };
 
+pthread_mutex_t timerMutex;
+pthread_cond_t timerCond;
+
+void* asyncTimer(void* param);
+
+class Packet{
+public:
+    Packet(){
+        retry_times = 0;
+    }
+
+    char send_buffer[BUFFSIZE];	//車子送出資料的buffer
+private:
+    int retry_times;
+};
+
 class PacketManager{
 public:
-    PacketManager(int CarID){
-        currentSendACK = 0;
-        currentRecvACK = 0;
-        errorCode = 0;
-        receiveTime = 10000;
-        carID = CarID;
-        clearBuffer();
+    static PacketManager* getInstance(){
+        if(!instance){
+            instance = new PacketManager(0);
+        }
+        return instance;
     }
+    
 
     bool isGatewayPacket(){
         return recv_buffer[0] == Gateway;
     }
 
     int recvData(){
+
+        #ifndef NO_CAR_MODE
         errorCode = sx1272.receivePacketTimeout(receiveTime);
-	
+        #endif
+
 		if(errorCode != 0){
+            printf("asyncRecv : no data received, receive again\n");
 			return errorCode;
 		}
 		
+        #ifndef NO_CAR_MODE
 		for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
 		{
-			recv_packet[i] = (char)sx1272.packet_received.data[i];
+			recv_buffer[i] = (char)sx1272.packet_received.data[i];
 		}
+        #endif
 
         return 0;
     }
@@ -59,10 +83,16 @@ public:
         return rACK == currentRecvACK;
     }
 
-    int sendState(int state){ 
-        sprintf(send_buffer,"%d%d%d%d%d\0",1,carID,currentSendACK,1,state);
+    int getEventCode(){
+        return recv_buffer[3];
+    }
+
+    int sendState(int state){
+        Packet *newPac = new Packet();
+        sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentSendACK,1,state);
+        enqueuePacket(newPac);
         #ifndef NO_CAR_MODE
-        errorCode = sx1272.sendPacketTimeout(0, send_buffer);
+        errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
         #endif
         return errorCode;
     }
@@ -80,6 +110,27 @@ public:
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
         #endif
     }
+
+    void enqueuePacket(Packet* pac){
+        sendPacQueue.push(pac);
+    }
+
+    void dequeuePacket(){
+        sendPacQueue.pop();
+    }
+
+    bool hasPacket(){
+        return !sendPacQueue.empty();
+    }
+
+    int sendQueuePacket(){
+        Packet* pac = sendPacQueue.front();
+        #ifndef NO_CAR_MODE
+        errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
+        #endif
+        return errorCode;
+    }
+    
 
 
 
@@ -108,23 +159,102 @@ public:
     }
 
     void setTimer(){
-        pthread_create(&timerThread,NULL,asyncRecv,NULL);
+        pthread_create(&timerThread,NULL,asyncTimer,&timeout);
     }
 
+    void setIsGetACK(bool ack){ isGetACK = ack; }
+    bool getIsGetACK(){ return isGetACK; }
+
+    bool stopTimer(){
+        
+        pthread_mutex_lock(&timerMutex);
+        if(isTimerAlive()){
+            pthread_cond_signal(&timerCond); 
+        }
+        pthread_mutex_unlock(&timerMutex);
+        
+    }
+
+    void setTimerSignal(){
+
+    }
+
+    bool isTimerAlive(){
+        int rv = pthread_kill(timerThread,0);
+        if(rv == ESRCH){
+            return false;
+        }
+            
+        else if(rv == EINVAL){
+            printf("pthread_kill signal is invalid/n");
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
     char recv_buffer[BUFFSIZE];	//車子接收資料的buffer
     char send_buffer[BUFFSIZE];	//車子送出資料的buffer
 private:
-    void asyncTimer();
+    static PacketManager *instance;
+    PacketManager(int CarID){
+        currentSendACK = 0;
+        currentRecvACK = 0;
+        errorCode = 0;
+        receiveTime = 1000;
+        timeout = 5;
+        carID = CarID;
+        clearBuffer();
+    }
+    
     int currentSendACK;
     int currentRecvACK;
     int errorCode;
     int carID;
     int receiveTime;
-    clock_t timer;
+    int timeout;
+    bool isGetACK;
     pthread_t timerThread;
+    std::queue<Packet*> sendPacQueue;
 };
 
-void PacketManager::asyncTimer(){
-    timer = clock();
+void* asyncTimer(void* param){
+    /*
+    clock_t startTime = clock();
+    clock_t timer = startTime;
+    int timeout = *((int* )param);
+    bool* result = new bool;
+    *result = false;
+
+    PacketManager pm = PacketManager.getInstance();
+
+
+    while( (timer-startTime) >  timeout){
+        if(pm->getIsGetACK()){
+            *result = true;
+            pm->setIsGetACK(false);
+            break;
+        }
+    }
+    */
+
+    struct timeval now;
+    struct timespec outtime;
+
+    PacketManager *pm = PacketManager::getInstance();
+
+    pthread_mutex_lock(&timerMutex);
+    gettimeofday(&now, NULL);
+    outtime.tv_sec = now.tv_sec + 5;
+    int result = pthread_cond_timedwait(&timerCond, &timerMutex, &outtime);
+    if(result == 0){
+        pm->dequeuePacket();
+    }
+    pthread_mutex_unlock(&timerMutex);
+
+    
+    pthread_exit((void*)result);
 }
+
+PacketManager* PacketManager::instance = 0;
