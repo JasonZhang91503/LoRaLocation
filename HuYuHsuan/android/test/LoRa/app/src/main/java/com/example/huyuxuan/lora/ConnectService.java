@@ -33,6 +33,7 @@ public class ConnectService extends Service {
 
     String id; //識別碼
     String msg;
+    String activityName; //哪個activity傳來的請求
 
     String rcvMessage;
     Boolean flag = false;
@@ -66,6 +67,12 @@ public class ConnectService extends Service {
                     in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                     out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
                     Log.i("Service", "BufferedReader and PrintWriter ready.");
+                    out.write("1");
+                    out.flush();
+                    Log.d("Service", "write 1 to server");
+                    //rcvMessage = in.readLine();
+                    Log.d("Service", "receive " + rcvMessage + " from server");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -81,10 +88,12 @@ public class ConnectService extends Service {
         Log.i("Service:","onBind called");
         id = intent.getExtras().getString("id");
 
+
         new AsyncTask<String,String,String>(){
             @Override
             protected String doInBackground(String... strings) {
                 sendToServer(intent);
+
                 return null;
             }
         }.execute();
@@ -108,13 +117,14 @@ public class ConnectService extends Service {
         return START_STICKY;
     }
 
-
     public void sendToServer(final Intent intent){
 
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
                 id = intent.getExtras().getString("id");
+                activityName = intent.getExtras().getString("activity");
+                Bundle bundle = new Bundle();
                 Log.i("Service", "id = " + id);
 
                 switch (id) {
@@ -141,8 +151,13 @@ public class ConnectService extends Service {
                     case "5"://詢問車子有空時間
                     case "7":
                     case "8":
+                    case "9":
                         time = intent.getStringExtra(getString(R.string.requireTime));
                         msg = id+ time + ",";
+                        break;
+                    case "10":
+                        name = intent.getStringExtra(getString(R.string.name));
+                        msg = id + name + ",";
                         break;
                 }
 
@@ -153,7 +168,10 @@ public class ConnectService extends Service {
                             out.flush();
                             Log.d("Service", "write " + msg + " to server");
                             rcvMessage = in.readLine();
+                            rcvMessage.concat("\0");    //*****後面一定要加\0不然會是亂碼
                             Log.d("Service", "receive " + rcvMessage + " from server");
+
+                            bundle = Analyze(rcvMessage);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -163,9 +181,10 @@ public class ConnectService extends Service {
                 broadcastIntent.setAction(ACTION_RECV_MSG);
                 broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
                 broadcastIntent.putExtra("result", flag.toString());
-                broadcastIntent.putExtra("activity","MainActivity");//定要傳給哪個activity
+                broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
+                broadcastIntent.putExtras(bundle);
                 sendBroadcast(broadcastIntent);
-
+                rcvMessage="";
                 return  null;
             }
         }.execute();
@@ -173,35 +192,67 @@ public class ConnectService extends Service {
         rcvMessage=null;
     }
 
-    public Bundle getData(String mes){
+    public Bundle Analyze(String mes){
         Bundle dataBundle = new Bundle();
         int commaIndex = mes.indexOf(',');
         String RcvId = mes.substring(0,commaIndex);
         dataBundle.putString("id",RcvId);
         Log.d("ConnectService","receive id="+RcvId);
         switch (RcvId){
+
             case "2":   //註冊是否成功
-            case "3":   //登入是否成功
-            case "4":   //登記寄件是否成功
                 String type=mes.substring(commaIndex+1,3);
+                Log.d("ana:","id="+id+"type="+type);
+                dataBundle.putString("type",type);
+                break;
+            case "3":   //登入是否成功
+                type=mes.substring(commaIndex+1,3);
+                if(type.compareTo("1")==0){
+                    String account = mes.substring(3,mes.indexOf('~'));
+                    String password = mes.substring(mes.indexOf('~')+1,mes.indexOf(':'));
+                    String name = mes.substring(mes.indexOf(':')+1,mes.indexOf(';'));
+                    String email = mes.substring(mes.indexOf(';')+1);
+                    dataBundle.putString(getString(R.string.account),account);
+                    dataBundle.putString(getString(R.string.password),password);
+                    dataBundle.putString(getString(R.string.name),name);
+                    dataBundle.putString(getString(R.string.email),email);
+                    Log.d("ana:","id="+id+"type="+type+"account="+account+"password="+password+"name="+name+"email="+email);
+                }
+                else{
+                    String error = mes.substring(3);
+                    dataBundle.putString(getString(R.string.errorMsg),error);
+                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }
+                dataBundle.putString("type",type);
+                break;
+            case "4":   //登記寄件是否成功
+                type=mes.substring(commaIndex+1,3);
+                if(type == "0"){
+                    String error = mes.substring(3);
+                    dataBundle.putString(getString(R.string.errorMsg),error);
+                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }
+                Log.d("ana:","id="+id+"type="+type);
                 dataBundle.putString("type",type);
                 break;
             case "5":   //車子有空時段
                 dataBundle.putString("message",mes.substring(commaIndex+1));
+                Log.d("ana:","id="+id+"msg="+mes.substring(commaIndex+1));
                 break;
             case "6":   //使用者資料
                 String name = mes.substring(commaIndex+1,mes.indexOf(':'));
                 String email = mes.substring(mes.indexOf(':')+1,mes.indexOf('*'));
                 dataBundle.putString(getString(R.string.name),name);
                 dataBundle.putString(getString(R.string.email),email);
+                Log.d("ana:","id="+id+"name="+name+"email="+email);
                 break;
             case "7":   //寄件資料
                 String numStr = mes.substring(commaIndex+1,3);//抓資料數量
                 int num = Integer.valueOf(numStr);
                 ArrayList<HashMap<String, String>> DataList = new ArrayList<HashMap<String, String>>();
-                String[] mesAray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                String[] mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 for(int i = 0; i < num ; i++){
-                    String curStr = mesAray[i]; //抓每筆資料
+                    String curStr = mesArray[i]; //抓每筆資料
                     HashMap<String, String> map = new HashMap<String, String>();
                     if(i==0){
                         map.put(getString(R.string.receiver),curStr.substring(3,curStr.indexOf('~')));
@@ -214,8 +265,9 @@ public class ConnectService extends Service {
                     map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
                     map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
                     map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
-                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('*')));
+                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
                     DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
                 dataBundle.putSerializable("arrayList",DataList);
                 break;
@@ -223,9 +275,9 @@ public class ConnectService extends Service {
                 numStr = mes.substring(commaIndex+1,3);//抓資料數量
                 num = Integer.valueOf(numStr);
                 DataList = new ArrayList<HashMap<String, String>>();
-                mesAray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 for(int i = 0; i < num ; i++){
-                    String curStr = mesAray[i]; //抓每筆資料
+                    String curStr = mesArray[i]; //抓每筆資料
                     HashMap<String, String> map = new HashMap<String, String>();
                     if(i==0){
                         map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));
@@ -238,18 +290,52 @@ public class ConnectService extends Service {
                     map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
                     map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
                     map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
-                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('*')));
+                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
                     DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
+                }
+
+                dataBundle.putSerializable("arrayList",DataList);
+                break;
+            case "9":
+                numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                num = Integer.valueOf(numStr);
+                DataList = new ArrayList<HashMap<String, String>>();
+                mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                for(int i = 0; i < num ; i++){
+                    String curStr = mesArray[i]; //抓每筆資料
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    if(i==0){
+                        map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));
+                    }
+                    else{
+                        map.put(getString(R.string.sender),curStr.substring(0,curStr.indexOf('~')));
+                    }
+                    map.put(getString(R.string.receiver),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':')));
+                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf(':')+1,curStr.indexOf(';')));
+                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
+                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
+                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
+                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')));
+                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('$')+1));
+                    DataList.add(map);
+                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf(':'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
                 dataBundle.putSerializable("arrayList",DataList);
                 break;
+            case "10":
+                mes = mes.substring(mes.indexOf(':')+1);
+                mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                dataBundle.putStringArray(getString(R.string.nameArray),mesArray);
+                Log.d("ana:","第二筆"+mesArray[2]);
+                break;
+            case "11":
+                mes = mes.substring(mes.indexOf(':')+1);
+                mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
+                Log.d("ana:","第二筆"+mesArray[2]);
+                break;
         }
-
-
-
-
-
-
         return  dataBundle;
     }
 }

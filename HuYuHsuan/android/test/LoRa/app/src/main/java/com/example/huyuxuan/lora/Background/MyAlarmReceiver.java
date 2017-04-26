@@ -58,6 +58,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         mServiceBroadcastReceiver = new BgServiceRecver();
         context.getApplicationContext().registerReceiver(mServiceBroadcastReceiver, filter);
+        Log.d("MyAlarmReceiver","register receiver");
     }
     /*
     public void cancelAlarm(Context context) {

@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
@@ -14,6 +15,16 @@ import android.util.Log;
 
 import com.example.huyuxuan.lora.MainActivity;
 import com.example.huyuxuan.lora.R;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 
 /**
  * Created by huyuxuan on 2017/3/19.
@@ -26,6 +37,14 @@ public class BackgroundRecvService extends Service {
     private final int notifyId = 1;
     PowerManager.WakeLock mWakeLock;
 
+    static Socket mSocket;
+    InetAddress serverAddr;
+    SocketAddress sc_add;
+    static BufferedReader in;
+    static BufferedWriter out;
+
+    String rcvMessage;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,6 +55,33 @@ public class BackgroundRecvService extends Service {
     public void onCreate() {
         super.onCreate();
         acquireWakeLock(1);
+
+        new AsyncTask<String,String,String>() {
+            @Override
+            protected String doInBackground(String... strings) {
+                try {
+                    serverAddr = InetAddress.getByName(getString(R.string.ip));
+                    mSocket = new Socket();
+                    sc_add = new InetSocketAddress(serverAddr, Integer.parseInt(getString(R.string.port)));
+                    if (mSocket.isConnected()) {
+                        Log.i("BGRService", "Socket Connected");
+                    } else {
+                        mSocket.connect(sc_add, 2000);
+                    }
+                    in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+                    out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+                    Log.i("BGRService", "BufferedReader and PrintWriter ready.");
+                    if(out != null){
+                        out.write("3");
+                        out.flush();
+                        Log.d("Service", "write 3 to server");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
     }
 
     @Override
@@ -48,15 +94,29 @@ public class BackgroundRecvService extends Service {
     public int onStartCommand(final Intent intent, int flags, int startId){
 
 
-        //接收server傳來的東西
-        Log.e("BackgroundRecvService:","已經接收到server的東西了");
+        new AsyncTask<String,String,String>() {
+            @Override
+            protected String doInBackground(String... strings) {
 
+                //ensureConnected();
+                try {
+                    if(in != null){
+                        rcvMessage = in.readLine();
+                        rcvMessage.concat("\0");
+                        Log.d("BGRService", "receive " + rcvMessage + " from server");
+                    }
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+                return null;
+            }
 
-
+        }.execute();
         //開啟通知
-        createSimleNotification();
+        createSimleNotification(rcvMessage);
         //強迫螢幕亮起
         acquireWakeLock(2);
+
 
         //接收完
         Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
@@ -66,17 +126,33 @@ public class BackgroundRecvService extends Service {
         sendBroadcast(broadcastIntent);
 
 
+
+
+
         return START_STICKY;
     }
 
-    private void createSimleNotification(){
+    private void createSimleNotification(String msg){
+        NotificationCompat.Builder mBuilder;
         //開啟notification
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!")
-                        .setAutoCancel(true);
+        if(msg=="1"){
+           mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setContentTitle("My notification")
+                            .setContentText("車子到了下來寄信")
+                            .setAutoCancel(true);
+        }else{
+            mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setContentTitle("My notification")
+                            .setContentText("車子到了下來收信")
+                            .setAutoCancel(true);
+        }
+
+
+
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
 
@@ -129,5 +205,16 @@ public class BackgroundRecvService extends Service {
         }
     }
 
+    private void ensureConnected(){
+        try {
+            if (mSocket.isConnected()) {
+                Log.i("Service", "Socket Connected");
+            } else {
+                mSocket.connect(sc_add, 2000);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
