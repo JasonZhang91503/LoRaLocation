@@ -179,21 +179,16 @@ void* asyncRecv(void *arg){
 			recv_packet[i] = (char)sx1272.packet_received.data[i];
 		}
 		*/
-		cout << "thread app\n";
-		PacManager->setTimer();
+		PacManager->setTimer();	//為了讓Timer可以被找到
 		do{
 			if(!PacManager->isTimerAlive()){
-				PacManager->setTimer();
-				cout << "thread bpp\n";
 				if(PacManager->hasPacket()){
-					cout << "thread cpp\n";
 					PacManager->sendQueuePacket();
 				}
 			}
-			cout << "thread dpp\n";
-			result = PacManager->sendBackACK();
-			cout << "thread epp\n";
 		}while(PacManager->recvData());
+
+		PacManager->sendBackACK();
 
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
@@ -228,6 +223,8 @@ void* asyncRecv(void *arg){
 
 		cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 		
+continue;
+
 		//判斷封包的識別碼
 		switch(PacManager->getEventCode()){
 			//case 1 = Gateway更改State(給車子訂單)，Index[4]後為訂單id、state、寄件經度、寄件緯度、收件經度、收件緯度、密碼，各資料間用 ',' 隔開
