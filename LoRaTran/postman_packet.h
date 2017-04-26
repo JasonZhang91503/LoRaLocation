@@ -180,7 +180,9 @@ public:
     }
 
     bool isTimerAlive(){
+        cout << "kill\n" << endl;
         int rv = pthread_kill(timerThread,0);
+        cout << "kill over\n";
         if(rv == ESRCH){
             return false;
         }
