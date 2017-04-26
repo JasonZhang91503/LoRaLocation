@@ -183,6 +183,7 @@ void* asyncRecv(void *arg){
 		PacManager->setTimer();
 		do{
 			if(!PacManager->isTimerAlive()){
+				PacManager->setTimer();
 				cout << "thread bpp\n";
 				if(PacManager->hasPacket()){
 					cout << "thread cpp\n";
