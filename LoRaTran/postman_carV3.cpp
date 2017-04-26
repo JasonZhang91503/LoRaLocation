@@ -191,6 +191,8 @@ void* asyncRecv(void *arg){
 				}
 			}
 			cout << "thread dpp\n";
+			result = PacManager->sendBackACK();
+			cout << "thread epp\n";
 		}while(PacManager->recvData());
 
 		/*
