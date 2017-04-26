@@ -180,6 +180,7 @@ void* asyncRecv(void *arg){
 		}
 		*/
 		cout << "thread app\n";
+		PacManager->setTimer();
 		do{
 			if(!PacManager->isTimerAlive()){
 				cout << "thread bpp\n";
