@@ -38,7 +38,7 @@ class PacketManager{
 public:
     static PacketManager* getInstance(){
         if(!instance){
-            instance = new PacketManager(0);
+            instance = new PacketManager(1);
         }
         return instance;
     }
@@ -202,8 +202,10 @@ public:
 private:
     static PacketManager *instance;
     PacketManager(int CarID){
-        currentSendACK = 0;
-        currentRecvACK = 0;
+        //currentSendACK = 0;
+        //currentRecvACK = 0;
+        currentSendACK = 1;
+        currentRecvACK = 1;
         errorCode = 0;
         receiveTime = 1000;
         timeout = 5;

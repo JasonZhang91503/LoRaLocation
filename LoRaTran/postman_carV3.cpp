@@ -189,10 +189,9 @@ void* asyncRecv(void *arg){
 		}while(PacManager->recvData());
 
 		PacManager->sendBackACK();
-		while(1){
-			PacManager->sendBackACK();
-		}
-
+		
+		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
+continue;
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
 		*	Index[0] : 類別碼, 1=gateway,2=車子,3=ACK0事件,4=ACK1事件
