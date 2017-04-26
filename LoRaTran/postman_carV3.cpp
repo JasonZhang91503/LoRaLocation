@@ -189,6 +189,9 @@ void* asyncRecv(void *arg){
 		}while(PacManager->recvData());
 
 		PacManager->sendBackACK();
+		while(1){
+			PacManager->sendBackACK();
+		}
 
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
