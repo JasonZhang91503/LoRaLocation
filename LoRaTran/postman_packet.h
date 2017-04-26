@@ -180,10 +180,11 @@ public:
     }
 
     bool isTimerAlive(){
-        cout << "kill\n" << endl;
+        cout << "kill\n";
         int rv = pthread_kill(timerThread,0);
         cout << "kill over\n";
         if(rv == ESRCH){
+            printf("timer thread not exist\n");
             return false;
         }
             
