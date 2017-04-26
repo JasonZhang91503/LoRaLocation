@@ -175,7 +175,7 @@ void* asyncRecv(void *arg){
 			recv_packet[i] = (char)sx1272.packet_received.data[i];
 		}
 		*/
-
+		cout << "thread round\n";
 		do{
 			if(!PacManager->isTimerAlive()){
 				if(PacManager->hasPacket()){
@@ -318,7 +318,7 @@ int main(int argc, const char * argv[]){
 
 	//開始送貨循環
 	while(1){
-		cout << "Begin transport" << endl;
+		cout << "Begin transport\n";
 		
 		req = waitRequest(reqObserver);
 
