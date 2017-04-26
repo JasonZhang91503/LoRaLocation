@@ -175,13 +175,16 @@ void* asyncRecv(void *arg){
 			recv_packet[i] = (char)sx1272.packet_received.data[i];
 		}
 		*/
-		cout << "thread round\n";
+		cout << "thread app\n";
 		do{
 			if(!PacManager->isTimerAlive()){
+				cout << "thread bpp\n";
 				if(PacManager->hasPacket()){
+					cout << "thread cpp\n";
 					PacManager->sendQueuePacket();
 				}
 			}
+			cout << "thread dpp\n";
 		}while(PacManager->recvData());
 
 		/*
