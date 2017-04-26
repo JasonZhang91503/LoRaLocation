@@ -155,6 +155,10 @@ void* asyncRecv(void *arg){
 	int result;
 
 	PacketManager *PacManager = PacketManager::getInstance();
+
+	if(PacManager == NULL){
+		cout << "instance is NULL\n";
+	}
 	
 	cout << " thread success\n";
 	
