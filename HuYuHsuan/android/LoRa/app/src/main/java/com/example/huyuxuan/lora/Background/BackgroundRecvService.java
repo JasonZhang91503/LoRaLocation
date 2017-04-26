@@ -71,11 +71,9 @@ public class BackgroundRecvService extends Service {
                     in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                     out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
                     Log.i("BGRService", "BufferedReader and PrintWriter ready.");
-                    if(out != null){
-                        out.write("3");
-                        out.flush();
-                        Log.d("Service", "write 3 to server");
-                    }
+                    out.write("3");
+                    out.flush();
+                    Log.d("Service", "write 3 to server");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -98,13 +96,10 @@ public class BackgroundRecvService extends Service {
             @Override
             protected String doInBackground(String... strings) {
 
-                //ensureConnected();
+                ensureConnected();
                 try {
-                    if(in != null){
-                        rcvMessage = in.readLine();
-                        rcvMessage.concat("\0");
-                        Log.d("BGRService", "receive " + rcvMessage + " from server");
-                    }
+                    rcvMessage = in.readLine();
+                    Log.d("BGRService", "receive " + rcvMessage + " from server");
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
@@ -117,14 +112,14 @@ public class BackgroundRecvService extends Service {
         //強迫螢幕亮起
         acquireWakeLock(2);
 
-
+        /*
         //接收完
         Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
         broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
         broadcastIntent.putExtra("result", flag.toString());
         broadcastIntent.putExtra("state","true");
         sendBroadcast(broadcastIntent);
-
+        */
 
 
 
