@@ -192,7 +192,7 @@ void* asyncRecv(void *arg){
 
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
-		*	Index[0] : 類別碼, 0=gateway,1=車子,2=ACK0事件,3=ACK1事件
+		*	Index[0] : 類別碼, 1=gateway,2=車子,3=ACK0事件,4=ACK1事件
 		*	Index[1] : 車子ID, 車子所代表ID
 		*	Index[2] : ACK,	以0與1表示ACK0與ACK1
 		*	Index[3] : 事件識別碼, 1 = 新增訂單
@@ -221,7 +221,7 @@ void* asyncRecv(void *arg){
 			//做recv_packet[1]的判斷
 		*/
 
-		cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
 		
 continue;
 
