@@ -23,11 +23,16 @@ import android.widget.Toast;
 public class SignUpActivity extends AppCompatActivity {
     protected EditText editTextAccount;
     protected EditText editTextPassword;
+    protected EditText editTextName;
+    protected EditText editTextEmail;
     protected Button btnLogin;
     protected Button btnSignUp;
 
     protected String account;
     protected String password;
+    protected String name;
+    protected String email;
+
 
     static boolean isBind;
 
@@ -43,8 +48,10 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //setcontextView
 
-        editTextAccount = (EditText)findViewById(R.id.editTextAccount);
-        editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+        editTextAccount = (EditText)findViewById(R.id.etSignAccount);
+        editTextPassword = (EditText)findViewById(R.id.etSignPassword);
+        editTextName = (EditText)findViewById(R.id.etSignName);
+        editTextEmail = (EditText)findViewById(R.id.etSignEmail);
 
         isBind=false;
 
@@ -52,6 +59,11 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //跳到登入畫面
+                Intent intent = new Intent();
+                intent.setClass(SignUpActivity.this,LoginActivity.class);
+                startActivity(intent);
+                SignUpActivity.this.finish();
+                Log.d("SignUpActivity","跳回登入畫面");
             }
         });
 
@@ -59,6 +71,30 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //抓資料
+                account = editTextAccount.getText().toString();
+                password = editTextPassword.getText().toString();
+                name = editTextName.getText().toString();
+                email = editTextEmail.getText().toString();
+
+
+                Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
+                intent.putExtra(getString(R.string.activity),"SignUpActivity");
+                intent.putExtra(getString(R.string.id), "2");
+                intent.putExtra(getString(R.string.account),account);
+                intent.putExtra(getString(R.string.password),password);
+                intent.putExtra(getString(R.string.name), name);
+                intent.putExtra(getString(R.string.email), email);
+
+                if(!isBind){
+                    getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                    isBind=true;
+                    Log.d("SignUpActivity:", "bindService");
+                }
+                else{
+                    mBoundService.sendToServer(intent);
+                    Log.d("SignUpActivity:", "sendToService");
+                }
+                setReceiver();
 
             }
         });
@@ -73,7 +109,42 @@ public class SignUpActivity extends AppCompatActivity {
                 unregisterReceiver(receiver);
                 Bundle bundle = intent.getExtras();
                 String type = bundle.getString(getString(R.string.type));
-
+                switch (type){
+                    case "1":
+                        User mUser=(User)context.getApplicationContext();
+                        mUser.UserAccount=account;
+                        mUser.UserPassword=password;
+                        mUser.UserName=name;
+                        mUser.UserEmail=email;
+                        sharedPreferences.edit()
+                                .putString(getString(R.string.account),mUser.UserAccount)
+                                .putString(getString(R.string.password),mUser.UserPassword)
+                                .putString(getString(R.string.name),mUser.UserName)
+                                .putString(getString(R.string.email),mUser.UserEmail)
+                                .putString(getString(R.string.isLogin),"true")
+                                .apply();
+                        Log.d("SignUpActivity:", "account:"+mUser.UserAccount+"password:"+mUser.UserPassword+"name:"+mUser.UserName);
+                        //跳到主畫面
+                        Intent intentToMain = new Intent();
+                        intentToMain.setClass(SignUpActivity.this,NavigationActivity.class);
+                        startActivity(intent);
+                        SignUpActivity.this.finish();
+                        Log.d("SignUpActivity","跳到主畫面");
+                        break;
+                    case "2":
+                        Toast.makeText(SignUpActivity.this,"帳號重複", Toast.LENGTH_LONG).show();
+                        editTextAccount.setText("");
+                        break;
+                    case "3":
+                        Toast.makeText(SignUpActivity.this,"密碼重複", Toast.LENGTH_LONG).show();
+                        editTextPassword.setText("");
+                        break;
+                    case "4":
+                        Toast.makeText(SignUpActivity.this,"帳號密碼都重複", Toast.LENGTH_LONG).show();
+                        editTextAccount.setText("");
+                        editTextPassword.setText("");
+                        break;
+                }
             }
         }
     }

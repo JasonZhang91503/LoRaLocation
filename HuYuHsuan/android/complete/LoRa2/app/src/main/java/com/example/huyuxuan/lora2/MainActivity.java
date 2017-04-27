@@ -25,12 +25,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         //是否第一次開app，若沒有值預設是第一次(true)
-        if(sharedPreferences.getString(getString(R.string.isFirstTimeOpen),"true")=="true"){
-            //是第一次開app
+        if((sharedPreferences.getString(getString(R.string.isFirstTimeOpen),"true")=="false") &&
+                sharedPreferences.getString(getString(R.string.isLogin),"false")=="true"){
+            //不是第一次開app且已登入
+            Log.d("MainActivity","不是第一次開app");
+            //跳到主畫面
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this,NavigationActivity.class);
+            startActivity(intent);
+            MainActivity.this.finish();
+            Log.d("MainActivity","跳到主畫面");
+
+        }else{
+            //是第一次開app或是還沒登入
             //顯示介紹
             setContentView(R.layout.activity_main);
             Log.d("MainActivity","第一次開app");
-            btnLogin = (Button)findViewById(R.id.btnLogin);
+            btnLogin = (Button)findViewById(R.id.btnToLogin);
             btnSignUp = (Button)findViewById(R.id.btnSignUp);
             sharedPreferences.edit().putString(getString(R.string.isFirstTimeOpen),"false").apply();
 
@@ -41,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this,LoginActivity.class);
                     startActivity(intent);
-                  //  MainActivity.this.finish();
+                    MainActivity.this.finish();
                     Log.d("MainActivity","跳到登入畫面");
                 }
             });
@@ -50,21 +61,15 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     //跳到註冊畫面
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this,SignUpActivity.class);
+                    startActivity(intent);
+                    MainActivity.this.finish();
                     Log.d("MainActivity","跳到註冊畫面");
 
                 }
             });
-
-        }else{
-            //不是第一次開app
-            Log.d("MainActivity","不是第一次開app");
-            if(sharedPreferences.getString(getString(R.string.isLogin),"false")=="true"){
-                //已經登入，跳到主畫面
-
-            }
-            else{
-                //還沒登入，跳到登入畫面
-            }
         }
+
     }
 }

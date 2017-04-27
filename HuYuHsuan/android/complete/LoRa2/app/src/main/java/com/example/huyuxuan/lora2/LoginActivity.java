@@ -45,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
 
         editTextAccount = (EditText)findViewById(R.id.editTextAccount);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+        btnLogin = (Button)findViewById(R.id.btnLogin);
+        btnSignUp = (Button)findViewById(R.id.btnToSign);
 
         isBind=false;
 
@@ -102,12 +104,16 @@ public class LoginActivity extends AppCompatActivity {
                             .putString(getString(R.string.password),mUser.UserPassword)
                             .putString(getString(R.string.name),mUser.UserName)
                             .putString(getString(R.string.email),mUser.UserEmail)
-                            .putString(getString(R.string.password),mUser.UserPassword)
                             .putString(getString(R.string.isLogin),"true")
                             .apply();
+                    Log.d("LoginActivity:", "account:"+mUser.UserAccount+"password:"+mUser.UserPassword+"name:"+mUser.UserName);
 
                     //跳到主畫面
-
+                    Intent intentToMain = new Intent();
+                    intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
+                    startActivity(intent);
+                    LoginActivity.this.finish();
+                    Log.d("LoginActivity","跳到主畫面");
 
                 }else{
                     //登入失敗

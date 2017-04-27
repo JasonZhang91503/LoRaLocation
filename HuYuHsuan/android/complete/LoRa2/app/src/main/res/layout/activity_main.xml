@@ -15,7 +15,7 @@
         android:text="這裡要放介紹～" />
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnToLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_span="2"

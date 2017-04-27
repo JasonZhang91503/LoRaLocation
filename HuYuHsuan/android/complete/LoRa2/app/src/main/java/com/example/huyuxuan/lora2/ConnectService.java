@@ -71,6 +71,7 @@ public class ConnectService extends Service {
                     out.flush();
                     Log.d("Service", "write 1 to server");
                     rcvMessage = in.readLine();
+                    rcvMessage.concat("\0");
                     Log.d("Service", "receive " + rcvMessage + " from server");
 
                 } catch (IOException e) {
@@ -168,7 +169,7 @@ public class ConnectService extends Service {
                             out.flush();
                             Log.d("Service", "write " + msg + " to server");
                             rcvMessage = in.readLine();
-                            rcvMessage.concat("\0");
+                            rcvMessage.concat("\0");    //*****後面一定要加\0不然會是亂碼
                             Log.d("Service", "receive " + rcvMessage + " from server");
                             bundle = Analyze(rcvMessage);
                         }
@@ -184,6 +185,7 @@ public class ConnectService extends Service {
                 broadcastIntent.putExtras(bundle);
                 sendBroadcast(broadcastIntent);
 
+                rcvMessage="";
                 return  null;
             }
         }.execute();
@@ -206,9 +208,9 @@ public class ConnectService extends Service {
                 break;
             case "3":   //登入是否成功
                 type=mes.substring(commaIndex+1,3);
-                if(type=="1"){
+                if(type.compareTo("1")==0){
                     String account = mes.substring(3,mes.indexOf('~'));
-                    String password = mes.substring(mes.indexOf('~'+1,mes.indexOf('^')));
+                    String password = mes.substring(mes.indexOf('~')+1,mes.indexOf('^'));
                     String name = mes.substring(mes.indexOf('^')+1,mes.indexOf(';'));
                     String email = mes.substring(mes.indexOf(';')+1);
                     dataBundle.putString(getString(R.string.type),type);
@@ -228,7 +230,7 @@ public class ConnectService extends Service {
                 break;
             case "4":   //登記寄件是否成功
                 type=mes.substring(commaIndex+1,3);
-                if(type == "0"){
+                if(type.compareTo("0")==0){
                     String error = mes.substring(3);
                     dataBundle.putString(getString(R.string.errorMsg),error);
                     Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
