@@ -309,10 +309,12 @@ public class ConnectService extends Service {
                     String curStr = mesArray[i]; //抓每筆資料
                     HashMap<String, String> map = new HashMap<String, String>();
                     if(i==0){
-                        map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));
+                        map.put(getString(R.string.packetType),curStr.substring(3,4));//是寄件或收件資料
+                        map.put(getString(R.string.sender),curStr.substring(4,curStr.indexOf('~')));
                     }
                     else{
-                        map.put(getString(R.string.sender),curStr.substring(0,curStr.indexOf('~')));
+                        map.put(getString(R.string.packetType),curStr.substring(0,1));
+                        map.put(getString(R.string.sender),curStr.substring(1,curStr.indexOf('~')));
                     }
                     map.put(getString(R.string.receiver),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^')));
                     map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')));
@@ -324,7 +326,10 @@ public class ConnectService extends Service {
                     DataList.add(map);
                     Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))+"key="+curStr.substring(curStr.indexOf('#')+1));
                 }
+                //ArrayList tmpList = new ArrayList(); //这个list用于在budnle中传递 需要传递的ArrayList<Object>
+                //tmpList.add(DataList);
                 dataBundle.putSerializable("arrayList",DataList);
+                //dataBundle.putParcelableArrayList("list",tmpList);
                 break;
             case "10":
                 mes = mes.substring(mes.indexOf('^')+1);

@@ -76,7 +76,19 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         //handle
-
+        int itemId = item.getItemId();
+        switch (itemId){
+            case R.id.nav_home:
+                break;
+            case R.id.nav_register:
+                break;
+            case R.id.nav_history:
+                break;
+            case R.id.nav_setting:
+                break;
+            case R.id.nav_logOut:
+                break;
+        }
         return false;
     }
 }
