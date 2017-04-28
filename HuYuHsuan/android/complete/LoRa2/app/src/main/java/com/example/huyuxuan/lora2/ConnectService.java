@@ -87,8 +87,6 @@ public class ConnectService extends Service {
     @Override
     public IBinder onBind(final Intent intent) {
         Log.i("Service:","onBind called");
-        id = intent.getExtras().getString("id");
-
 
         new AsyncTask<String,String,String>(){
             @Override
@@ -159,6 +157,9 @@ public class ConnectService extends Service {
                     case "10":
                         name = intent.getStringExtra(getString(R.string.name));
                         msg = id + name + ",";
+                        break;
+                    case "11"://要大樓資訊
+                        msg = id;
                         break;
                 }
 

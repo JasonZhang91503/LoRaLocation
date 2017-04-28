@@ -1,6 +1,6 @@
 package com.example.huyuxuan.lora2.Fragment;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -19,18 +18,12 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
-import com.example.huyuxuan.lora2.NavigationActivity;
 import com.example.huyuxuan.lora2.R;
-import com.example.huyuxuan.lora2.SignUpActivity;
-import com.example.huyuxuan.lora2.User;
-
+import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
 /**
  * Created by huyuxuan on 2017/4/28.
  */
@@ -83,6 +76,7 @@ public class HomeFragment extends Fragment {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
+        Log.d("HomeFragment","formattedDate:"+formattedDate);
 
         Intent intent = new Intent(getContext(),ConnectService.class);
         intent.putExtra(getString(R.string.activity),"HomeFragment");
@@ -150,5 +144,10 @@ public class HomeFragment extends Fragment {
         receiver = new ConnectServiceReceiver();
         getActivity().registerReceiver(receiver, filter);
         Log.d("HomeFragment:","register receiver");
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateListView();
     }
 }

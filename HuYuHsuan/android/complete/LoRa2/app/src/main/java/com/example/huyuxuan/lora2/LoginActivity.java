@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 unregisterReceiver(receiver);
                 Bundle bundle = intent.getExtras();
                 String type = bundle.getString(getString(R.string.type));
-                if(type=="1"){
+                if(type.compareTo("1")==0){
                     User mUser=(User)context.getApplicationContext();
                     mUser.UserAccount=bundle.getString(getString(R.string.account));
                     mUser.UserPassword=bundle.getString(getString(R.string.password));
