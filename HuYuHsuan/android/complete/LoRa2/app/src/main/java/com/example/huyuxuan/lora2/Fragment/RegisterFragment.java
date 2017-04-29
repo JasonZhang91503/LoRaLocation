@@ -24,6 +24,7 @@ import com.example.huyuxuan.lora2.R;
 import com.example.huyuxuan.lora2.User;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by huyuxuan on 2017/4/28.
@@ -49,6 +50,7 @@ public class RegisterFragment extends Fragment {
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Override
     public void onCreate(Bundle savedInstances){
@@ -60,7 +62,7 @@ public class RegisterFragment extends Fragment {
 
 
         //向server要有空時段資料
-        Intent intent = new Intent(getContext(),ConnectService.class);
+        Intent intent = new Intent(getActivity(),ConnectService.class);
         intent.putExtra(getString(R.string.activity),"RegisterFragment");
         intent.putExtra(getString(R.string.id),"10");
         intent.putExtra(getString(R.string.name),myName);
@@ -159,12 +161,11 @@ public class RegisterFragment extends Fragment {
             public void onClick(View v) {
                 //抓手機現在時間
                 Calendar c = Calendar.getInstance();
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                String formattedDate = df.format(c.getTime());
+                String formattedDate = dayDateFormat.format(c.getTime());
                 Log.d("RegisterFragment","formattedDate:"+formattedDate);
 
                 //向server要有空時段資料
-                Intent intent = new Intent(getContext(),ConnectService.class);
+                Intent intent = new Intent(getActivity(),ConnectService.class);
                 intent.putExtra(getString(R.string.activity),"RegisterFragment");
                 intent.putExtra(getString(R.string.id),"5");
                 intent.putExtra(getString(R.string.requireTime),formattedDate);

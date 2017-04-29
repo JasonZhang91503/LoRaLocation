@@ -24,6 +24,8 @@ import com.example.huyuxuan.lora2.R;
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
+
 /**
  * Created by huyuxuan on 2017/4/28.
  */
@@ -39,6 +41,7 @@ public class HomeFragment extends Fragment {
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Override
     public void onCreate(Bundle savedInstances){
@@ -74,11 +77,10 @@ public class HomeFragment extends Fragment {
     public void updateListView(){
 
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = df.format(c.getTime());
+        String formattedDate = dayDateFormat.format(c.getTime());
         Log.d("HomeFragment","formattedDate:"+formattedDate);
 
-        Intent intent = new Intent(getContext(),ConnectService.class);
+        Intent intent = new Intent(getActivity(),ConnectService.class);
         intent.putExtra(getString(R.string.activity),"HomeFragment");
         intent.putExtra(getString(R.string.id),"9");
         intent.putExtra(getString(R.string.requireTime),formattedDate);

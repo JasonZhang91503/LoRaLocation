@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
 
@@ -91,6 +92,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,registerFragment).commit();
                 break;
             case R.id.nav_history:
+                HistoryFragment historyFragment = new HistoryFragment();
+                myFragment = historyFragment;
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,historyFragment).commit();
                 break;
             case R.id.nav_setting:
                 break;

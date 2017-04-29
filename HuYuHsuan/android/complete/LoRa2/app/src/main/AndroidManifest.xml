@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".LoginActivity"/>
         <activity android:name=".NavigationActivity" />
-
+        <activity android:name=".SignUpActivity"/>
 
         <service android:name=".ConnectService" android:enabled="true">
         </service>

@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.Locale;
+
 /**
  * Created by huyuxuan on 2017/4/28.
  */
@@ -18,7 +20,8 @@ public class PaperAdapter extends FragmentStatePagerAdapter {
         switch (position){
             case 0:
                 //創收件歷史的fragment
-                break;
+                RcvHistoryPage rcpPage = new RcvHistoryPage();
+                return rcpPage;
             case 1:
                 //創寄件歷史的fragment
                 break;
@@ -28,6 +31,18 @@ public class PaperAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return 2;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        Locale l = Locale.getDefault();
+        switch (position) {
+            case 0:
+                return "ReceiveHistory";
+            case 1:
+                return "SendHistory";
+        }
+        return null;
     }
 }
