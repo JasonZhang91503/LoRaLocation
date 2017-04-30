@@ -336,6 +336,7 @@ int main(int argc, const char * argv[]){
 	*/
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
+	PacketManager *pac = PacketManager::getInstance();
 	ReqManger.addReqestListener(reqObserver);
 
 	pthread_mutex_init(&timerMutex, NULL);
@@ -446,7 +447,7 @@ int moveToSender(UserRequest* req){
 	req->state = 1;
 	
 #ifndef NO_CAR_MODE
-	sendPacket(req);
+	pac->sendState(req->state);
 #endif
 	
 	return CAR_OK;
@@ -467,7 +468,7 @@ int beginTransport(UserRequest* req){
 	req->state = 2;
 
 #ifndef NO_CAR_MODE
-	sendPacket(req);
+	pac->sendState(req->state);
 #endif
 
 	return CAR_OK;
@@ -507,7 +508,7 @@ int moveToReceiver(UserRequest* req){
 	req->state = 3;
 	
 #ifndef NO_CAR_MODE
-	sendPacket(req);
+	pac->sendState(req->state);
 #endif
 	
 	return CAR_OK;
@@ -547,7 +548,7 @@ int endTransport(UserRequest* req){
 	req->state = 4;
 	
 	#ifndef NO_CAR_MODE
-	sendPacket(req);
+	pac->sendState(req->state);
 	#endif
 	
 	return CAR_OK;
@@ -632,8 +633,10 @@ int parseRequestData(UserRequest* req){
 	printf("dLat :%f\n",req->dest_lat);
 	*/
 
+	PacketManager *PacManager = PacketManager::getInstance();
+
 	//有識別碼版
-	statePtr = strtok(recv_packet + 2 ,d);	//index[2]後開始為資料
+	statePtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[2]後開始為資料
 	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",sLonPtr);

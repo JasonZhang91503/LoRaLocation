@@ -73,11 +73,22 @@ void setup()
 
 void sendRequest(){
     char buffer[256];
-    int num1 = 1;
-    sprintf(buffer, "0 0,123.121212,24.252525,123.121212,24.252525,1234,");
-    buffer[0] = 1;
-    e = sx1272.sendPacketTimeout(0, buffer);
+    inputHeader();
+    sprintf(message1+4, "0,123.121212,24.252525,123.121212,24.252525,1234,");
+    message1[0] = 1;
+    e = sx1272.sendPacketTimeout(0, message1);
     printf("Packet sent, state %d\n",e);
+}
+
+void inputHeader(){
+    printf("Input sendType: ");
+    scanf("%d",&message1[0]);
+    printf("Input carID: ");
+    scanf("%d",&message1[1]);
+    printf("Input PacNum: ");
+    scanf("%d",&message1[2]);
+    printf("Input EventNum: ");
+    scanf("%d",&message1[3]);
 }
 
 void loop(void)
