@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LoRa2</string>
+    <string name="ip">192.168.0.12</string>
+    <string name="port">3490</string>
+
+    <!--傳給service的key-->
+    <string name="id">id</string>
+    <string name="account">account</string>
+    <string name="password">password</string>
+    <string name="name">name</string>
+    <string name="email">email</string>
+    <string name="requireTime">requireTime</string>
+    <string name="arriveTime">arriveTime</string>
+    <string name="sender">sender</string>
+    <string name="receiver">receiver</string>
+    <string name="startLocation">startLocation</string>
+    <string name="desLocation">desLocation</string>
+    <string name="state">state</string>
+    <string name="key">key</string>
+    <string name="errorMsg">errorMsg</string>
+    <string name="packetType">packetType</string>
+
+    <!--service傳回來要用的-->
+    <string name="type">type</string>
+    <string name="activity">activity</string>
+    <string name="nameArray">nameArray</string>
+    <string name="buildingArray">buildingArray</string>
+
+    <!--sharedPreference專用-->
+    <string name="isLogin">isLogin</string>
+    <string name="isFirstTimeOpen">isFirstTimeOpen</string>
+
+    <!--NavigationBar選項-->
+    <string name="home">主畫面</string>
+    <string name="register">登記寄件</string>
+    <string name="history">歷史</string>
+    <string name="setting">設定</string>
+    <string name="logOut">登出</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>

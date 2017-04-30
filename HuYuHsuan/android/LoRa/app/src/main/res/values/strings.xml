@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">LoRa</string>
+    <string name="ip">192.168.0.12</string>
+    <string name="port">3490</string>
+
+    //傳給service的key
+    <string name="id">id</string>
+    <string name="account">account</string>
+    <string name="password">password</string>
+    <string name="name">name</string>
+    <string name="email">email</string>
+    <string name="requireTime">requireTime</string>
+    <string name="arriveTime">arriveTime</string>
+    <string name="sender">sender</string>
+    <string name="receiver">receiver</string>
+    <string name="startLocation">startLocation</string>
+    <string name="desLocation">desLocation</string>
+    <string name="state">state</string>
+    <string name="key">key</string>
+    <string name="errorMsg">errorMsg</string>
+    
+    <string name="activity">activity</string>
+    <string name="nameArray">nameArray</string>
+    <string name="buildingArray">buildingArray</string>
+</resources>
