@@ -356,30 +356,35 @@ int main(int argc, const char * argv[]){
 		e = recvSenderRequest(req);
 		if(e != CAR_OK){
 			cout << "main : recvSenderRequest method error, code = " << e << endl;
+			exit(1);
 		}
 		
 		//state 0->1 = 行走->到達sender指定地點
 		e = moveToSender(req);
 		if(e != CAR_OK){
 			cout << "main : moveToSender method error, code = " << e << endl;
+			exit(1);
 		}
 		
 		//state 1->2 = 抵達->sender放入文件，開始前往recv點
 		e = beginTransport(req);
 		if(e != CAR_OK){
 			cout << "main : beginTransport method error, code = " << e << endl;
+			exit(1);
 		}
 		
 		//state 2->3 = 抵達->告知抵達，並且接收packetKey
 		e = moveToReceiver(req);
 		if(e != CAR_OK){
 			cout << "main : moveToReceiver method error, code = " << e << endl;
+			exit(1);
 		}
 		
 		//state 3->4 = 等待領貨->輸入密碼成功，取貨完畢
 		e = endTransport(req);
 		if(e != CAR_OK){
 			cout << "main : endTransport method error, code = " << e << endl;
+			exit(1);
 		}	
 	}
 
