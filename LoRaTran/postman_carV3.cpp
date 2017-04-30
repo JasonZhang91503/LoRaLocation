@@ -402,7 +402,7 @@ int recvSenderRequest(UserRequest* req){
 	//剖析state 與 經緯度
 	//int rState = parseRequestData(req);
 	if(req->state != 0){
-		cout << "recvSenderRequest : recv state data error! tarState = " << 0 << ",Recv_state = " << rState << endl;
+		cout << "recvSenderRequest : recv state data error! tarState = " << 0 << ",Recv_state = " << req->state << endl;
 		return CAR_STATE_0_ERROR;
 	}
 	
