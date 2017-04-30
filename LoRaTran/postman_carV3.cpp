@@ -177,6 +177,7 @@ void* asyncRecv(void *arg){
 				if(PacManager->hasPacket()){
 					cout << "asyncRecv : Send packet which in queue, meaning that packet will be re-sended\n";
 					PacManager->sendQueuePacket();
+					PacManager->setTimer();
 				}
 			}
 		}while(PacManager->recvData());
