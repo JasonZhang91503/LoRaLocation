@@ -647,17 +647,17 @@ int parseRequestData(UserRequest* req){
 
 	//有識別碼版
 	statePtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[2]後開始為資料
-	printf("split state :%s\n",*statePtr);
+	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(NULL,d);
-	printf("split sLon :%s\n",*sLonPtr);
+	printf("split sLon :%s\n",sLonPtr);
 	sLatPtr = strtok(NULL,d);
-	printf("split sLat :%s\n",*sLatPtr);
+	printf("split sLat :%s\n",sLatPtr);
 	dLonPtr = strtok(NULL,d);
-	printf("split dLon :%s\n",*dLonPtr);
+	printf("split dLon :%s\n",dLonPtr);
 	dLatPtr = strtok(NULL,d);
-	printf("split dLat :%s\n",*dLatPtr);
+	printf("split dLat :%s\n",dLatPtr);
 	packetKeyPtr = strtok(NULL,d);
-	printf("split packetKey :%s\n",*packetKeyPtr);
+	printf("split packetKey :%s\n",packetKeyPtr);
 	
 	req->state = atoi(statePtr);
 	printf("rState :%d\n",req->state);
