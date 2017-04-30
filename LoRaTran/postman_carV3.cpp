@@ -436,7 +436,13 @@ int moveToSender(UserRequest* req){
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
-		getGPSLocation(sLon,sLat);
+		if(NOGPS == 2){
+			sLon = req->dest_lon;
+			sLat = req->dest_lat;
+		}
+		else{
+			getGPSLocation(sLon,sLat);
+		}
 		#else
 		sLon = req->dest_lon;
 		sLat = req->dest_lat;
@@ -500,7 +506,14 @@ int moveToReceiver(UserRequest* req){
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
-		getGPSLocation(sLon,sLat);
+		if(NOGPS == 2){
+			sLon = req->dest_lon;
+			sLat = req->dest_lat;
+		}
+		else{
+			getGPSLocation(sLon,sLat);
+		}
+		
 		#else
 		sLon = req->dest_lon;
 		sLat = req->dest_lat;
