@@ -29,6 +29,8 @@ int e;
 
 char message1 [256];
 
+void inputHeader();
+
 void setup()
 {
   // Print a start message
@@ -81,8 +83,9 @@ void sendRequest(){
 }
 
 void inputHeader(){
+    int temp;
     printf("Input sendType: ");
-    scanf("%d",&(int*)message1[0]);
+    scanf("%d",&message1[0]);
     printf("Input carID: ");
     scanf("%d",&(int*)message1[1]);
     printf("Input PacNum: ");
