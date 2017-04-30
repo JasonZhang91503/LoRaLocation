@@ -106,6 +106,7 @@ double dest_range = 0.02;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
+int NOGPS = 0;
 
 
 
@@ -301,6 +302,9 @@ void* asyncRecv(void *arg){
 
 int main(int argc, const char * argv[]){
 	int error;	//
+
+	cout << "Has GPS? (1 Yes, 2No):";
+	cin >> NOGPS;
 
 	UserRequest *req;
 
@@ -664,18 +668,40 @@ int parseRequestData(UserRequest* req){
 	packetKeyPtr = strtok(NULL,d);
 	printf("split packetKey :%s\n",packetKeyPtr);
 	
-	req->state = atoi(statePtr);
-	printf("rState :%d\n",req->state);
-	req->src_lon = atof(sLonPtr);
-	printf("sLon :%f\n",req->src_lon);
-	req->src_lat = atof(sLatPtr);
-	printf("sLat :%f\n",req->src_lat);
-	req->dest_lon = atof(dLonPtr);
-	printf("dLon :%f\n",req->dest_lon);
-	req->dest_lat = atof(dLatPtr);
-	printf("dLat :%f\n",req->dest_lat);
-	req->packetKey.assign(packetKeyPtr);
-	printf("packetKey :%s\n",req->packetKey.c_str());
+	if(NOGPS == 2){
+		req->state = 0;
+		printf("rState :%d\n",req->state);
+		req->src_lon = 121.369862;
+		printf("sLon :%f\n",req->src_lon);
+		req->src_lat = 24.944185;
+		printf("sLat :%f\n",req->src_lat);
+		req->dest_lon = 121.369862;
+		printf("dLon :%f\n",req->dest_lon);
+		req->dest_lat = 24.944185;
+		printf("dLat :%f\n",req->dest_lat);
+		req->dest_lat = 24.944185;
+		printf("dLat :%f\n",req->dest_lat);
+		char* pw = new char[pw_size];
+		pw[0] = '\0';
+		req->packetKey.assign(pw);
+		printf("packetKey :%s\n",req->packetKey.c_str());
+	}
+	else{
+		req->state = atoi(statePtr);
+		printf("rState :%d\n",req->state);
+		req->src_lon = atof(sLonPtr);
+		printf("sLon :%f\n",req->src_lon);
+		req->src_lat = atof(sLatPtr);
+		printf("sLat :%f\n",req->src_lat);
+		req->dest_lon = atof(dLonPtr);
+		printf("dLon :%f\n",req->dest_lon);
+		req->dest_lat = atof(dLatPtr);
+		printf("dLat :%f\n",req->dest_lat);
+		req->packetKey.assign(packetKeyPtr);
+		printf("packetKey :%s\n",req->packetKey.c_str());
+	}
+
+	
 	#else
 	req->state = 0;
 	printf("rState :%d\n",req->state);
