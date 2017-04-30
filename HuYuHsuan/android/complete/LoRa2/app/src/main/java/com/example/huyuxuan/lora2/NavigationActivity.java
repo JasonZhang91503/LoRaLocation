@@ -1,5 +1,7 @@
 package com.example.huyuxuan.lora2;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,13 +10,16 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
+import com.example.huyuxuan.lora2.Fragment.SettingFragment;
 
 /**
  * Created by huyuxuan on 2017/4/27.
@@ -97,10 +102,54 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,historyFragment).commit();
                 break;
             case R.id.nav_setting:
+                SettingFragment settingFragment = new SettingFragment();
+                myFragment = settingFragment;
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,settingFragment).commit();
                 break;
             case R.id.nav_logOut:
+                logOutDialog();
                 break;
         }
         return false;
+    }
+
+    private void logOutDialog(){
+        new AlertDialog.Builder(this)
+                .setTitle("登出")
+                .setMessage("確定要登出嗎？")
+                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clearData();
+                        Intent intent = new Intent();
+                        intent.setClass(NavigationActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        Log.d("NavigationActivity","跳到登入畫面");
+                        NavigationActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    private void clearData(){
+        SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        sharedPreferences.edit()
+                .putString(getString(R.string.account),"")
+                .putString(getString(R.string.password),"")
+                .putString(getString(R.string.name),"")
+                .putString(getString(R.string.email),"")
+                .putString(getString(R.string.isLogin),"fasle")
+                .apply();
+        User mUser=(User)getApplicationContext();
+        mUser.UserName="";
+        mUser.UserPassword="";
+        mUser.UserEmail="";
+        mUser.UserAccount="";
     }
 }

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -24,7 +25,8 @@ public class PaperAdapter extends FragmentStatePagerAdapter {
                 return rcpPage;
             case 1:
                 //創寄件歷史的fragment
-                break;
+                SendHistotyPage sendPage = new SendHistotyPage();
+                return sendPage;
         }
         return null;
     }

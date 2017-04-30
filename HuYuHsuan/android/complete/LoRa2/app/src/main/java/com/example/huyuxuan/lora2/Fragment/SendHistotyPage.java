@@ -1,12 +1,12 @@
 package com.example.huyuxuan.lora2.Fragment;
 
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -32,7 +32,7 @@ import java.util.Locale;
  * Created by huyuxuan on 2017/4/29.
  */
 
-public class SendHistotyPage extends Fragment implements Serializable {
+public class SendHistotyPage extends Fragment implements Serializable,DatePickerFragment.PassOnDateSetListener {
     private static View myView;
     private ListView lv;
     private Button btnPickTime;
@@ -69,13 +69,27 @@ public class SendHistotyPage extends Fragment implements Serializable {
         btnPickTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getActivity().getFragmentManager(), "datePicker");
+                Log.d("SendHistotyPage","show DialogFragment");
             }
         });
         btnPickTime.setText(dayDateFormat.format(c.getTimeInMillis()));
         Log.d("SendHistotyPage:", "pickdate set getTimeInMillis");
 
         return myView;
+    }
+
+    public void passOnDateSet(int year, int month, int day) {
+        Log.d("SendHistotyPage","curFragment.passOnDateSet");
+        myYear = year;
+        myMonth = month + 1;
+        myDay = day;
+        c.set(year,month,day);
+        formattedDate = dayDateFormat.format(c.getTimeInMillis());
+        btnPickTime.setText(formattedDate);
+        Log.d("SendHistotyPage:","passOn formatted="+formattedDate);
+        updateListView();
     }
 
     public void updateListView(){
@@ -125,6 +139,7 @@ public class SendHistotyPage extends Fragment implements Serializable {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("SendHistotyPage")){
+                Log.d("SendHistotyPage:","receiver on receive");
                 getActivity().unregisterReceiver(receiver);
                 Bundle bundle = intent.getExtras();
                 ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
