@@ -636,7 +636,7 @@ int parseRequestData(UserRequest* req){
 	PacketManager *PacManager = PacketManager::getInstance();
 
 	//有識別碼版
-	statePtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[2]後開始為資料
+	statePtr = strtok( PacManager->(recv_buffer + 4) ,d);	//index[2]後開始為資料
 	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",sLonPtr);
