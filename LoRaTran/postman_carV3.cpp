@@ -398,6 +398,7 @@ UserRequest* waitRequest(RequestObserver *reqObserver){
 int recvSenderRequest(UserRequest* req){
 	int StateCode;
 
+
 	//剖析state 與 經緯度
 	int rState = parseRequestData(req);
 	if(rState != 0){
@@ -420,6 +421,8 @@ int moveToSender(UserRequest* req){
 	int StateCode;
 	
 	cout << "moveToSender : Begin go to sender location" << endl;
+
+	PacketManager *pac = PacketManager::getInstance();
 
 	do {
 		//取得車子本身GPS座標
@@ -457,6 +460,8 @@ int beginTransport(UserRequest* req){
 	
 	cout << "beginTransport : Wait for sender place the file" << endl;
 	
+	PacketManager *pac = PacketManager::getInstance();
+
 	//改成偵測是否recv到收到寄件?
 	
 	//判定使用者放入文件，目前使用enter做為判定
@@ -481,6 +486,8 @@ int moveToReceiver(UserRequest* req){
 	bool isCarReach;	//車子是否到達
 	int StateCode;
 	
+	PacketManager *pac = PacketManager::getInstance();
+
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
@@ -524,6 +531,9 @@ int endTransport(UserRequest* req){
 	req->packetKey = parsePassword();
 	
 	cout << "endTransport : Wait for password input" << endl << endl;
+
+	PacketManager *pac = PacketManager::getInstance();
+
 	do{
 		cout << "Password :";
 		getline(cin,input,'\n');
@@ -636,7 +646,7 @@ int parseRequestData(UserRequest* req){
 	PacketManager *PacManager = PacketManager::getInstance();
 
 	//有識別碼版
-	statePtr = strtok( PacManager->(recv_buffer + 4) ,d);	//index[2]後開始為資料
+	statePtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[2]後開始為資料
 	printf("split state :%s\n",*statePtr);
 	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",*sLonPtr);
