@@ -85,13 +85,18 @@ void sendRequest(){
 void inputHeader(){
     int temp;
     printf("Input sendType: ");
-    scanf("%d",&message1[0]);
+    scanf("%d",&temp);
+    message1[0] = temp;
     printf("Input carID: ");
-    scanf("%d",&(int*)message1[1]);
+    scanf("%d",&temp);
+    message1[1] = temp;
     printf("Input PacNum: ");
-    scanf("%d",&(int*)message1[2]);
+    scanf("%d",&temp);
+    message1[2] = temp;
     printf("Input EventNum: ");
-    scanf("%d",&(int*)message1[3]);
+    scanf("%d",&temp);
+    message1[3] = temp;
+
 }
 
 void loop(void)
