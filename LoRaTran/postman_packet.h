@@ -48,6 +48,10 @@ public:
         return recv_buffer[0] == Gateway;
     }
 
+    bool isMyCarIDPacket(){
+        return recv_buffer[1] == carID;
+    }
+
     int recvData(){
 
         #ifndef NO_CAR_MODE
@@ -70,17 +74,24 @@ public:
     }
 
     bool isACK(){
-        return ( recv_buffer[0] == ACK0 ) || ( recv_buffer[0] == ACK1 );
+        return getEventCode() == 1;
+        //return ( recv_buffer[0] == ACK0 ) || ( recv_buffer[0] == ACK1 );
     }
 
     bool isCorrectACK(){
         int rACK;
 
-        if(recv_buffer[0] == ACK0) { rACK = 0; }
-        else if(recv_buffer[0] == ACK1){ rACK = 1; }
+/*
+        if(recv_buffer[2] == 1) { rACK = 0; }
+        else if(recv_buffer[2] == 2){ rACK = 1; }
         else { return false; }
+*/
 
-        return rACK == currentRecvACK;
+        return recv_buffer[2] == currentRecvACK;
+    }
+
+    bool isCorrectPackNum(){
+        return recv_buffer[2] == recvWaitingPacNum;
     }
 
     int getEventCode(){
@@ -89,7 +100,7 @@ public:
 
     int sendState(int state){
         Packet *newPac = new Packet();
-        sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentSendACK,1,state);
+        sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentRecvACK,2,state);
         enqueuePacket(newPac);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
@@ -103,9 +114,11 @@ public:
 
     bool sendBackACK(){
         int BackACK;
-        if(currentRecvACK == 0){ BackACK = ACK0; }
-        else { BackACK = ACK1; }
-        sprintf(send_buffer,"%d%d",BackACK,carID);
+        /*
+        if(currentRecvACK == 1){ BackACK = ACK0; }
+        else { BackACK = 2; }
+        */
+        sprintf(send_buffer,"%d%d%d%d",1,carID,currentSendACK,1);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
         #endif
@@ -135,15 +148,19 @@ public:
 
 
     void switchSendACK(){
-        if(currentSendACK == 0) currentSendACK = 1;
-        else currentSendACK = 0;
+        if(currentSendACK == 1) currentSendACK = 2;
+        else currentSendACK = 1;
     }
 
     void switchRecvACK(){
-        if(currentRecvACK == 0) currentRecvACK = 1;
-        else currentRecvACK = 0;
+        if(currentRecvACK == 1) currentRecvACK = 2;
+        else currentRecvACK = 1;
     }
 
+    void switch_recvWaitingPacNum(){
+        if(recvWaitingPacNum == 1) recvWaitingPacNum = 2;
+        else recvWaitingPacNum = 1;
+    }
 
 
     void clearBuffer(){
@@ -162,6 +179,11 @@ public:
         pthread_create(&timerThread,NULL,asyncTimer,&timeout);
     }
 
+    void initTimer(){
+        int initTime = 1;
+        pthread_create(&timerThread,NULL,asyncTimer,&initTime);
+    }
+
     void setIsGetACK(bool ack){ isGetACK = ack; }
     bool getIsGetACK(){ return isGetACK; }
 
@@ -175,14 +197,8 @@ public:
         
     }
 
-    void setTimerSignal(){
-
-    }
-
     bool isTimerAlive(){
-        cout << "kill\n";
         int rv = pthread_kill(timerThread,0);
-        cout << "kill over\n";
         if(rv == ESRCH){
             printf("timer thread not exist\n");
             return false;
@@ -204,8 +220,9 @@ private:
     PacketManager(int CarID){
         //currentSendACK = 0;
         //currentRecvACK = 0;
-        currentSendACK = 1;
+        currentSendACK = 2;
         currentRecvACK = 1;
+        recvWaitingPacNum = 1;
         errorCode = 0;
         receiveTime = 1000;
         timeout = 5;
@@ -215,6 +232,7 @@ private:
     
     int currentSendACK;
     int currentRecvACK;
+    int recvWaitingPacNum;
     int errorCode;
     int carID;
     int receiveTime;
@@ -248,10 +266,11 @@ void* asyncTimer(void* param){
     struct timespec outtime;
 
     PacketManager *pm = PacketManager::getInstance();
+    int* timeout = (int*)param;
 
     pthread_mutex_lock(&timerMutex);
     gettimeofday(&now, NULL);
-    outtime.tv_sec = now.tv_sec + 5;
+    outtime.tv_sec = now.tv_sec + *timeout;
     int result = pthread_cond_timedwait(&timerCond, &timerMutex, &outtime);
     if(result == 0){
         pm->dequeuePacket();

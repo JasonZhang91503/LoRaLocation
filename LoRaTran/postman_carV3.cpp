@@ -157,115 +157,133 @@ void* asyncRecv(void *arg){
 	PacketManager *PacManager = PacketManager::getInstance();
 
 	if(PacManager == NULL){
-		cout << "instance is NULL\n";
+		cout << "asyncRecv : PacketManager instance is NULL\n";
+		cout << "asyncRecv : thread close";
+		pthread_exit(NULL);
 	}
 	
-	cout << " thread success\n";
+	cout << "asyncRecv : thread success\n";
 	
+	PacManager->initTimer();	//為了讓Timer可以被找到
 	while(true){
 
 
 #ifndef NO_CAR_MODE
-		/*
-		e = sx1272.receivePacketTimeout(10000);
-	
-		if(e != 0){
-			cout << "asyncRecv : no data received, receive again\n";
-			continue;
-		}
+
 		
-		for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
-		{
-			recv_packet[i] = (char)sx1272.packet_received.data[i];
-		}
-		*/
-		PacManager->setTimer();	//為了讓Timer可以被找到
 		do{
 			if(!PacManager->isTimerAlive()){
 				if(PacManager->hasPacket()){
+					cout << "asyncRecv : Send packet which in queue, meaning that packet will be re-sended\n";
 					PacManager->sendQueuePacket();
 				}
 			}
 		}while(PacManager->recvData());
 
-		unistd::sleep(1);
-		PacManager->sendBackACK();
+		//unistd::sleep(1);
+		//PacManager->sendBackACK();
 		
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
-continue;
+//continue;
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
-		*	Index[0] : 類別碼, 1=gateway,2=車子,3=ACK0事件,4=ACK1事件
+		*	Index[0] : 類別碼, 1=gateway,2=車子
 		*	Index[1] : 車子ID, 車子所代表ID
-		*	Index[2] : ACK,	以0與1表示ACK0與ACK1
-		*	Index[3] : 事件識別碼, 1 = 新增訂單
+		*	Index[2] : packetNum, 以1與2表示, 也分別對應ACK1與ACK2
+		*	Index[3] : 事件識別碼, 1 = 為ACK事件,2以後為其他事件定義
 		*	Index[4] : 事件資料, 事件所傳送的資料
 		*
 		*/
 		
 		//若收到gateway的資料則捨棄
 		if(PacManager->isGatewayPacket()){
-			cout << "asyncRecv : recvive gateway data, discard it"<< endl;
+			cout << "asyncRecv : recvive gateway data, discard it\n";
 			continue;
 		}
-		else if(PacManager->isACK()){
+
+		//若收到不正確ID則丟棄
+		if(!PacManager->isMyCarIDPacket()){
+			cout << "asyncRecv : recvive another car's data, discard it\n";
+			continue;
+		}
+
+		if(PacManager->isACK()){
 			//isCorrectACK
 			if(!PacManager->isCorrectACK()){
-				cout << "asyncRecv : recvive incorrect ACK, discard it"<< endl;
-				cout << "asyncRecv : resend last sended packet"<< endl;
+				cout << "asyncRecv : recvive incorrect ACK, discard it\n";
+				//cout << "asyncRecv : resend last sended packet\n";
 			}
 			else{
-				PacManager->stopTimer();
+				if(PacManager->isTimerAlive()){
+					PacManager->stopTimer();
+					PacManager->switchRecvACK();
+					cout << "asyncRecv : recvive correct ACK\n";
+				}
+				else{
+					cout << "asyncRecv : timer correct ACK\n";
+				}
 			}
 			continue;
 		}
+		else{
+			if(!PacManager->isCorrectPackNum()){
+				cout << "asyncRecv : recvive incorrect packNum, discard it\n";
+				result = PacManager->sendBackACK();
+				//cout << "asyncRecv : resend last sended packet\n";
+			}
+			else{
+				cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
+				//判斷封包的識別碼
+				switch(PacManager->getEventCode()){
+					case 1:
+					
+						break;
+					//case 2 = Gateway更改State(給車子訂單)，Index[4]後為訂單id、state、寄件經度、寄件緯度、收件經度、收件緯度、密碼，各資料間用 ',' 隔開
+					case 2:
+						cout << "asyncRecv : recvive UserRequest, begin parse"<< endl;
+						
+						req = new UserRequest;
+						parseRequestData(req);
+						ReqManger.add(req);
+						break;
+					//case 3 = Gateway傳遞密碼，Index[2]後為密碼
+					case 3:
+						cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 
-		/*
-			//做recv_packet[1]的判斷
-		*/
+						//需要決定丟到哪個訂單上面
+						parsePassword();
+						break;
+					//case 4 = 暫停車子送件
+					case 4:
+						cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 
-		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
-		
-continue;
+						pauseCar();
+						break;
+					//case 5 = 開始車子送件
+					case 5:
+						cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
 
-		//判斷封包的識別碼
-		switch(PacManager->getEventCode()){
-			//case 1 = Gateway更改State(給車子訂單)，Index[4]後為訂單id、state、寄件經度、寄件緯度、收件經度、收件緯度、密碼，各資料間用 ',' 隔開
-			case 1:
-				cout << "asyncRecv : recvive UserRequest, begin parse"<< endl;
+						restartCar();
+						break;
+					//case 6 = 終止車子送件
+					case 6:
+						cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
+
+						stopCar();
+						break;
+				}
+
 				
-				req = new UserRequest;
-				parseRequestData(req);
-				ReqManger.add(req);
-				break;
-			//case 2 = Gateway傳遞密碼，Index[2]後為密碼
-			case 2:
-				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
-
-				//需要決定丟到哪個訂單上面
-				parsePassword();
-				break;
-			//case 3 = 暫停車子送件
-			case 3:
-				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
-
-				pauseCar();
-				break;
-			//case 4 = 開始車子送件
-			case 4:
-				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
-
-				restartCar();
-				break;
-			//case 5 = 終止車子送件
-			case 5:
-				cout << "asyncRecv : recvive data > " <<  recv_packet << endl;
-
-				stopCar();
-				break;
+				PacManager->switch_recvWaitingPacNum();
+				PacManager->switchSendACK();
+				result = PacManager->sendBackACK();
+			}
 		}
 
-		result = PacManager->sendBackACK();
+
+		
+		
+
 #else
 		cin.get();
 		UserRequest *req = new UserRequest;
