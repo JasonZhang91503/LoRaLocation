@@ -106,10 +106,21 @@ public:
 
         enqueuePacket(newPac);
         
+        if(isTimerAlive()){
+            return;
+        }
+        else{
+            PacManager->sendQueuePacket();  
+			PacManager->setTimer();
+        }
+
+/*
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
         #endif
-        return errorCode;
+        */
+
+        return 0;
     }
 
     int sendError(){
