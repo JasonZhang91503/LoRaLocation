@@ -107,7 +107,7 @@ public:
         enqueuePacket(newPac);
         
         if(isTimerAlive()){
-            return;
+            return 0;
         }
         else{
             sendQueuePacket();  
