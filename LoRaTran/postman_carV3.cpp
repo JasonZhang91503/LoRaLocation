@@ -182,7 +182,7 @@ void* asyncRecv(void *arg){
 			}
 			else{
 				if(PacManager->hasPacket()){
-					cout << "PacketNum : " PacManager->packetNum() << endl;
+					cout << "PacketNum : " << PacManager->packetNum() << endl;
 				}
 				
 			}
