@@ -202,14 +202,14 @@ public:
 
     bool stopTimer(){
 
-cout << "timerMutex lock\n";
+cout << "stopTimer : timerMutex lock\n";
         pthread_mutex_lock(&timerMutex);
         if(isTimerAlive()){
             pthread_cond_signal(&timerCond); 
         }
         pthread_mutex_unlock(&timerMutex);
 
-cout << "timerMutex unlock\n";
+cout << "stopTimer : timerMutex unlock\n";
         
     }
 
@@ -266,7 +266,7 @@ void* asyncTimer(void* param){
     int* timeout = (int*)param;
 
 
-cout << "timerMutex lock\n";
+cout << "asyncTimer : timerMutex lock\n";
     pthread_mutex_lock(&timerMutex);
     gettimeofday(&now, NULL);
     outtime.tv_sec = now.tv_sec + *timeout;
@@ -276,7 +276,7 @@ cout << "timerMutex lock\n";
     }
     pthread_mutex_unlock(&timerMutex);
 
-cout << "timerMutex unlock\n";
+cout << "asyncTimer : timerMutex unlock\n";
     
     pthread_exit((void*)result);
 }
