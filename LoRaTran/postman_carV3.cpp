@@ -181,7 +181,10 @@ void* asyncRecv(void *arg){
 				}
 			}
 			else{
-				cout << "No packet\n";
+				if(PacManager->hasPacket()){
+					cout << "No packet\n";
+				}
+				
 			}
 			PacManager->sendState();
 		}while(PacManager->recvData());
