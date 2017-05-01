@@ -140,6 +140,10 @@ public:
         return !sendPacQueue.empty();
     }
 
+    int packetNum(){
+        return sendPacQueue.size();
+    }
+
     int sendQueuePacket(){
         Packet* pac = sendPacQueue.front();
         cout << "PacManager : sendQueuePacket " << pac->send_buffer << endl;
