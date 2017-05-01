@@ -138,6 +138,7 @@ public:
 
     int sendQueuePacket(){
         Packet* pac = sendPacQueue.front();
+        cout << "PacManager : sendQueuePacket " << pac->send_buffer << endl;
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif
@@ -243,25 +244,6 @@ private:
 };
 
 void* asyncTimer(void* param){
-    /*
-    clock_t startTime = clock();
-    clock_t timer = startTime;
-    int timeout = *((int* )param);
-    bool* result = new bool;
-    *result = false;
-
-    PacketManager pm = PacketManager.getInstance();
-
-
-    while( (timer-startTime) >  timeout){
-        if(pm->getIsGetACK()){
-            *result = true;
-            pm->setIsGetACK(false);
-            break;
-        }
-    }
-    */
-
     struct timeval now;
     struct timespec outtime;
 
