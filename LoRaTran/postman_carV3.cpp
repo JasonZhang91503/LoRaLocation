@@ -180,6 +180,7 @@ void* asyncRecv(void *arg){
 					PacManager->setTimer();
 				}
 			}
+			/*
 			else{
 				if(PacManager->hasPacket()){
 					cout << "PacketNum : " << PacManager->packetNum() << endl;
@@ -187,6 +188,7 @@ void* asyncRecv(void *arg){
 				
 			}
 			PacManager->sendState(0);
+			*/
 		}while(PacManager->recvData());
 
 		//unistd::sleep(1);

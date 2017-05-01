@@ -201,12 +201,15 @@ public:
     bool getIsGetACK(){ return isGetACK; }
 
     bool stopTimer(){
-        
+
+cout << "timerMutex lock\n";
         pthread_mutex_lock(&timerMutex);
         if(isTimerAlive()){
             pthread_cond_signal(&timerCond); 
         }
         pthread_mutex_unlock(&timerMutex);
+
+cout << "timerMutex unlock\n";
         
     }
 
@@ -262,6 +265,8 @@ void* asyncTimer(void* param){
     PacketManager *pm = PacketManager::getInstance();
     int* timeout = (int*)param;
 
+
+cout << "timerMutex lock\n";
     pthread_mutex_lock(&timerMutex);
     gettimeofday(&now, NULL);
     outtime.tv_sec = now.tv_sec + *timeout;
@@ -271,6 +276,7 @@ void* asyncTimer(void* param){
     }
     pthread_mutex_unlock(&timerMutex);
 
+cout << "timerMutex unlock\n";
     
     pthread_exit((void*)result);
 }
