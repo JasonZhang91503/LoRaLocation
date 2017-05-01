@@ -377,14 +377,14 @@ int main(int argc, const char * argv[]){
 		cout << "Begin transport\n";
 		
 		req = waitRequest(reqObserver);
-continue;
+
 		//state -1->0 = idle - >接收到經緯度,開始到sender地點
 		e = recvSenderRequest(req);
 		if(e != CAR_OK){
 			cout << "main : recvSenderRequest method error, code = " << e << endl;
 			exit(1);
 		}
-		
+continue;		
 		//state 0->1 = 行走->到達sender指定地點
 		e = moveToSender(req);
 		if(e != CAR_OK){
