@@ -391,7 +391,7 @@ int main(int argc, const char * argv[]){
 			cout << "main : moveToSender method error, code = " << e << endl;
 			exit(1);
 		}
-continue;	
+	
 		//state 1->2 = 抵達->sender放入文件，開始前往recv點
 		e = beginTransport(req);
 		if(e != CAR_OK){
