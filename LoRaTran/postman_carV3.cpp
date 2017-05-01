@@ -180,6 +180,9 @@ void* asyncRecv(void *arg){
 					PacManager->setTimer();
 				}
 			}
+			else{
+				cout << "No packet\n";
+			}
 			PacManager->sendState();
 		}while(PacManager->recvData());
 
