@@ -110,8 +110,8 @@ public:
             return;
         }
         else{
-            PacManager->sendQueuePacket();  
-			PacManager->setTimer();
+            sendQueuePacket();  
+			setTimer();
         }
 
 /*
