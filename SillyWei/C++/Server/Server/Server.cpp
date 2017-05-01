@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Socket.h"
+#include <string.h>
 
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
@@ -148,7 +149,7 @@ int main(void) {
 		initializeMySQL();
 		cout << "Initialize database." << endl;
 
-		testFunction();
+		//testFunction();
 
 		// Initialize Socket Listener
 		listenSocket = getInitializeListenSocket();
@@ -200,16 +201,20 @@ void handleNewConnection(SOCKET clientSocket) {
 		cout << "Socket: " << clientSocket << " connection terminate" << endl;
 		return;
 	}
-	if (buff == 1) {
+	if (buff == '1') {
 		// client is cellphone
 		handleCellphoneTask(clientSocket);
 	}else if (buff == 2) {
 		// client is gateway
 		handleGatewayTask(clientSocket);
+	}else if (buff == '3') {
+
+	}else {
+		cout << "Device error socket: " << clientSocket << endl;
 	}
 }
 
-bool login(char* buff, string &account, int &id) {
+bool login(char* buff, string &account, int &id, string &name, string &email) {
 	string password;
 	string tempStr;
 	int tempInt1, tempInt2;
@@ -217,15 +222,20 @@ bool login(char* buff, string &account, int &id) {
 	tempStr = buff;
 	
 	// get account
-	tempInt1 = tempStr.find(",");
+	tempInt1 = tempStr.find("~");
 	account = tempStr.substr(0, tempInt1);
 	// get password
-	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	tempInt2 = tempStr.find("^", tempInt1 + 1);
 	password = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
-	res = stmt->executeQuery("SELECT _id FROM user WHERE \"" + account + "\"=account AND \"" + password + "\"=password");
+
+	//cout << account << " " << password << endl;
+	
+	res = stmt->executeQuery("SELECT _id, name, mail FROM user WHERE \"" + account + "\"=account AND \"" + password + "\"=password");
 
 	if (res->next()) {
 		id = res->getInt("_id");
+		name = res->getString("name");
+		email = res->getString("mail");
 		delete res;
 		return true;
 	}
@@ -242,16 +252,16 @@ int createAccount(char* buff) {
 	tempStr = buff;
 	
 	// get account
-	tempInt1 = tempStr.find(",");
+	tempInt1 = tempStr.find("~");
 	account = tempStr.substr(0, tempInt1);
 	//get password
-	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	tempInt2 = tempStr.find("^", tempInt1 + 1);
 	password = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 	//get name
-	tempInt1 = tempStr.find(",", tempInt2 + 1);
+	tempInt1 = tempStr.find(";", tempInt2 + 1);
 	name = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
 	// get email
-	tempInt2 = tempStr.find(",", tempInt1 + 1);
+	tempInt2 = tempStr.find("/", tempInt1 + 1);
 	email = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 
 	res = stmt->executeQuery("SELECT * FROM user WHERE account='" + account + "'");
@@ -282,6 +292,10 @@ int createAccount(char* buff) {
 	}
 }
 
+bool carAvailableTime(char* buff, string &buffStr) {
+
+}
+
 bool askTransportSend(int id, char* buff, string &buffStr) {
 	try {
 		string tempStr;
@@ -293,7 +307,7 @@ bool askTransportSend(int id, char* buff, string &buffStr) {
 		tempStr = buff;
 		stmtStr = "SELECT * FROM transport WHERE sender=" + to_string(id) + " AND requireTime>=";
 
-		tempInt1 = tempStr.find(",");
+		tempInt1 = tempStr.find("~");
 		dataStr = tempStr.substr(0, tempInt1);
 		cout << dataStr << endl;
 
@@ -304,54 +318,51 @@ bool askTransportSend(int id, char* buff, string &buffStr) {
 		index = 0;
 		tempStr = "";
 		while (res->next()) {
-			tempStr.append(res->getString("receiver") + ",");
-			tempStr.append(res->getString("requireTime") + ",");
-			tempStr.append(res->getString("arriveTime") + ",");
-			tempStr.append(res->getString("start_id") + ",");
-			tempStr.append(res->getString("des_id") + ",");
-			tempStr.append(res->getString("state") + ",");
-			tempStr.append(res->getString("key") + ",");
+			tempStr.append(res->getString("receiver") + "~");
+			tempStr.append(res->getString("requireTime") + "^");
+			tempStr.append(res->getString("arriveTime") + ";");
+			tempStr.append(res->getString("start_id") + "/");
+			tempStr.append(res->getString("des_id") + "!");
+			tempStr.append(res->getString("state") + "#");
+			tempStr.append(res->getString("key") + "*");
 			index++;
 		}
 		buffStr[1] = index;
 		delete res;
 		for (int i = 0; i < index; i++) {
 			// get receiver
-			tempInt1 = tempStr.find(",");
+			tempInt1 = tempStr.find("~");
 			dataStr = tempStr.substr(0, tempInt1);
 			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "~");
 			delete res;
 			//get requireTime
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			tempInt2 = tempStr.find("^", tempInt1 + 1);
 			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
 			// get arriveTime
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			tempInt1 = tempStr.find(";", tempInt2 + 1);
 			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
 			// get startLocation
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			tempInt2 = tempStr.find("/", tempInt1 + 1);
 			dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "/");
 			delete res;
 			// get DesLocation
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			tempInt1 = tempStr.find("!", tempInt2 + 1);
 			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
 			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "!");
 			delete res;
-			// get state
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			// get state and key
+			tempInt2 = tempStr.find("*", tempInt1 + 1);
 			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
-			// get key
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
-			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
 		}
 		return true;
 	}catch (sql::SQLException &e) {
@@ -375,7 +386,7 @@ bool askTransportRec(int id, char* buff, string &buffStr) {
 		tempStr = buff;
 		stmtStr = "SELECT * FROM transport WHERE receiver=" + to_string(id) + " AND requireTime>=";
 
-		tempInt1 = tempStr.find(",");
+		tempInt1 = tempStr.find("~");
 		dataStr = tempStr.substr(0, tempInt1);
 		cout << dataStr << endl;
 
@@ -386,54 +397,51 @@ bool askTransportRec(int id, char* buff, string &buffStr) {
 		index = 0;
 		tempStr = "";
 		while (res->next()) {
-			tempStr.append(res->getString("sender") + ",");
-			tempStr.append(res->getString("requireTime") + ",");
-			tempStr.append(res->getString("arriveTime") + ",");
-			tempStr.append(res->getString("start_id") + ",");
-			tempStr.append(res->getString("des_id") + ",");
-			tempStr.append(res->getString("state") + ",");
-			tempStr.append(res->getString("key") + ",");
+			tempStr.append(res->getString("sender") + "~");
+			tempStr.append(res->getString("requireTime") + "^");
+			tempStr.append(res->getString("arriveTime") + ";");
+			tempStr.append(res->getString("start_id") + "/");
+			tempStr.append(res->getString("des_id") + "!");
+			tempStr.append(res->getString("state") + "#");
+			tempStr.append(res->getString("key") + "*");
 			index++;
 		}
 		buffStr[1] = index;
 		delete res;
 		for (int i = 0; i < index; i++) {
 			// get receiver
-			tempInt1 = tempStr.find(",");
+			tempInt1 = tempStr.find("~");
 			dataStr = tempStr.substr(0, tempInt1);
 			stmtStr = "SELECT name FROM user WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "~");
 			delete res;
 			//get requireTime
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			tempInt2 = tempStr.find("^", tempInt1 + 1);
 			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
 			// get arriveTime
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			tempInt1 = tempStr.find(";", tempInt2 + 1);
 			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
 			// get startLocation
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			tempInt2 = tempStr.find("/", tempInt1 + 1);
 			dataStr = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "/");
 			delete res;
 			// get DesLocation
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
+			tempInt1 = tempStr.find("!", tempInt2 + 1);
 			dataStr = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
 			stmtStr = "SELECT name FROM location WHERE _id=" + dataStr;
 			res = stmt->executeQuery(stmtStr);
 			res->next();
-			buffStr.append(res->getString("name") + ",");
+			buffStr.append(res->getString("name") + "!");
 			delete res;
-			// get state
-			tempInt2 = tempStr.find(",", tempInt1 + 1);
+			// get state and key
+			tempInt2 = tempStr.find("*", tempInt1 + 1);
 			buffStr.append(tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1));
-			// get key
-			tempInt1 = tempStr.find(",", tempInt2 + 1);
-			buffStr.append(tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2));
 		}
 		return true;
 	}
@@ -456,7 +464,7 @@ bool askTransportSendRec(int id, char* buff, string &buffStr) {
 		int index;
 
 		tempStr = buff;
-		stmtStr = "SELECT * FROM transport WHERE requireTime>=";
+		stmtStr = "SELECT * FROM transport WHERE (receiver=" + to_string(id) + " Or sender=" + to_string(id) + ") AND requireTime>=";
 
 		tempInt1 = tempStr.find(",");
 		dataStr = tempStr.substr(0, tempInt1);
@@ -541,16 +549,17 @@ bool askTransportSendRec(int id, char* buff, string &buffStr) {
 
 void handleCellphoneTask(SOCKET clientSocket) {
 	cout << "Start cellphone task" << endl;
-	char buff[BUFFSIZE] = {'\0'};
 	string buffStr;
 	int errorCode;
+	int recognizeNumber;
 
 	// User Info
 	bool isLogin = false;
-	string account;
+	string account, name, email;
 	int id;
 
 	while (true) {
+		char buff[BUFFSIZE] = { '\0' };
 		errorCode = recv(clientSocket, buff, BUFFSIZE, 0);
 
 		lock_guard<mutex> mLock(sqlMutex);
@@ -559,42 +568,41 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			closesocket(clientSocket);
 			return;
 		}
-		cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << (int)buff[0] << buff << endl;
+		cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << buff << endl;
+
+		char* endP;
+		recognizeNumber = (int)strtol(buff, &endP, 10);
 
 		// error message
-		if (buff[0] == 1) {
-			cout << "error info: "<< &buff[1] << endl;
+		if (recognizeNumber == 20) {
+			cout << "error info: " << &buff[1] << endl;
 			return;
-		}
-
-		buffStr;
-		if (!isLogin) {
+		}else if (!isLogin) {
 			// buff for send
 
-			switch (buff[0]) {
+			switch (recognizeNumber) {
 			case 2:
-				buffStr = "  \n";
-				buffStr[0] = 1;
+				buffStr = "2 \n";
 				// create acount
-				switch (createAccount(&buff[1])) {
+				switch (createAccount(&buff[2])) {
 				case 1:
 					cout << "account: " << account << " create success" << endl;
-					buffStr[1] = 1;
+					buffStr[1] = '1';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 2:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = 2;
+					buffStr[1] = '2';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 3:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = 3;
+					buffStr[1] = '3';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 4:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = 4;
+					buffStr[1] = '4';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				default:
@@ -603,16 +611,17 @@ void handleCellphoneTask(SOCKET clientSocket) {
 				break;
 			case 3:
 				// log in
-				isLogin = login(&buff[1], account, id);
-				buffStr = "  \n";
-				buffStr[0] = 3;
+				isLogin = login(&buff[2], account, id, name, email);
+				buffStr = "3;  ~";
 				if (isLogin) {
 					cout << "account: " << account << " login success, id = " << id << endl;
-					buffStr[1] = 1;
+					buffStr[2] = '1';
+					buffStr.append(name + "^" + email + ";\n");
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				}else {
 					cout << "account: " << account << " login fail" << endl;
-					buffStr[1] = 0;
+					buffStr[2] = '0';
+					buffStr.append("\n");
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				}
 				break;
@@ -623,46 +632,48 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 8:
 			case 9:
 			case 10:
-				buffStr = " you need to login first\n";
-				buffStr[0] = 1;
+			case 11:
+				buffStr = "20;you need to login first\n";
 				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			default:
-				buffStr = " wrong state\n";
-				buffStr[0] = 1;
+				buffStr = "20;wrong state\n";
 				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			}
 		}
 		else {
-			switch (buff[0]) {
+			switch (recognizeNumber) {
 			case 2:
 			case 3:
-				buffStr = " you already login\n";
-				buffStr[0] = 1;
+				buffStr = "1;you already login\n";
 				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
-			/*case 4:
+			case 4:
 				break;
 			case 5:
 				break;
 			case 6:
-				break;*/
+				break;
 			case 7:
-				buffStr = "  ";
-				buffStr[0] = 7;
-				askTransportSend(id, &buff[1], buffStr);
-				send(clientSocket, &buffStr[0], buffStr.size(), 0);
+				buffStr = "7;";
+				if (askTransportSend(id, &buff[2], buffStr)) {
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
+				}
 				break;
 			case 8:
-				buffStr = "  ";
-				buffStr[0] = 8;
-				askTransportRec(id, &buff[1], buffStr);
-				send(clientSocket, &buffStr[0], buffStr.size(), 0);
+				buffStr = "8;";
+				if (askTransportRec(id, &buff[2], buffStr)) {
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
+				}
 				break;
 			case 9:
+				/*  不用
 				buffStr = "  ";
 				buffStr[0] = 9;
+				if (askTransportSendRec(id, &buff[1], buffStr)) {
+					send(clientSocket, &buffStr[0], buffStr.size(), 0);
+				}*/
 				break;
 			case 10:
 				break;
@@ -672,9 +683,56 @@ void handleCellphoneTask(SOCKET clientSocket) {
 	}
 }
 
+bool gatewayRecv(SOCKET clientSocket, char buff[]) {
+	char sendBuff[BUFFSIZE];
+	int errorCode;
+	errorCode = recv(clientSocket, buff, BUFFSIZE, 0);
+	if (errorCode == -1 || errorCode == 0) {
+		cout << "Socket: " << clientSocket << " connection terminate" << endl;
+		closesocket(clientSocket);
+		return false;
+	}
+	cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << buff << endl;
+	
+	for (int i = 0; i < BUFFSIZE; i++) {
+		sendBuff[i] = buff[i];
+	}
+
+	if (sendBuff[0] == 1 && sendBuff[3] != 1) {
+		sendBuff[0] = 2;
+		sendBuff[3] = 1;
+		send(clientSocket, sendBuff, 4, 0);
+	}
+}
+
+void stateUpdate(int id, int state) {
+	string idString, stateString;
+	idString = "      ";
+	stateString = " ";
+	sprintf(&idString[0], "%d", id);
+	sprintf(&stateString[0], "%d", state);
+	stmt->execute("UPDATE transport SET state = " + stateString +" WHERE _id = " + idString);
+}
+
 void handleGatewayTask(SOCKET clientSocket) {
 	cout << "Start gateway task" << endl;
+	string buffStr;
+
 	while (true) {
+		char buff[BUFFSIZE] = { '\0' };
+		if (!gatewayRecv(clientSocket, buff)) {
+			return;
+		}
+		lock_guard<mutex> mLock(sqlMutex);
+		switch (buff[3]) {
+		case 2:
+			stateUpdate(buff[4], buff[5]);
+			break;
+		case 3:
+			cout << "car is broken" << endl;
+			break;
+		default:
+		}
 
 	}
 }
