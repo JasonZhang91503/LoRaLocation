@@ -245,7 +245,7 @@ void* asyncRecv(void *arg){
 			else{
 				cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
 				//判斷封包的識別碼
-				continue;
+//0
 				switch(PacManager->getEventCode()){
 					case 1:
 					
@@ -256,7 +256,7 @@ void* asyncRecv(void *arg){
 						
 						req = new UserRequest;
 						parseRequestData(req);
-						ReqManger.add(req);
+						//ReqManger.add(req);
 						break;
 					//case 3 = Gateway傳遞密碼，Index[2]後為密碼
 					case 3:
