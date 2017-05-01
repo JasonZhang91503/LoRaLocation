@@ -288,7 +288,17 @@ void* asyncRecv(void *arg){
 
 #else
 		cin.get();
+		cin.get();
 		UserRequest *req = new UserRequest;
+		req->state = 0;
+		req->src_lon = 121.369862;
+		req->src_lat = 24.944185;
+		req->dest_lon = 121.369862;
+		req->dest_lat = 24.944185;
+		req->dest_lat = 24.944185;
+		char* pw = new char[pw_size];
+		pw[0] = '\0';
+		req->packetKey.assign(pw);
 		ReqManger.add(req);
 		cin.get();
 		while(true){
@@ -329,6 +339,7 @@ int main(int argc, const char * argv[]){
 
 	//car程式開始執行
 	
+
 	/*
 	功能
 	state0. gateway主動打來用戶請求 -  state 被Gateway設為 0 ，並且前往寄件地點。
@@ -401,6 +412,9 @@ UserRequest* waitRequest(RequestObserver *reqObserver){
 	while(!reqObserver->HasRequest()){
 		
 	}
+	
+//cin.get();
+
 	return reqObserver->RequestPop();
 }
 
@@ -416,6 +430,7 @@ int recvSenderRequest(UserRequest* req){
 		return CAR_STATE_0_ERROR;
 	}
 	
+
 	cout << "recvSenderRequest : recv source longitude = " << req->src_lon << ", latitude = " << req->src_lat << endl;
 	cout << "recvSenderRequest : recv destnation longitude = " << req->dest_lon << ", latitude = " << req->dest_lat << endl;
 	cout << "recvSenderRequest : recv state = " << req->state << endl;
@@ -641,30 +656,6 @@ int parseRequestData(UserRequest* req){
 	char* packetKeyPtr;
 	
 	#ifndef NO_CAR_MODE
-
-	/*
-	statePtr = strtok(recv_packet,d);	//state
-	printf("split state :%s\n",statePtr);
-	sLonPtr = strtok(NULL,d);
-	printf("split sLon :%s\n",sLonPtr);
-	sLatPtr = strtok(NULL,d);
-	printf("split sLat :%s\n",sLatPtr);
-	dLonPtr = strtok(NULL,d);
-	printf("split dLon :%s\n",dLonPtr);
-	dLatPtr = strtok(NULL,d);
-	printf("split dLat :%s\n",dLatPtr);
-	
-	req->state = atoi(statePtr);
-	printf("rState :%d\n",req->state);
-	req->src_lon = atof(sLonPtr);
-	printf("sLon :%f\n",req->src_lon);
-	req->src_lat = atof(sLatPtr);
-	printf("sLat :%f\n",req->src_lat);
-	req->dest_lon = atof(dLonPtr);
-	printf("dLon :%f\n",req->dest_lon);
-	req->dest_lat = atof(dLatPtr);
-	printf("dLat :%f\n",req->dest_lat);
-	*/
 
 	PacketManager *PacManager = PacketManager::getInstance();
 

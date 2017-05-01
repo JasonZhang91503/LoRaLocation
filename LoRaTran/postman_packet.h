@@ -18,8 +18,10 @@
 
 enum PacketType{ Gateway = 1, car, ACK0, ACK1 };
 
-pthread_mutex_t timerMutex;
+pthread_mutex_t timerMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timerCond;
+
+pthread_mutex_t queueMutex;
 
 void* asyncTimer(void* param);
 
@@ -101,6 +103,8 @@ public:
     int sendState(int state){
         Packet *newPac = new Packet();
         sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentRecvACK,2,state);
+
+
         enqueuePacket(newPac);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
@@ -177,6 +181,10 @@ public:
     }
 
     void setTimer(){
+        if(isTimerAlive()){
+            cout << "PacManager : reject setTimer , timer is alive\n";
+            return;
+        }
         pthread_create(&timerThread,NULL,asyncTimer,&timeout);
     }
 
