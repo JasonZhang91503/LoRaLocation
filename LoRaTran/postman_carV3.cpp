@@ -458,7 +458,7 @@ int moveToSender(UserRequest* req){
 	cout << "moveToSender : Begin go to sender location" << endl;
 
 	PacketManager *pac = PacketManager::getInstance();
-return CAR_OK;
+
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
@@ -489,7 +489,7 @@ return CAR_OK;
 	} while ( -180 < sLon && sLon < 180);
 	
 	req->state = 1;
-	
+return CAR_OK;	
 #ifndef NO_CAR_MODE
 	pac->sendState(req->state);
 #endif
