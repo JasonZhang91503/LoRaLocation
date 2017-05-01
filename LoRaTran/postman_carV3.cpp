@@ -384,14 +384,14 @@ int main(int argc, const char * argv[]){
 			cout << "main : recvSenderRequest method error, code = " << e << endl;
 			exit(1);
 		}
-continue;		
+
 		//state 0->1 = 行走->到達sender指定地點
 		e = moveToSender(req);
 		if(e != CAR_OK){
 			cout << "main : moveToSender method error, code = " << e << endl;
 			exit(1);
 		}
-		
+continue;	
 		//state 1->2 = 抵達->sender放入文件，開始前往recv點
 		e = beginTransport(req);
 		if(e != CAR_OK){
