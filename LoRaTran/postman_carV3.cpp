@@ -195,6 +195,8 @@ void* asyncRecv(void *arg){
 		//PacManager->sendBackACK();
 		
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
+
+		continue;
 //continue;
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
