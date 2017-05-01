@@ -256,7 +256,7 @@ void* asyncRecv(void *arg){
 						
 						req = new UserRequest;
 						parseRequestData(req);
-						//ReqManger.add(req);
+						ReqManger.add(req);
 						break;
 					//case 3 = Gateway傳遞密碼，Index[2]後為密碼
 					case 3:
@@ -377,7 +377,7 @@ int main(int argc, const char * argv[]){
 		cout << "Begin transport\n";
 		
 		req = waitRequest(reqObserver);
-
+continue;
 		//state -1->0 = idle - >接收到經緯度,開始到sender地點
 		e = recvSenderRequest(req);
 		if(e != CAR_OK){
