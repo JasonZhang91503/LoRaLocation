@@ -21,7 +21,7 @@ enum PacketType{ Gateway = 1, car, ACK0, ACK1 };
 pthread_mutex_t timerMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timerCond;
 
-pthread_mutex_t queueMutex;
+pthread_mutex_t queueMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void* asyncTimer(void* param);
 
@@ -104,8 +104,8 @@ public:
         Packet *newPac = new Packet();
         sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentRecvACK,2,state);
 
-
         enqueuePacket(newPac);
+        
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
         #endif
@@ -129,23 +129,37 @@ public:
     }
 
     void enqueuePacket(Packet* pac){
+        pthread_mutex_lock(&queueMutex);
         sendPacQueue.push(pac);
+        pthread_mutex_unlock(&queueMutex);
     }
 
     void dequeuePacket(){
+        pthread_mutex_lock(&queueMutex);
         sendPacQueue.pop();
+        pthread_mutex_unlock(&queueMutex);
     }
 
     bool hasPacket(){
-        return !sendPacQueue.empty();
+        bool rv;
+        pthread_mutex_lock(&queueMutex);
+        rv = !sendPacQueue.empty();
+        pthread_mutex_unlock(&queueMutex);
+        return rv;
     }
 
     int packetNum(){
-        return sendPacQueue.size();
+        int rv;
+        pthread_mutex_lock(&queueMutex);
+        rv = sendPacQueue.size();
+        pthread_mutex_unlock(&queueMutex);
+        return rv;
     }
 
     int sendQueuePacket(){
+        pthread_mutex_lock(&queueMutex);
         Packet* pac = sendPacQueue.front();
+        pthread_mutex_unlock(&queueMutex);
         cout << "PacManager : sendQueuePacket " << pac->send_buffer << endl;
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);

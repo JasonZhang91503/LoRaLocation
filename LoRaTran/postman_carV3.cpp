@@ -489,7 +489,7 @@ int moveToSender(UserRequest* req){
 	} while ( -180 < sLon && sLon < 180);
 	
 	req->state = 1;
-return CAR_OK;	
+	
 #ifndef NO_CAR_MODE
 	pac->sendState(req->state);
 #endif
