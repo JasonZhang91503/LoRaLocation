@@ -105,7 +105,7 @@ public:
         sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentRecvACK,2,state);
 
         enqueuePacket(newPac);
-        
+        /*
         if(isTimerAlive()){
             return 0;
         }
@@ -113,7 +113,7 @@ public:
             sendQueuePacket();  
 			setTimer();
         }
-
+*/
 /*
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, newPac->send_buffer);
