@@ -186,7 +186,7 @@ void* asyncRecv(void *arg){
 				}
 				
 			}
-			PacManager->sendState();
+			PacManager->sendState(0);
 		}while(PacManager->recvData());
 
 		//unistd::sleep(1);
