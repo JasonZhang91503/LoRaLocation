@@ -194,6 +194,15 @@ void* asyncRecv(void *arg){
 		//unistd::sleep(1);
 		//PacManager->sendBackACK();
 		
+		PacManager->sendState(1);
+		PacManager->sendState(2);
+		PacManager->sendState(3);
+		PacManager->sendState(4);
+
+		PacManager->switch_recvWaitingPacNum();
+		PacManager->switchSendACK();
+		result = PacManager->sendBackACK();
+
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
 
 		continue;
