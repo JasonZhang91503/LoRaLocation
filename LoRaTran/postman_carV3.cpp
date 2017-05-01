@@ -193,19 +193,8 @@ void* asyncRecv(void *arg){
 
 		//unistd::sleep(1);
 		//PacManager->sendBackACK();
-		
-		PacManager->sendState(1);
-		PacManager->sendState(2);
-		PacManager->sendState(3);
-		PacManager->sendState(4);
-
-		PacManager->switch_recvWaitingPacNum();
-		PacManager->switchSendACK();
-		result = PacManager->sendBackACK();
 
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
-
-		continue;
 //continue;
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
@@ -256,6 +245,7 @@ void* asyncRecv(void *arg){
 			else{
 				cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
 				//判斷封包的識別碼
+				continue;
 				switch(PacManager->getEventCode()){
 					case 1:
 					
