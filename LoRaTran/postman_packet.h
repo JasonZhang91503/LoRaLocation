@@ -102,9 +102,11 @@ public:
 
     int sendState(int state){
         Packet *newPac = new Packet();
-        sprintf(newPac->send_buffer,"%c%c%c%c%c\0",1,carID,currentRecvACK,2,state);
+        sprintf(newPac->send_buffer,"%c%c%c%c%c\0",1,carID,sendPacNum,2,state);
 
         enqueuePacket(newPac);
+
+        switch_sendPacNum();
         /*
         if(isTimerAlive()){
             return 0;
@@ -206,6 +208,11 @@ public:
         else recvWaitingPacNum = 1;
     }
 
+    void switch_sendPacNum(){
+        if(sendPacNum == 1) sendPacNum = 2;
+        else sendPacNum = 1;
+    }
+
 
     void clearBuffer(){
         clearRecvBuffer();
@@ -274,6 +281,7 @@ private:
         currentSendACK = 2;
         currentRecvACK = 1;
         recvWaitingPacNum = 1;
+        sendPacNum = 1;
         errorCode = 0;
         receiveTime = 1000;
         timeout = 5;
@@ -284,6 +292,7 @@ private:
     int currentSendACK;
     int currentRecvACK;
     int recvWaitingPacNum;
+    int sendPacNum;
     int errorCode;
     int carID;
     int receiveTime;
