@@ -93,7 +93,7 @@ void inputHeader(){
 void setHeaderFromRecv(){
     message1[0] = 2;
     message1[1] = 1;
-    message1[2] = message[2];
+    message1[2] = message1[2];
     message1[3] = 1;
 }
 
