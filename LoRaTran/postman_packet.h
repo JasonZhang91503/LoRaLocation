@@ -134,6 +134,12 @@ public:
         else { BackACK = 2; }
         */
         sprintf(send_buffer,"%c%c%c%c",1,carID,currentSendACK,1);
+        int role = send_buffer[0];
+        int carID = send_buffer[1];
+        int packNum = send_buffer[2];
+        int eventNum = send_buffer[3];
+        printf("PacManager : sendBackACK -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);
+        
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
         #endif
@@ -171,7 +177,11 @@ public:
         pthread_mutex_lock(&queueMutex);
         Packet* pac = sendPacQueue.front();
         pthread_mutex_unlock(&queueMutex);
-        cout << "PacManager : sendQueuePacket " << pac->send_buffer << endl;
+        int role = pac->send_buffer[0];
+        int carID = pac->send_buffer[1];
+        int packNum = pac->send_buffer[2];
+        int eventNum = pac->send_buffer[3];
+        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif
