@@ -99,6 +99,23 @@ void inputHeader(){
 
 }
 
+void recvACK(){
+    e = sx1272.receivePacketTimeout(5000);
+    if ( e == 0 )
+    {
+        printf("Receive packet, state %d\n",e);
+
+        for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
+        {
+        message1[i] = (char)sx1272.packet_received.data[i];
+        }
+        printf("Message: %s\n", message1);
+    }
+    else {
+        printf("Receive packet, state %d\n",e);
+    }
+}
+
 void loop(void)
 {
     int mode;
@@ -108,6 +125,7 @@ void loop(void)
     switch(mode){
         case 1:
             sendRequest();
+            recvACK();
             break;
         case 2:
             break;

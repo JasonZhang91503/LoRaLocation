@@ -240,7 +240,7 @@ void* asyncRecv(void *arg){
 			if(!PacManager->isCorrectPackNum()){
 				cout << "asyncRecv : recvive incorrect packNum, discard it\n";
 				result = PacManager->sendBackACK();
-				//cout << "asyncRecv : resend last sended packet\n";
+				cout << "asyncRecv : resend last sended packet\n";
 			}
 			else{
 				cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
