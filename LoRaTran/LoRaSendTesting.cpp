@@ -91,10 +91,10 @@ void inputHeader(){
 }
 
 void setHeaderFromRecv(){
-    message[0] = 2;
-    message[1] = 1;
-    message[2] = message[2];
-    message[3] = 1;
+    message1[0] = 2;
+    message1[1] = 1;
+    message1[2] = message[2];
+    message1[3] = 1;
 }
 
 void sendRequest(){
