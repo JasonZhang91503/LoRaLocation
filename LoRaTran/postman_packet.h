@@ -307,6 +307,7 @@ cout << "asyncTimer : timerMutex lock\n";
     outtime.tv_sec = now.tv_sec + *timeout;
     int result = pthread_cond_timedwait(&timerCond, &timerMutex, &outtime);
     if(result == 0){
+        printf("asyncTimer : stopTimer!");
         pm->dequeuePacket();
     }
     pthread_mutex_unlock(&timerMutex);
