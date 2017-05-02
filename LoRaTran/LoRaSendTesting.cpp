@@ -73,15 +73,6 @@ void setup()
   delay(1000);
 }
 
-void sendRequest(){
-    char buffer[256];
-    inputHeader();
-    sprintf(message1+4, "0,123.121212,24.252525,123.121212,24.252525,1234,");
-//    message1[0] = 1;
-    e = sx1272.sendPacketTimeout(0, message1);
-    printf("Packet sent, state %d\n",e);
-}
-
 void inputHeader(){
     int temp;
     printf("Input sendType: ");
@@ -97,6 +88,31 @@ void inputHeader(){
     scanf("%d",&temp);
     message1[3] = temp;
 
+}
+
+void setHeaderFromRecv(){
+    message[0] = 2;
+    message[1] = 1;
+    message[2] = message[2];
+    message[3] = 1;
+}
+
+void sendRequest(){
+    char buffer[256];
+    inputHeader();
+    sprintf(message1+4, "0,123.121212,24.252525,123.121212,24.252525,1234,");
+//    message1[0] = 1;
+    e = sx1272.sendPacketTimeout(0, message1);
+    printf("Packet sent, state %d\n",e);
+}
+
+void sendACK(){
+//    char buffer[256];
+    inputHeader();
+//    sprintf(message1, "0,123.121212,24.252525,123.121212,24.252525,1234,");
+//    message1[0] = 1;
+    e = sx1272.sendPacketTimeout(0, message1);
+    printf("Packet sent, state %d\n",e);
 }
 
 void recvACK(){
@@ -120,6 +136,28 @@ void recvACK(){
     }
 }
 
+void recvState(){
+    e = sx1272.receivePacketTimeout(5000);
+    if ( e == 0 )
+    {
+        printf("Receive packet, state %d\n",e);
+
+        for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
+        {
+        message1[i] = (char)sx1272.packet_received.data[i];
+        }
+        int role = message1[0];
+        int carID = message1[1];
+        int packNum = message1[2];
+        int eventNum = message1[3];
+        char state = message1[4];
+        printf("role = %d, carID = %d, packNum = %d, eventNum = %d, state = %c\n",role,carID,packNum,eventNum,state);
+    }
+    else {
+        printf("Receive packet, state %d\n",e);
+    }
+}
+
 void loop(void)
 {
     int mode;
@@ -132,6 +170,8 @@ void loop(void)
             recvACK();
             break;
         case 2:
+            recvState();
+            sendACK();
             break;
     }
     
