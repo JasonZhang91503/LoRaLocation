@@ -62,8 +62,8 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
         myYear = c.get(Calendar.YEAR);
         myMonth = c.get(Calendar.MONTH) + 1;
         myDay = c.get(Calendar.DAY_OF_MONTH);
-       // updateListView();
-        btnPickDate = (Button)myView.findViewById(R.id.btnSelectTime);
+        updateListView();
+        btnPickDate = (Button)myView.findViewById(R.id.btnPickDate);
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +90,7 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
         intent.putExtra(getString(R.string.id),"8");
         intent.putExtra(getString(R.string.requireTime),formattedDate);
         if(!isBind){
-            getActivity().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
             isBind=true;
             Log.d("RcvHistoryPage:", "checkSR->bind");
         }
@@ -127,7 +127,8 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("RcvHistoryPage")){
                 Log.d("RcvHistoryPage:","receiver on receive");
-                getActivity().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
                 // ArrayList list = bundle.getParcelableArrayList("list");
@@ -148,7 +149,7 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ConnectServiceReceiver();
-        getActivity().registerReceiver(receiver, filter);
+        getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("RcvHistoryPage:","register receiver");
     }
 

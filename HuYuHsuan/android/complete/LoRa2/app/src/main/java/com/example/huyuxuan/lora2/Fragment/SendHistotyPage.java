@@ -103,7 +103,7 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
         intent.putExtra(getString(R.string.id),"7");
         intent.putExtra(getString(R.string.requireTime),formattedDate);
         if(!isBind){
-            getActivity().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
             isBind=true;
             Log.d("SendHistotyPage:", "checkSR->bind");
         }
@@ -140,7 +140,8 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("SendHistotyPage")){
                 Log.d("SendHistotyPage:","receiver on receive");
-                getActivity().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
                 // ArrayList list = bundle.getParcelableArrayList("list");
@@ -161,7 +162,7 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ConnectServiceReceiver();
-        getActivity().registerReceiver(receiver, filter);
+        getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("SendHistotyPage:","register receiver");
     }
 }

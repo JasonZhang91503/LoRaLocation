@@ -1,5 +1,6 @@
 package com.example.huyuxuan.lora2.Fragment;
 
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -7,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,10 +21,11 @@ import android.widget.Spinner;
 
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.R;
-import com.example.huyuxuan.lora2.User;
 
 import java.util.Calendar;
 import java.util.Locale;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by huyuxuan on 2017/4/28.
@@ -38,8 +39,7 @@ public class RegisterFragment extends Fragment {
     private Spinner spnReceiver;
     private Spinner spnStart;
     private Spinner spnDes;
-
-    User mUser;
+    private SharedPreferences sharedPreferences;
     private String myName;
     private boolean getBuildingArray;
     private String des;
@@ -55,9 +55,24 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstances){
         super.onCreate(savedInstances);
+
+
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState){
+        //inflate layout for this fragment
+        myview = inflater.inflate(R.layout.fragment_register,container,false);
+        btnOk = (Button)myview.findViewById(R.id.btnRegisterOk);
+        btnSelectTime = (Button)myview.findViewById(R.id.btnSelectTime);
+        spnReceiver = (Spinner)myview.findViewById(R.id.spinnerReceiver);
+        spnStart = (Spinner)myview.findViewById(R.id.spinnerStart);
+        spnDes = (Spinner)myview.findViewById(R.id.spinnerDes);
+
+
         isBind = false;
-        mUser = (User) getContext().getApplicationContext();
-        myName = mUser.UserName;
+        sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
+        myName = sharedPreferences.getString(getString(R.string.name),"");
         getBuildingArray = false;
 
 
@@ -67,7 +82,7 @@ public class RegisterFragment extends Fragment {
         intent.putExtra(getString(R.string.id),"10");
         intent.putExtra(getString(R.string.name),myName);
         if(!isBind){
-            getActivity().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
             isBind=true;
             Log.d("RegisterFragment:", "checkSR->bind");
         }
@@ -76,18 +91,6 @@ public class RegisterFragment extends Fragment {
             Log.d("RegisterFragment:", "checkSR->sendToService");
         }
         setReceiver();
-
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState){
-        //inflate layout for this fragment
-        myview = inflater.inflate(R.layout.fragment_register,container,false);
-        btnOk = (Button)getView().findViewById(R.id.btnRegisterOk);
-        btnSelectTime = (Button)getView().findViewById(R.id.btnSelectTime);
-        spnReceiver = (Spinner)getView().findViewById(R.id.spinnerReceiver);
-        spnStart = (Spinner)getView().findViewById(R.id.spinnerStart);
-        spnDes = (Spinner)getView().findViewById(R.id.spinnerDes);
 
         spnReceiver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -138,7 +141,7 @@ public class RegisterFragment extends Fragment {
                 intent.putExtra(getString(R.string.desLocation),start);
 
                 if(!isBind){
-                    getActivity().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                    getActivity().getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
                     isBind=true;
                     Log.d("RegisterFragment:", "apply->bind");
                 }
@@ -170,7 +173,7 @@ public class RegisterFragment extends Fragment {
                 intent.putExtra(getString(R.string.id),"5");
                 intent.putExtra(getString(R.string.requireTime),formattedDate);
                 if(!isBind){
-                    getActivity().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+                    getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
                     isBind=true;
                     Log.d("RegisterFragment:", "checkSR->bind");
                 }
@@ -208,7 +211,8 @@ public class RegisterFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("RegisterFragment")){
-                getActivity().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unregisterReceiver(receiver);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
@@ -230,6 +234,7 @@ public class RegisterFragment extends Fragment {
                         ArrayAdapter<String > nameList = new ArrayAdapter<>(getActivity(),
                                 R.layout.support_simple_spinner_dropdown_item,nameArray);
                         spnReceiver.setAdapter(nameList);
+
                         if(!getBuildingArray){
                             Intent tmpIntent = new Intent(getContext(),ConnectService.class);
                             tmpIntent.putExtra(getString(R.string.activity),"RegisterFragment");
@@ -257,8 +262,8 @@ public class RegisterFragment extends Fragment {
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ConnectServiceReceiver();
-        getActivity().registerReceiver(receiver, filter);
-        Log.d("RegisterFragment:","register receiver");
+        getActivity().getApplicationContext().registerReceiver(receiver, filter);
+        Log.d("RegisterFragment","register receiver");
     }
 
 

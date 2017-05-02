@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
         btnLogin = (Button)findViewById(R.id.btnLogin);
         btnSignUp = (Button)findViewById(R.id.btnToSign);
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
 
         isBind=false;
 
@@ -90,28 +91,26 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("LoginActivity")){
+                getApplicationContext().unbindService(mConnection);
                 unregisterReceiver(receiver);
                 Bundle bundle = intent.getExtras();
                 String type = bundle.getString(getString(R.string.type));
                 if(type.compareTo("1")==0){
-                    User mUser=(User)context.getApplicationContext();
-                    mUser.UserAccount=bundle.getString(getString(R.string.account));
-                    mUser.UserPassword=bundle.getString(getString(R.string.password));
-                    mUser.UserName=bundle.getString(getString(R.string.name));
-                    mUser.UserEmail=bundle.getString(getString(R.string.email));
+                    String name = bundle.getString(getString(R.string.name));
+                    String mail = bundle.getString(getString(R.string.email));
                     sharedPreferences.edit()
-                            .putString(getString(R.string.account),mUser.UserAccount)
-                            .putString(getString(R.string.password),mUser.UserPassword)
-                            .putString(getString(R.string.name),mUser.UserName)
-                            .putString(getString(R.string.email),mUser.UserEmail)
+                            .putString(getString(R.string.account),account)
+                            .putString(getString(R.string.password),password)
+                            .putString(getString(R.string.name),name)
+                            .putString(getString(R.string.email),mail)
                             .putString(getString(R.string.isLogin),"true")
                             .apply();
-                    Log.d("LoginActivity:", "account:"+mUser.UserAccount+"password:"+mUser.UserPassword+"name:"+mUser.UserName);
-
+                    Log.d("LoginActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+mail);
+                    Log.d("LoginActivity","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));
                     //跳到主畫面
                     Intent intentToMain = new Intent();
                     intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
-                    startActivity(intent);
+                    startActivity(intentToMain);
                     LoginActivity.this.finish();
                     Log.d("LoginActivity","跳到主畫面");
 

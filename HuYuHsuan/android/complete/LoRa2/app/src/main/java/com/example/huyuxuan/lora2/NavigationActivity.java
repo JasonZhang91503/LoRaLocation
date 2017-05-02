@@ -1,7 +1,14 @@
 package com.example.huyuxuan.lora2;
 
+import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
@@ -28,7 +36,9 @@ import com.example.huyuxuan.lora2.Fragment.SettingFragment;
 public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     public Fragment myFragment;
-
+    static ConnectService mBoundService;
+    private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    private static boolean isBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -77,34 +87,55 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+          //  super.onBackPressed();
+            FragmentManager fm = this.getFragmentManager();
+
+            if (fm.getBackStackEntryCount() == 0) {
+                super.onBackPressed();
+                //   this.finish();
+            } else {
+                fm.popBackStack();
+            }
         }
+
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         //handle
         int itemId = item.getItemId();
+        if(itemId!=R.id.nav_logOut){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         switch (itemId){
             case R.id.nav_home:
                 HomeFragment firstFragment = new HomeFragment();
                 myFragment = firstFragment;
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
                 RegisterFragment registerFragment = new RegisterFragment();
                 myFragment = registerFragment;
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,registerFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,registerFragment).commit();
                 break;
             case R.id.nav_history:
                 HistoryFragment historyFragment = new HistoryFragment();
                 myFragment = historyFragment;
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,historyFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,historyFragment).commit();
                 break;
             case R.id.nav_setting:
                 SettingFragment settingFragment = new SettingFragment();
                 myFragment = settingFragment;
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,settingFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,settingFragment).commit();
                 break;
             case R.id.nav_logOut:
                 logOutDialog();
@@ -146,10 +177,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString(getString(R.string.email),"")
                 .putString(getString(R.string.isLogin),"fasle")
                 .apply();
-        User mUser=(User)getApplicationContext();
-        mUser.UserName="";
-        mUser.UserPassword="";
-        mUser.UserEmail="";
-        mUser.UserAccount="";
     }
+
+
+
+
+
+
 }
