@@ -24,7 +24,7 @@
  
 // Include the SX1272 and SPI library: 
 #include "arduPiLoRa.h"
-#include <syswait.h>
+#include <unistd.h>
 
 int e;
 
