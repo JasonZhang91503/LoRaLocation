@@ -108,7 +108,7 @@ void sendRequest(){
 
 void sendACK(){
 //    char buffer[256];
-    inputHeader();
+ //   inputHeader();
 //    sprintf(message1, "0,123.121212,24.252525,123.121212,24.252525,1234,");
 //    message1[0] = 1;
     e = sx1272.sendPacketTimeout(0, message1);
