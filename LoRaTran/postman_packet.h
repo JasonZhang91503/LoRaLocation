@@ -102,7 +102,7 @@ public:
 
     int sendState(int state){
         Packet *newPac = new Packet();
-        sprintf(newPac->send_buffer,"%d%d%d%d%d\0",1,carID,currentRecvACK,2,state);
+        sprintf(newPac->send_buffer,"%c%c%c%c%c\0",1,carID,currentRecvACK,2,state);
 
         enqueuePacket(newPac);
         /*
@@ -133,7 +133,7 @@ public:
         if(currentRecvACK == 1){ BackACK = ACK0; }
         else { BackACK = 2; }
         */
-        sprintf(send_buffer,"%d%d%d%d",1,carID,currentSendACK,1);
+        sprintf(send_buffer,"%c%c%c%c",1,carID,currentSendACK,1);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
         #endif

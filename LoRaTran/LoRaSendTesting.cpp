@@ -109,7 +109,11 @@ void recvACK(){
         {
         message1[i] = (char)sx1272.packet_received.data[i];
         }
-        printf("Message: %s\n", message1);
+        int role = message1[0];
+        int carID = message1[1];
+        int packNum = message1[2];
+        int eventNum = message1[3];
+        printf("role = %d, carID = %d, packNum = %d, eventNum = %d",role,carID,packNum,eventNum);
     }
     else {
         printf("Receive packet, state %d\n",e);
