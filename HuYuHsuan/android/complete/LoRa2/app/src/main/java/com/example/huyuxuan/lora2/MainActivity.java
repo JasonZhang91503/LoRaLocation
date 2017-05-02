@@ -12,7 +12,6 @@ public class MainActivity extends AppCompatActivity {
 
     //用來存程式關掉之後還要存在的資料、狀態
     private SharedPreferences sharedPreferences;
-    private static final String data = "DATA";
 
 
     protected Button btnLogin;
@@ -22,13 +21,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
-
+        Log.d("MainActivity","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));
+        Log.d("MainActivity","sharedpreference isFirstTimeOpen="+sharedPreferences.getString("isFirstTimeOpen",""));
 
         //是否第一次開app，若沒有值預設是第一次(true)
-        if((sharedPreferences.getString(getString(R.string.isFirstTimeOpen),"true")=="false") &&
-                sharedPreferences.getString(getString(R.string.isLogin),"false")=="true"){
+        if((sharedPreferences.getString(getString(R.string.isFirstTimeOpen),"").compareTo("false")==0) &&
+                sharedPreferences.getString(getString(R.string.isLogin),"").compareTo("true")==0){
             //不是第一次開app且已登入
-            Log.d("MainActivity","不是第一次開app");
+            Log.d("MainActivity","不是第一次開且已登入");
             //跳到主畫面
             Intent intent = new Intent();
             intent.setClass(MainActivity.this,NavigationActivity.class);
@@ -40,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
             //是第一次開app或是還沒登入
             //顯示介紹
             setContentView(R.layout.activity_main);
-            Log.d("MainActivity","第一次開app");
+            Log.d("MainActivity","第一次開app或還沒登入");
             btnLogin = (Button)findViewById(R.id.btnToLogin);
-            btnSignUp = (Button)findViewById(R.id.btnSignUp);
+            btnSignUp = (Button)findViewById(R.id.btnMaintoSign);
             sharedPreferences.edit().putString(getString(R.string.isFirstTimeOpen),"false").apply();
+            Log.d("MainActivity","sharedpreference isFirstTimeOpen="+sharedPreferences.getString("isFirstTimeOpen",""));
 
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -71,5 +72,11 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        //sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
     }
 }

@@ -22,7 +22,7 @@
         android:text="登入" />
 
     <Button
-        android:id="@+id/btnSignUp"
+        android:id="@+id/btnMaintoSign"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="註冊" />

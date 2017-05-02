@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">LoRa2</string>
     <string name="ip">192.168.0.12</string>
-    <string name="port">3490</string>
+    <string name="port">5000</string>
 
     <!--傳給service的key-->
     <string name="id">id</string>
@@ -41,4 +41,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_navigation">Navigation</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

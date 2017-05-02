@@ -25,7 +25,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText editTextPassword;
     protected EditText editTextName;
     protected EditText editTextEmail;
-    protected Button btnLogin;
+    protected Button btnToLogin;
     protected Button btnSignUp;
 
     protected String account;
@@ -46,16 +46,18 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        //setcontextView
+        setContentView(R.layout.activity_sign_up);
 
         editTextAccount = (EditText)findViewById(R.id.etSignAccount);
         editTextPassword = (EditText)findViewById(R.id.etSignPassword);
         editTextName = (EditText)findViewById(R.id.etSignName);
         editTextEmail = (EditText)findViewById(R.id.etSignEmail);
-
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        btnToLogin = (Button)findViewById(R.id.btnSignToLogin);
+        btnSignUp = (Button)findViewById(R.id.btnSignUp);
         isBind=false;
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnToLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //跳到登入畫面
@@ -111,23 +113,18 @@ public class SignUpActivity extends AppCompatActivity {
                 String type = bundle.getString(getString(R.string.type));
                 switch (type){
                     case "1":
-                        User mUser=(User)context.getApplicationContext();
-                        mUser.UserAccount=account;
-                        mUser.UserPassword=password;
-                        mUser.UserName=name;
-                        mUser.UserEmail=email;
                         sharedPreferences.edit()
-                                .putString(getString(R.string.account),mUser.UserAccount)
-                                .putString(getString(R.string.password),mUser.UserPassword)
-                                .putString(getString(R.string.name),mUser.UserName)
-                                .putString(getString(R.string.email),mUser.UserEmail)
+                                .putString(getString(R.string.account),account)
+                                .putString(getString(R.string.password),password)
+                                .putString(getString(R.string.name),name)
+                                .putString(getString(R.string.email),email)
                                 .putString(getString(R.string.isLogin),"true")
                                 .apply();
-                        Log.d("SignUpActivity:", "account:"+mUser.UserAccount+"password:"+mUser.UserPassword+"name:"+mUser.UserName);
+                        Log.d("SignUpActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+email);
                         //跳到主畫面
                         Intent intentToMain = new Intent();
                         intentToMain.setClass(SignUpActivity.this,NavigationActivity.class);
-                        startActivity(intent);
+                        startActivity(intentToMain);
                         SignUpActivity.this.finish();
                         Log.d("SignUpActivity","跳到主畫面");
                         break;

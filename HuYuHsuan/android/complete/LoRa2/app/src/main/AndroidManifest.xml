@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -13,8 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".User">
+        android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,23 +21,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".NavigationActivity" />
-        <activity android:name=".SignUpActivity"/>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".NavigationActivity"
+            android:label="NavigationActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".SignUpActivity" />
 
-        <service android:name=".ConnectService" android:enabled="true">
-        </service>
+        <service
+            android:name="com.example.huyuxuan.lora2.ConnectService"
+            android:enabled="true"></service>
+        <service
+            android:name=".Background.BackgroundRecvService"
+            android:exported="false" />
 
-        <service android:name=".Background.BackgroundRecvService" android:exported="false"></service>
-
-        <receiver android:name="com.example.huyuxuan.lora2.Background.BackgroundReceiver" >
+        <receiver android:name=".Background.BackgroundReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT"></action>
+                <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".Background.MyAlarmReceiver" />
 
-        <receiver android:name=".Background.MyAlarmReceiver"/>
     </application>
 
 </manifest>

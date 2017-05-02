@@ -70,9 +70,6 @@ public class ConnectService extends Service {
                     out.write("1");
                     out.flush();
                     Log.d("Service", "write 1 to server");
-                    rcvMessage = in.readLine();
-                    rcvMessage.concat("\0");
-                    Log.d("Service", "receive " + rcvMessage + " from server");
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -121,6 +118,7 @@ public class ConnectService extends Service {
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
+
                 id = intent.getExtras().getString("id");
                 activityName = intent.getExtras().getString("activity");
                 Bundle bundle = new Bundle();
@@ -132,12 +130,12 @@ public class ConnectService extends Service {
                         String password = intent.getStringExtra("password");
                         String name = intent.getStringExtra("name");
                         String email = intent.getStringExtra("email");
-                        msg = id + account + "," + password + "," + name + "," + email + ",";
+                        msg = id +","+ account + "," + password + "," + name + "," + email + ",";
                         break;
                     case "3"://登入
                         account = intent.getStringExtra("account");
                         password = intent.getStringExtra("password");
-                        msg = id+ account + "," + password + ",";
+                        msg = id+","+ account + "," + password + ",";
                         break;
                     case "4"://登記寄件
                         String time = intent.getStringExtra(getString(R.string.requireTime));
@@ -145,27 +143,28 @@ public class ConnectService extends Service {
                         String receiver = intent.getStringExtra(getString(R.string.receiver));
                         String StartId = intent.getStringExtra(getString(R.string.startLocation));
                         String destinationId = intent.getStringExtra(getString(R.string.desLocation));
-                        msg = id + time + "," + sender + "," + receiver + "," + StartId + "," + destinationId + ",";
+                        msg = id +","+ time + "," + sender + "," + receiver + "," + StartId + "," + destinationId + ",";
                         break;
                     case "5"://詢問車子有空時間
                     case "7":
                     case "8":
                     case "9":
                         time = intent.getStringExtra(getString(R.string.requireTime));
-                        msg = id+ time + ",";
+                        msg = id+","+ time + ",";
                         break;
                     case "10":
                         name = intent.getStringExtra(getString(R.string.name));
-                        msg = id + name + ",";
+                        msg = id +","+ name + ",";
                         break;
                     case "11"://要大樓資訊
-                        msg = id;
+                        msg = id+",";
                         break;
                 }
 
-                if (!mSocket.isOutputShutdown() && msg.length() > 0) {
+                if (!mSocket.isOutputShutdown() && msg.length() > 0 && !mSocket.isInputShutdown()) {
                     try {
                         if (out != null) {//傳送給server，接收server回應
+                            rcvMessage="";
                             out.write(msg);
                             out.flush();
                             Log.d("Service", "write " + msg + " to server");
@@ -190,8 +189,6 @@ public class ConnectService extends Service {
                 return  null;
             }
         }.execute();
-
-        rcvMessage=null;
     }
 
     public Bundle Analyze(String mes){
@@ -210,16 +207,12 @@ public class ConnectService extends Service {
             case "3":   //登入是否成功
                 type=mes.substring(commaIndex+1,3);
                 if(type.compareTo("1")==0){
-                    String account = mes.substring(3,mes.indexOf('~'));
-                    String password = mes.substring(mes.indexOf('~')+1,mes.indexOf('^'));
-                    String name = mes.substring(mes.indexOf('^')+1,mes.indexOf(';'));
-                    String email = mes.substring(mes.indexOf(';')+1);
+                    String name = mes.substring(3,mes.indexOf('^'));
+                    String email = mes.substring(mes.indexOf('^')+1);
                     dataBundle.putString(getString(R.string.type),type);
-                    dataBundle.putString(getString(R.string.account),account);
-                    dataBundle.putString(getString(R.string.password),password);
                     dataBundle.putString(getString(R.string.name),name);
                     dataBundle.putString(getString(R.string.email),email);
-                    Log.d("ana:","id="+id+"type="+type+"account="+account+"password="+password+"name="+name+"email="+email);
+                    Log.d("ana:","id="+id+"type="+type+"name="+name+"email="+email);
                 }
                 else{
                     String error = mes.substring(3);
