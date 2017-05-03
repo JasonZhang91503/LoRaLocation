@@ -15,29 +15,28 @@
             android:layout_width="match_parent"
             android:layout_height="209dp"
             android:background="@android:color/darker_gray">
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                app:srcCompat="@mipmap/ic_launcher_round" />
+            <com.example.huyuxuan.lora2.RoundImageView
+                android:id="@+id/main_roundImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:src="@drawable/default_avatar"/>
 
             <Button
                 android:id="@+id/btnProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/imageButton"
-                android:layout_toEndOf="@+id/imageButton"
+                android:layout_below="@+id/main_roundImage"
+                android:layout_toEndOf="@+id/main_roundImage"
                 android:text="profile" />
 
             <Button
                 android:id="@+id/btnHomeToRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/imageButton"
-                android:layout_toStartOf="@+id/imageButton"
+                android:layout_below="@+id/main_roundImage"
+                android:layout_toStartOf="@+id/main_roundImage"
                 android:text="@string/register" />
 
         </RelativeLayout>
