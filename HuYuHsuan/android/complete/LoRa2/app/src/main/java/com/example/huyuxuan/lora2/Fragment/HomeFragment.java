@@ -36,8 +36,6 @@ import com.example.huyuxuan.lora2.SelectDialog.SelectDialogListener;
 import com.example.huyuxuan.lora2.UIUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
@@ -66,6 +64,8 @@ public class HomeFragment extends Fragment {
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     final private int MY_REQUEST_CODE = 123;
+    final private int REQUEST_WRITE_EXTERNAL_CODE = 213;
+    final private int REQUEST_READ_EXTERNAL_CODE = 230;
 
     private RoundImageView mHeadImage;
     private final int PHOTO_PICKED_FROM_CAMERA = 1; // 用来标识头像来自系统拍照
@@ -90,6 +90,13 @@ public class HomeFragment extends Fragment {
         mHeadImage = (RoundImageView)myview.findViewById(R.id.main_roundImage);
         isBind = false;
         updateListView();
+
+        if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_EXTERNAL_CODE);
+        }
 
         String sd = Environment.getExternalStorageDirectory().toString();
         Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
@@ -263,6 +270,7 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("HomeFragment","resultCode="+resultCode+"requestCode="+requestCode);
         if (resultCode != RESULT_OK){
+            Log.d("onActivityResult","resultCode not ok");
             return;
         }
         //藉由requestCode判斷是否為開啟相機或開啟相簿而呼叫的，且data不為null
@@ -277,6 +285,8 @@ public class HomeFragment extends Fragment {
             case CROP_FROM_CAMERA:
                 if (data != null){
                     setCropImg(data);
+                }else{
+                    Log.d("onActivityResult","data = null");
                 }
                 break;
             default:
@@ -326,7 +336,7 @@ public class HomeFragment extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
 
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_REQUEST_CODE);
+                    REQUEST_WRITE_EXTERNAL_CODE);
         }
         File file = new File(fileName);
         FileOutputStream fout = null;
@@ -347,6 +357,7 @@ public class HomeFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+
     }
 
     @Override
@@ -363,17 +374,33 @@ public class HomeFragment extends Fragment {
                 // original question
                 Toast.makeText(getActivity(),"請開啟相機權限", Toast.LENGTH_LONG).show();
             }
+        }else if(requestCode==REQUEST_WRITE_EXTERNAL_CODE){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Now user should be able to use camera
+
+
+            }
+            else {
+                // Your app will not have this permission. Turn off all functions
+                // that require this permission or it will force close like your
+                // original question
+                Toast.makeText(getActivity(),"無法寫入外部SD", Toast.LENGTH_LONG).show();
+            }
+        }else if(requestCode==REQUEST_READ_EXTERNAL_CODE){
+            if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_LONG).show();
+            }
         }
 
     }
 
     public void openCamera(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        imgUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-                "avatar_"+String.valueOf(System.currentTimeMillis())+".png"));
+        imgUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"/mypic.png"));
         intent.putExtra(MediaStore.EXTRA_OUTPUT,imgUri);
         startActivityForResult(intent,PHOTO_PICKED_FROM_CAMERA);
         Log.d("HomeFragment","openCamera");
     }
+
 
 }

@@ -275,6 +275,7 @@ public class ConnectService extends Service {
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 for(int i = 0; i < num ; i++){
                     String curStr = mesArray[i]; //抓每筆資料
+                    Log.d("ana","curStr="+curStr);
                     HashMap<String, String> map = new HashMap<String, String>();
                     if(i==0){
                         map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));

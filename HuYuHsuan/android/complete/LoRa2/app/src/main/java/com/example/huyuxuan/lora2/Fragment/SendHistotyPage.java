@@ -57,15 +57,15 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
-        myView = inflater.inflate(R.layout.fragment_recv_history, container, false);
-        lv = (ListView)myView.findViewById(R.id.rcvHistoryListView);
+        myView = inflater.inflate(R.layout.fragment_send_history, container, false);
+        lv = (ListView)myView.findViewById(R.id.sendHistoryListView);
         btnPickTime = (Button)myView.findViewById(R.id.btnPickDate2);
 
         c = Calendar.getInstance();
         myYear = c.get(Calendar.YEAR);
         myMonth = c.get(Calendar.MONTH) + 1;
         myDay = c.get(Calendar.DAY_OF_MONTH);
-
+        updateListView();
         btnPickTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +81,7 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
     }
 
     public void passOnDateSet(int year, int month, int day) {
-        Log.d("SendHistotyPage","curFragment.passOnDateSet");
+        Log.d("SendHistotyPage","passOnDateSet");
         myYear = year;
         myMonth = month + 1;
         myDay = day;
@@ -99,7 +99,7 @@ public class SendHistotyPage extends Fragment implements Serializable,DatePicker
         Log.d("SendHistotyPage:","updateLV formatted="+formattedDate);
 
         Intent intent = new Intent(getActivity(),ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"RcvHistoryPage");
+        intent.putExtra(getString(R.string.activity),"SendHistoryPage");
         intent.putExtra(getString(R.string.id),"7");
         intent.putExtra(getString(R.string.requireTime),formattedDate);
         if(!isBind){
