@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">main</string>
+    <string name="copyright">Copyright &#169; NTPU CSIE</string>
+    <string name="resource">感謝網路各方圖片支持，無法一一註明盡請見諒！</string>
+    <string name="introText1">簡單方便的物流運送</string>
+    <string name="Text1">突破傳統的快遞、物流系統\n提供更快、更即時的服務。</string>
+    <string name="introText2">即時訂單管理系統</string>
+    <string name="Text2">藉由手機APP訂單管理\n隨時掌握貨品動態。</string>
+    <string name="Username">請輸入帳號</string>
+    <string name="Password">請輸入密碼</string>
+    <string name="name">姓名</string>
+    <string name="account">帳號</string>
+    <string name="password">密碼</string>
+    <string name="confirm_pwd">確認密碼</string>
+    <string name="mail">信箱</string>
+    <string name="title_activity_mainpage"></string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
