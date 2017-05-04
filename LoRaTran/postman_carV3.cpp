@@ -658,6 +658,7 @@ int sendPacket(UserRequest *req){
 
 int parseRequestData(UserRequest* req){
 	const char *d = " ,";
+	char* pacIdPtr;
 	char* statePtr;
 	char* sLonPtr;
 	char* sLatPtr;
@@ -670,7 +671,9 @@ int parseRequestData(UserRequest* req){
 	PacketManager *PacManager = PacketManager::getInstance();
 
 	//有識別碼版
-	statePtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[2]後開始為資料
+	pacIdPtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[4]後開始為資料
+	printf("split state :%s\n",pacIdPtr);
+	statePtr = strtok(NULL,d);	
 	printf("split state :%s\n",statePtr);
 	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",sLonPtr);
@@ -684,6 +687,8 @@ int parseRequestData(UserRequest* req){
 	printf("split packetKey :%s\n",packetKeyPtr);
 	
 	if(NOGPS == 2){
+		req->packetNum = 1;
+		printf("packetNum :%d\n",req->packetNum);
 		req->state = 0;
 		printf("rState :%d\n",req->state);
 		req->src_lon = 121.369862;
@@ -702,6 +707,8 @@ int parseRequestData(UserRequest* req){
 		printf("packetKey :%s\n",req->packetKey.c_str());
 	}
 	else{
+		req->packetNum = atoi(pacIdPtr);;
+		printf("packetNum :%d\n",req->packetNum);
 		req->state = atoi(statePtr);
 		printf("rState :%d\n",req->state);
 		req->src_lon = atof(sLonPtr);
@@ -718,6 +725,8 @@ int parseRequestData(UserRequest* req){
 
 	
 	#else
+	req->packetNum = 1;
+	printf("packetNum :%d\n",req->packetNum);
 	req->state = 0;
 	printf("rState :%d\n",req->state);
 	req->src_lon = 121.369862;
