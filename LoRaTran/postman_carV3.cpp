@@ -659,12 +659,15 @@ int sendPacket(UserRequest *req){
 int parseRequestData(UserRequest* req){
 	const char *d = " ,";
 	char* pacIdPtr;
-	char* statePtr;
+	char* senderIdPtr;
+	char* receiverIdPtr;
+	char* packetKeyPtr;
+	//char* statePtr;
+	char* timePtr;
 	char* sLonPtr;
 	char* sLatPtr;
 	char* dLonPtr;
 	char* dLatPtr;
-	char* packetKeyPtr;
 	
 	#ifndef NO_CAR_MODE
 
@@ -672,9 +675,15 @@ int parseRequestData(UserRequest* req){
 
 	//有識別碼版
 	pacIdPtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[4]後開始為資料
-	printf("split state :%s\n",pacIdPtr);
-	statePtr = strtok(NULL,d);	
-	printf("split state :%s\n",statePtr);
+	printf("split pacId :%s\n",pacIdPtr);
+	senderIdPtr = strtok(NULL,d);
+	printf("split senderId :%s\n",senderIdPtr);
+	receiverIdPtr = strtok(NULL,d);
+	printf("split receiverId :%s\n",receiverIdPtr);
+	packetKeyPtr = strtok(NULL,d);
+	printf("split packetKey :%s\n",packetKeyPtr);
+	timePtr = strtok(NULL,d);
+	printf("split time :%s\n",timePtr);
 	sLonPtr = strtok(NULL,d);
 	printf("split sLon :%s\n",sLonPtr);
 	sLatPtr = strtok(NULL,d);
@@ -683,14 +692,20 @@ int parseRequestData(UserRequest* req){
 	printf("split dLon :%s\n",dLonPtr);
 	dLatPtr = strtok(NULL,d);
 	printf("split dLat :%s\n",dLatPtr);
-	packetKeyPtr = strtok(NULL,d);
-	printf("split packetKey :%s\n",packetKeyPtr);
 	
+	
+	req->packetNum = atoi(pacIdPtr);
+	printf("packetNum :%d\n",req->packetNum);
+	req->senderID = atoi(senderIdPtr);
+	printf("senderID :%d\n",req->senderID);
+	req->receiverID = atoi(receiverIdPtr);
+	printf("receiverID :%d\n",req->receiverID);
+	req->packetKey.assign(packetKeyPtr);
+	printf("packetKey :%s\n",req->packetKey.c_str());
+	req->sendTime.assign(timePtr);
+	printf("sendTime :%s\n",req->sendTime.c_str());
+
 	if(NOGPS == 2){
-		req->packetNum = 1;
-		printf("packetNum :%d\n",req->packetNum);
-		req->state = 0;
-		printf("rState :%d\n",req->state);
 		req->src_lon = 121.369862;
 		printf("sLon :%f\n",req->src_lon);
 		req->src_lat = 24.944185;
@@ -699,18 +714,8 @@ int parseRequestData(UserRequest* req){
 		printf("dLon :%f\n",req->dest_lon);
 		req->dest_lat = 24.944185;
 		printf("dLat :%f\n",req->dest_lat);
-		req->dest_lat = 24.944185;
-		printf("dLat :%f\n",req->dest_lat);
-		char* pw = new char[pw_size];
-		pw[0] = '\0';
-		req->packetKey.assign(pw);
-		printf("packetKey :%s\n",req->packetKey.c_str());
 	}
 	else{
-		req->packetNum = atoi(pacIdPtr);;
-		printf("packetNum :%d\n",req->packetNum);
-		req->state = atoi(statePtr);
-		printf("rState :%d\n",req->state);
 		req->src_lon = atof(sLonPtr);
 		printf("sLon :%f\n",req->src_lon);
 		req->src_lat = atof(sLatPtr);
@@ -719,16 +724,25 @@ int parseRequestData(UserRequest* req){
 		printf("dLon :%f\n",req->dest_lon);
 		req->dest_lat = atof(dLatPtr);
 		printf("dLat :%f\n",req->dest_lat);
-		req->packetKey.assign(packetKeyPtr);
-		printf("packetKey :%s\n",req->packetKey.c_str());
+		
 	}
+	req->state = 0;
+	printf("state :%f\n",req->state);
 
 	
 	#else
 	req->packetNum = 1;
 	printf("packetNum :%d\n",req->packetNum);
-	req->state = 0;
-	printf("rState :%d\n",req->state);
+	req->senderID = 1;
+	printf("senderID :%d\n",req->senderID);
+	req->receiverID = 2;
+	printf("receiverID :%d\n",req->receiverID);
+	char* pw = new char[pw_size];
+	pw[0] = '\0';
+	req->packetKey.assign(pw);
+	printf("packetKey :%s\n",req->packetKey.c_str());
+	req->sendTime.assign("time is money");
+	printf("sendTime :%s\n",req->sendTime.c_str());
 	req->src_lon = 121.369862;
 	printf("sLon :%f\n",req->src_lon);
 	req->src_lat = 24.944185;
@@ -737,12 +751,9 @@ int parseRequestData(UserRequest* req){
 	printf("dLon :%f\n",req->dest_lon);
 	req->dest_lat = 24.944185;
 	printf("dLat :%f\n",req->dest_lat);
-	req->dest_lat = 24.944185;
-	printf("dLat :%f\n",req->dest_lat);
-	char* pw = new char[pw_size];
-	pw[0] = '\0';
-	req->packetKey.assign(pw);
-	printf("packetKey :%s\n",req->packetKey.c_str());
+
+	req->state = 0;
+	printf("state :%f\n",req->state);
 	#endif
 	
 	return req->state;

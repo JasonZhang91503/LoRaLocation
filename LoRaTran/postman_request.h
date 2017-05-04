@@ -5,6 +5,9 @@ using namespace std;
 
 struct UserRequest{
 	int packetNum;
+	int senderID;
+	int receiverID;
+	string sendTime;
     int state;
     double src_lon;
 	double src_lat;
