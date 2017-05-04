@@ -51,7 +51,7 @@ public:
     }
 
     bool isMyCarIDPacket(){
-        printf("Aasdasdsadsa : %d\n",recv_buffer[1]);
+        //printf("Aasdasdsadsa : %d\n",recv_buffer[1]);
         return recv_buffer[1] == carID;
     }
 
@@ -101,9 +101,9 @@ public:
         return recv_buffer[3];
     }
 
-    int sendState(int state){
+    int sendState(int id,int state){
         Packet *newPac = new Packet();
-        sprintf(newPac->send_buffer,"%c%c%c%c%c\0",1,carID,sendPacNum,2,state);
+        sprintf(newPac->send_buffer,"%c%c%c%c%c,%c,\0",1,carID,sendPacNum,2,id,state);
 
         enqueuePacket(newPac);
 
@@ -184,7 +184,7 @@ public:
         int carID = pac->send_buffer[1];
         int packNum = pac->send_buffer[2];
         int eventNum = pac->send_buffer[3];
-        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);
+        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,send_buffer[4]);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif

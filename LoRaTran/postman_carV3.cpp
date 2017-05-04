@@ -491,7 +491,7 @@ int moveToSender(UserRequest* req){
 	req->state = 1;
 	
 #ifndef NO_CAR_MODE
-	pac->sendState(req->state);
+	pac->sendState(req->packetNum,req->state);
 #endif
 	
 	return CAR_OK;
@@ -514,7 +514,7 @@ int beginTransport(UserRequest* req){
 	req->state = 2;
 
 #ifndef NO_CAR_MODE
-	pac->sendState(req->state);
+	pac->sendState(req->packetNum,req->state);
 #endif
 
 	return CAR_OK;
@@ -563,7 +563,7 @@ int moveToReceiver(UserRequest* req){
 	req->state = 3;
 	
 #ifndef NO_CAR_MODE
-	pac->sendState(req->state);
+	pac->sendState(req->packetNum,req->state);
 #endif
 	
 	return CAR_OK;
@@ -606,7 +606,7 @@ int endTransport(UserRequest* req){
 	req->state = 4;
 	
 	#ifndef NO_CAR_MODE
-	pac->sendState(req->state);
+	pac->sendState(req->packetNum,req->state);
 	#endif
 	
 	return CAR_OK;
@@ -668,7 +668,7 @@ int parseRequestData(UserRequest* req){
 	char* sLatPtr;
 	char* dLonPtr;
 	char* dLatPtr;
-	
+
 	#ifndef NO_CAR_MODE
 
 	PacketManager *PacManager = PacketManager::getInstance();
