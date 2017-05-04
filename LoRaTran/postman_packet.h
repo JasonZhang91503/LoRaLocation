@@ -39,9 +39,9 @@ private:
 
 class PacketManager{
 public:
-    static PacketManager* getInstance(){
+    static PacketManager* getInstance(int period){
         if(!instance){
-            instance = new PacketManager(1);
+            instance = new PacketManager(1,period);
         }
         return instance;
     }
@@ -279,7 +279,7 @@ cout << "stopTimer : timerMutex unlock\n";
     char send_buffer[BUFFSIZE];	//車子送出資料的buffer
 private:
     static PacketManager *instance;
-    PacketManager(int CarID){
+    PacketManager(int CarID,int peroid){
         //currentSendACK = 0;
         //currentRecvACK = 0;
         currentSendACK = 2;
@@ -287,7 +287,7 @@ private:
         recvWaitingPacNum = 1;
         sendPacNum = 1;
         errorCode = 0;
-        receiveTime = 500;
+        receiveTime = peroid; //1000、700、
         timeout = 5;
         carID = CarID;
         clearBuffer();
@@ -310,7 +310,7 @@ void* asyncTimer(void* param){
     struct timeval now;
     struct timespec outtime;
 
-    PacketManager *pm = PacketManager::getInstance();
+    PacketManager *pm = PacketManager::getInstance(0);
     int* timeout = (int*)param;
 
 

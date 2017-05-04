@@ -107,6 +107,7 @@ int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
 int NOGPS = 0;
+int receivePeriod = 700;
 
 
 
@@ -155,7 +156,7 @@ void* asyncRecv(void *arg){
 	UserRequest *req;
 	int result;
 
-	PacketManager *PacManager = PacketManager::getInstance();
+	PacketManager *PacManager = PacketManager::getInstance(receivePeriod);
 
 	if(PacManager == NULL){
 		cout << "asyncRecv : PacketManager instance is NULL\n";
@@ -327,6 +328,9 @@ int main(int argc, const char * argv[]){
 	cout << "Has GPS? (1 Yes, 2No):";
 	cin >> NOGPS;
 
+	cout << "Receive period?:";
+	cin >> receivePeriod;
+
 	UserRequest *req;
 
 	#ifndef NO_CAR_MODE
@@ -362,7 +366,7 @@ int main(int argc, const char * argv[]){
 	*/
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
-	PacketManager *pac = PacketManager::getInstance();
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	ReqManger.addReqestListener(reqObserver);
 
 	pthread_mutex_init(&timerMutex, NULL);
@@ -457,7 +461,7 @@ int moveToSender(UserRequest* req){
 	
 	cout << "moveToSender : Begin go to sender location" << endl;
 
-	PacketManager *pac = PacketManager::getInstance();
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
 	do {
 		//取得車子本身GPS座標
@@ -501,7 +505,7 @@ int beginTransport(UserRequest* req){
 	
 	cout << "beginTransport : Wait for sender place the file" << endl;
 	
-	PacketManager *pac = PacketManager::getInstance();
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
 	//改成偵測是否recv到收到寄件?
 	
@@ -527,7 +531,7 @@ int moveToReceiver(UserRequest* req){
 	bool isCarReach;	//車子是否到達
 	int StateCode;
 	
-	PacketManager *pac = PacketManager::getInstance();
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
 	do {
 		//取得車子本身GPS座標
@@ -580,7 +584,7 @@ int endTransport(UserRequest* req){
 	
 	cout << "endTransport : Wait for password input" << endl << endl;
 
-	PacketManager *pac = PacketManager::getInstance();
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
 	do{
 		cout << "Password :";
@@ -671,7 +675,7 @@ int parseRequestData(UserRequest* req){
 
 	#ifndef NO_CAR_MODE
 
-	PacketManager *PacManager = PacketManager::getInstance();
+	PacketManager *PacManager = PacketManager::getInstance(receivePeriod);
 
 	//有識別碼版
 	pacIdPtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[4]後開始為資料
