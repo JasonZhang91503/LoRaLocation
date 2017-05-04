@@ -103,7 +103,7 @@ public:
 
     int sendState(int id,int state){
         Packet *newPac = new Packet();
-        sprintf(newPac->send_buffer,"%c%c%c%c%c,%c,\0",1,carID,sendPacNum,2,id,state);
+        sprintf(newPac->send_buffer,"%c%c%c%c%c,%c,\0",1,carID,sendPacNum,2,id + 48,state + 48);
 
         enqueuePacket(newPac);
 
@@ -184,7 +184,7 @@ public:
         int carID = pac->send_buffer[1];
         int packNum = pac->send_buffer[2];
         int eventNum = pac->send_buffer[3];
-        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,send_buffer[4]);
+        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,send_buffer+4);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif
