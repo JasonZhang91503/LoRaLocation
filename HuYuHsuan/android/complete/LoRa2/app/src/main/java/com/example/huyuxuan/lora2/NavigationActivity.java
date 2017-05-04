@@ -24,6 +24,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
@@ -34,6 +36,9 @@ import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
 import com.example.huyuxuan.lora2.Fragment.SettingFragment;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -45,9 +50,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     static ConnectService mBoundService;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     private static boolean isBind;
+    private ConnectServiceReceiver receiver;
 
     private static RcvHistoryPage mRcvHistoryPage;
     private static SendHistotyPage mSendHistoryPage;
+
+    private Calendar c;
+    String formattedDate;
+    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -62,6 +72,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        c = Calendar.getInstance();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -86,8 +98,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             HomeFragment firstFragment = new HomeFragment();
             myFragment = firstFragment;
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
-
         }
+
+
     }
 
     @Override
@@ -192,12 +205,93 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public void passOnDateSet(int year, int month, int day) {
         Log.d("NavigationActivity","passOnDateSet");
-        if(mRcvHistoryPage!=null){
-            mRcvHistoryPage.passOnDateSet(year,month,day);
+        c.set(year,month,day);
+        formattedDate = dayDateFormat.format(c.getTime());
+
+        Intent intent = new Intent(NavigationActivity.this,ConnectService.class);
+        intent.putExtra(getString(R.string.activity),"RcvHistoryPage");
+        intent.putExtra(getString(R.string.id),"8");
+        intent.putExtra(getString(R.string.requireTime),formattedDate);
+        if(!isBind){
+            getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            isBind=true;
+            Log.d("NavigationActivity:", "checkSR->bind");
         }
-        if(mSendHistoryPage!=null){
-            mSendHistoryPage.passOnDateSet(year,month,day);
+        else{
+            mBoundService.sendToServer(intent);
+            Log.d("NavigationActivity:", "checkSR->sendToService");
         }
+        setReceiver();
+    }
+    private static ServiceConnection mConnection = new ServiceConnection() {
+        //EDITED PART
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // TODO Auto-generated method stub
+            mBoundService = ((ConnectService.LocalBinder)service).getService();
+            isBind=true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // TODO Auto-generated method stub
+            Log.d("NavigationActivity","onServiceDisconnected");
+            //mBoundService = null;
+            isBind=false;
+        }
+
+    };
+
+    //接收广播类
+    public class ConnectServiceReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getStringExtra("activity").equals("RcvHistoryPage")){
+                Log.d("NavigationActivity:","receiver on receive");
+                unregisterReceiver(receiver);
+                //getApplicationContext().unbindService(mConnection);
+                Bundle bundle = intent.getExtras();
+                //把bundle傳給recvHistoryPage
+                if(mRcvHistoryPage!=null){
+                    mRcvHistoryPage.updateListView(bundle);
+                }
+                Intent SendIntent = new Intent(NavigationActivity.this,ConnectService.class);
+                SendIntent.putExtra(getString(R.string.activity),"SendHistoryPage");
+                SendIntent.putExtra(getString(R.string.id),"7");
+                SendIntent.putExtra(getString(R.string.requireTime),formattedDate);
+                if(!isBind){
+                    getApplicationContext().bindService(SendIntent,mConnection, Context.BIND_AUTO_CREATE);
+                    isBind=true;
+                    Log.d("NavigationActivity:", "bind in receiver");
+                }
+                else{
+                    mBoundService.sendToServer(SendIntent);
+                    Log.d("NavigationActivity:", "sendToService in receiver");
+                }
+                setReceiver();
+
+            }
+            else if(intent.getStringExtra("activity").equals("SendHistoryPage")){
+                Log.d("NavigationActivity:","receiver on receive");
+                unregisterReceiver(receiver);
+                getApplicationContext().unbindService(mConnection);
+                Bundle bundle = intent.getExtras();
+                //把bundle傳給sendHistoryPage
+                if(mSendHistoryPage!=null){
+                    mSendHistoryPage.updateListView(bundle);
+                }
+
+            }
+        }
+    }
+
+    private void setReceiver(){
+        //动态注册receiver
+        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new ConnectServiceReceiver();
+        registerReceiver(receiver, filter);
+        Log.d("NavigationActivity:","register receiver");
     }
 
     public static class PaperAdapter extends FragmentStatePagerAdapter {
