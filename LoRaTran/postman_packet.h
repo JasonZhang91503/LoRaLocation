@@ -104,10 +104,8 @@ public:
 
     int sendState(int id,int state){
         Packet *newPac = new Packet();
-        printf("packet : id \n\n\n");
 
         string idStr = std::to_string(id);
-
         sprintf(newPac->send_buffer,"%c%c%c%c%s,%c,\0",1,carID,sendPacNum,2,idStr.c_str(),state + 48);
 
         enqueuePacket(newPac);
@@ -289,7 +287,7 @@ private:
         recvWaitingPacNum = 1;
         sendPacNum = 1;
         errorCode = 0;
-        receiveTime = 1000;
+        receiveTime = 500;
         timeout = 5;
         carID = CarID;
         clearBuffer();
