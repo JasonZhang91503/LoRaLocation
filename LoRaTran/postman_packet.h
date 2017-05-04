@@ -103,6 +103,7 @@ public:
 
     int sendState(int id,int state){
         Packet *newPac = new Packet();
+        printf("packet : id \n\n\n");
         sprintf(newPac->send_buffer,"%c%c%c%c%c,%c,\0",1,carID,sendPacNum,2,id + 48,state + 48);
 
         enqueuePacket(newPac);
