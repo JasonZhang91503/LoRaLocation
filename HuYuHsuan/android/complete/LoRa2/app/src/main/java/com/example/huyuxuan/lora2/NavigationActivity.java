@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,23 +23,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
+import com.example.huyuxuan.lora2.Fragment.RcvHistoryPage;
 import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
+import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
 import com.example.huyuxuan.lora2.Fragment.SettingFragment;
+
+import java.util.Locale;
 
 /**
  * Created by huyuxuan on 2017/4/27.
  */
 
-public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-
+public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,DatePickerFragment.PassOnDateSetListener{
     public Fragment myFragment;
     static ConnectService mBoundService;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     private static boolean isBind;
+
+    private static RcvHistoryPage mRcvHistoryPage;
+    private static SendHistotyPage mSendHistoryPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -180,8 +189,69 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
 
+    @Override
+    public void passOnDateSet(int year, int month, int day) {
+        Log.d("NavigationActivity","passOnDateSet");
+        if(mRcvHistoryPage!=null){
+            mRcvHistoryPage.passOnDateSet(year,month,day);
+        }
+        if(mSendHistoryPage!=null){
+            mSendHistoryPage.passOnDateSet(year,month,day);
+        }
+    }
 
+    public static class PaperAdapter extends FragmentStatePagerAdapter {
 
+        public PaperAdapter(android.support.v4.app.FragmentManager fm) {
+            super(fm);
+        }
 
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case 0:
+                    //創收件歷史的fragment
+                    RcvHistoryPage rcpPage = new RcvHistoryPage();
+                    return rcpPage;
+                case 1:
+                    //創寄件歷史的fragment
+                    SendHistotyPage sendPage = new SendHistotyPage();
+                    return sendPage;
+            }
+            return null;
+        }
 
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            Locale l = Locale.getDefault();
+            switch (position) {
+                case 0:
+                    return "ReceiveHistory";
+                case 1:
+                    return "SendHistory";
+            }
+            return null;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+            // save the appropriate reference depending on position
+            switch (position) {
+                case 0:
+                    mRcvHistoryPage = (RcvHistoryPage) createdFragment;
+                    break;
+                case 1:
+                    mSendHistoryPage = (SendHistotyPage) createdFragment;
+                    break;
+            }
+            return createdFragment;
+        }
+
+    }
 }

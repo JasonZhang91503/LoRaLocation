@@ -24,6 +24,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current date as the default date in the picker
+        NavigationActivity mActivity = (NavigationActivity)getActivity();
+        mListener = (PassOnDateSetListener)mActivity;
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -46,6 +48,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     }
 
+    /*
 
     @Override
     public void onAttach(Activity activity) {
@@ -58,7 +61,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             mListener = (PassOnDateSetListener) (mActivity.myFragment);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement PassOnDateSetListener");
         }
     }
+    */
 }

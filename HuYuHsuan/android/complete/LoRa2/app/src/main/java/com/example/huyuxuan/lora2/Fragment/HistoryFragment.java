@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.NavigationActivity;
 import com.example.huyuxuan.lora2.R;
 
 /**
@@ -22,7 +22,7 @@ public class HistoryFragment extends Fragment {
     private View myview;
     ViewPager pager;
     PagerTabStrip tab_strp;
-
+    PagerAdapter myPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstances){
@@ -35,14 +35,13 @@ public class HistoryFragment extends Fragment {
                              Bundle savedInstanceState){
         myview = inflater.inflate(R.layout.fragment_history,container,false);
         pager = (ViewPager)myview.findViewById(R.id.pager);
-        PagerAdapter myPagerAdapter = new PaperAdapter(getFragmentManager());
+        myPagerAdapter = new NavigationActivity.PaperAdapter(getFragmentManager());
         pager.setAdapter(myPagerAdapter);
         tab_strp = (PagerTabStrip)myview.findViewById(R.id.tab_strip);
         tab_strp.setTextColor(Color.WHITE);
-
         return myview;
     }
 
 
-
 }
+

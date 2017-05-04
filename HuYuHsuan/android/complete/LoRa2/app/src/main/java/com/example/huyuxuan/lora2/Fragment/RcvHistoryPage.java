@@ -154,7 +154,7 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
     }
 
     public void passOnDateSet(int year, int month, int day) {
-        Log.d("RcvHistoryPage","curFragment.passOnDateSet");
+        Log.d("RcvHistoryPage","passOnDateSet");
         myYear = year;
         myMonth = month + 1;
         myDay = day;
