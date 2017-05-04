@@ -83,7 +83,7 @@ public class ConnectService extends Service {
 
     @Override
     public IBinder onBind(final Intent intent) {
-        Log.i("Service:","onBind called");
+        Log.i("Service:","onBind called from "+intent.getExtras().getString("activity"));
 
         new AsyncTask<String,String,String>(){
             @Override
@@ -118,9 +118,9 @@ public class ConnectService extends Service {
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
-
                 id = intent.getExtras().getString("id");
                 activityName = intent.getExtras().getString("activity");
+                Log.i("Service:","send to server from "+activityName);
                 Bundle bundle = new Bundle();
                 Log.i("Service", "id = " + id);
 
@@ -184,6 +184,7 @@ public class ConnectService extends Service {
                 broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
                 broadcastIntent.putExtras(bundle);
                 sendBroadcast(broadcastIntent);
+                Log.i("Service:","sendbroadcast to  "+activityName);
 
                 rcvMessage="";
                 return  null;

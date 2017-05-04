@@ -32,7 +32,7 @@ import java.util.Locale;
  * Created by huyuxuan on 2017/4/29.
  */
 
-public class RcvHistoryPage extends Fragment implements Serializable,DatePickerFragment.PassOnDateSetListener{
+public class RcvHistoryPage extends Fragment implements Serializable{
 
     private static  View myView;
     private ListView lv;
@@ -41,16 +41,13 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
     private Calendar c;
     int myYear,myMonth,myDay;
     String formattedDate;
+    DialogFragment newFragment;
 
-    private static boolean isBind;
-    static ConnectService mBoundService;
-    private ConnectServiceReceiver receiver;
-    private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
-    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+  static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        isBind = false;
+
 
     }
     @Override
@@ -62,7 +59,7 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
         myYear = c.get(Calendar.YEAR);
         myMonth = c.get(Calendar.MONTH) + 1;
         myDay = c.get(Calendar.DAY_OF_MONTH);
-        updateListView();
+
         btnPickDate = (Button)myView.findViewById(R.id.btnPickDate);
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,94 +71,24 @@ public class RcvHistoryPage extends Fragment implements Serializable,DatePickerF
             }
         });
         btnPickDate.setText(dayDateFormat.format(c.getTimeInMillis()));
-        Log.d("RcvHistoryPage:", "pickdate set getTimeInMillis");
+        Log.d("RcvHistoryPage:", "onCreateView");
 
         return myView;
     }
 
-    public void updateListView(){
+    public void updateListView(Bundle bundle){
 
         //c = Calendar.getInstance(TimeZone.getDefault());
         formattedDate = dayDateFormat.format(c.getTime());
         Log.d("RcvHistoryPage:","updateLV formatted="+formattedDate);
-
-        Intent intent = new Intent(getActivity(),ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"RcvHistoryPage");
-        intent.putExtra(getString(R.string.id),"8");
-        intent.putExtra(getString(R.string.requireTime),formattedDate);
-        if(!isBind){
-            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
-            isBind=true;
-            Log.d("RcvHistoryPage:", "checkSR->bind");
-        }
-        else{
-            mBoundService.sendToServer(intent);
-            Log.d("RcvHistoryPage:", "checkSR->sendToService");
-        }
-        setReceiver();
+        ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
+        ListAdapter adapter = new SimpleAdapter(
+                getActivity(), DataList,
+                R.layout.rcvhistory_list_item, new String[] {getString(R.string.requireTime),getString(R.string.arriveTime),getString(R.string.state),
+                getString(R.string.sender),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
+                new int[] {R.id.RcvrequireTime,R.id.RcvarriveTime,R.id.Rcvstate,R.id.Rcvsender,R.id.Rcvdes_id,R.id.Rcvstart,R.id.Rcvkey});
+        lv.setAdapter(adapter);
 
     }
 
-    private static ServiceConnection mConnection = new ServiceConnection() {
-        //EDITED PART
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // TODO Auto-generated method stub
-            mBoundService = ((ConnectService.LocalBinder)service).getService();
-            isBind=true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // TODO Auto-generated method stub
-            Log.d("RcvHistoryPage","onServiceDisconnected");
-            //mBoundService = null;
-            isBind=false;
-        }
-
-    };
-
-    //接收广播类
-    public class ConnectServiceReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("activity").equals("RcvHistoryPage")){
-                Log.d("RcvHistoryPage:","receiver on receive");
-                getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
-                Bundle bundle = intent.getExtras();
-                ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
-                // ArrayList list = bundle.getParcelableArrayList("list");
-                // DataList = (ArrayList<HashMap<String, String>>)list.get(0);
-                ListAdapter adapter = new SimpleAdapter(
-                        getActivity(), DataList,
-                        R.layout.rcvhistory_list_item, new String[] {getString(R.string.requireTime),getString(R.string.arriveTime),getString(R.string.state),
-                        getString(R.string.sender),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
-                        new int[] {R.id.RcvrequireTime,R.id.RcvarriveTime,R.id.Rcvstate,R.id.Rcvsender,R.id.Rcvdes_id,R.id.Rcvstart,R.id.Rcvkey});
-                lv.setAdapter(adapter);
-
-            }
-        }
-    }
-
-    private void setReceiver(){
-        //动态注册receiver
-        IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new ConnectServiceReceiver();
-        getActivity().getApplicationContext().registerReceiver(receiver, filter);
-        Log.d("RcvHistoryPage:","register receiver");
-    }
-
-    public void passOnDateSet(int year, int month, int day) {
-        Log.d("RcvHistoryPage","passOnDateSet");
-        myYear = year;
-        myMonth = month + 1;
-        myDay = day;
-        c.set(year,month,day);
-        formattedDate = dayDateFormat.format(c.getTimeInMillis());
-        btnPickDate.setText(formattedDate);
-        Log.d("RcvHistoryPage:","passOn formatted="+formattedDate);
-        updateListView();
-    }
 }

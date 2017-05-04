@@ -14,6 +14,14 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include <vector>
+
+#include <ctime>
+#include <chrono>
+#include <thread>
+#include <iomanip>
+
+#pragma warning(disable:4996)
 
 #define HOSTNAME "tcp://127.0.0.1:3306"
 #define USERNAME "root"
@@ -29,13 +37,16 @@ sql::Statement *stmt;
 sql::ResultSet *res;
 
 mutex sqlMutex;
+mutex gatewayMutex;
 
 /* Initialize and connect to MySQL database */
 void initializeMySQL();
 /* Identify connection is gateway or cellphone */
 void handleNewConnection(SOCKET clientSocket);
 void handleCellphoneTask(SOCKET clientSocket);
+void cellphoneSend(SOCKET clientSocket);
 void handleGatewayTask(SOCKET clientSocket);
+void gatewaySend();
 
 #include <locale>
 #include <windows.h>
@@ -155,12 +166,16 @@ int main(void) {
 		listenSocket = getInitializeListenSocket();
 		cout << "Initialize listenSocket" << endl;
 
+		// Create background thread for send event check
+		new thread(gatewaySend);
+
 		// Handle connections
 		while (true) {
 			// Accept socket connection
 			clientSocket = getAcceptSocket(listenSocket);
 			cout << "Accept a new client: " << clientSocket << endl;
 
+			// Handle connection
 			new thread(handleNewConnection, clientSocket);
 			
 		}
@@ -208,7 +223,7 @@ void handleNewConnection(SOCKET clientSocket) {
 		// client is gateway
 		handleGatewayTask(clientSocket);
 	}else if (buff == '3') {
-
+		
 	}else {
 		cout << "Device error socket: " << clientSocket << endl;
 	}
@@ -222,13 +237,13 @@ bool login(char* buff, string &account, int &id, string &name, string &email) {
 	tempStr = buff;
 	
 	// get account
-	tempInt1 = tempStr.find("~");
+	tempInt1 = tempStr.find(",");
 	account = tempStr.substr(0, tempInt1);
 	// get password
-	tempInt2 = tempStr.find("^", tempInt1 + 1);
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
 	password = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 
-	//cout << account << " " << password << endl;
+	cout << account << " " << password << endl;
 	
 	res = stmt->executeQuery("SELECT _id, name, mail FROM user WHERE \"" + account + "\"=account AND \"" + password + "\"=password");
 
@@ -252,16 +267,16 @@ int createAccount(char* buff) {
 	tempStr = buff;
 	
 	// get account
-	tempInt1 = tempStr.find("~");
+	tempInt1 = tempStr.find(",");
 	account = tempStr.substr(0, tempInt1);
 	//get password
-	tempInt2 = tempStr.find("^", tempInt1 + 1);
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
 	password = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 	//get name
-	tempInt1 = tempStr.find(";", tempInt2 + 1);
+	tempInt1 = tempStr.find(",", tempInt2 + 1);
 	name = tempStr.substr(tempInt2 + 1, tempInt1 - tempInt2 - 1);
 	// get email
-	tempInt2 = tempStr.find("/", tempInt1 + 1);
+	tempInt2 = tempStr.find(",", tempInt1 + 1);
 	email = tempStr.substr(tempInt1 + 1, tempInt2 - tempInt1 - 1);
 
 	res = stmt->executeQuery("SELECT * FROM user WHERE account='" + account + "'");
@@ -559,7 +574,7 @@ void handleCellphoneTask(SOCKET clientSocket) {
 	int id;
 
 	while (true) {
-		char buff[BUFFSIZE] = { '\0' };
+		char buff[BUFFSIZE] = { '\0' }; 
 		errorCode = recv(clientSocket, buff, BUFFSIZE, 0);
 
 		lock_guard<mutex> mLock(sqlMutex);
@@ -582,27 +597,27 @@ void handleCellphoneTask(SOCKET clientSocket) {
 
 			switch (recognizeNumber) {
 			case 2:
-				buffStr = "2 \n";
+				buffStr = "2, \n";
 				// create acount
 				switch (createAccount(&buff[2])) {
 				case 1:
 					cout << "account: " << account << " create success" << endl;
-					buffStr[1] = '1';
+					buffStr[2] = '1';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 2:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = '2';
+					buffStr[2] = '2';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 3:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = '3';
+					buffStr[2] = '3';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				case 4:
 					cout << "account: " << account << " create fail" << endl;
-					buffStr[1] = '4';
+					buffStr[2] = '4';
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 					break;
 				default:
@@ -612,11 +627,12 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 3:
 				// log in
 				isLogin = login(&buff[2], account, id, name, email);
-				buffStr = "3;  ~";
+				buffStr = "3, ";
 				if (isLogin) {
 					cout << "account: " << account << " login success, id = " << id << endl;
 					buffStr[2] = '1';
-					buffStr.append(name + "^" + email + ";\n");
+					buffStr.append(name + "^" + email + "\n");
+					cout << buffStr << endl;
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				}else {
 					cout << "account: " << account << " login fail" << endl;
@@ -654,6 +670,11 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 5:
 				break;
 			case 6:
+				buffStr = "6,";
+				cout << "account: " << account << ", id = " << id << endl;
+				buffStr.append(name + "^" + email + "\n");
+				cout << buffStr << endl;
+				send(clientSocket, &buffStr[0], buffStr.size(), 0);
 				break;
 			case 7:
 				buffStr = "7;";
@@ -668,12 +689,10 @@ void handleCellphoneTask(SOCKET clientSocket) {
 				}
 				break;
 			case 9:
-				/*  不用
-				buffStr = "  ";
-				buffStr[0] = 9;
-				if (askTransportSendRec(id, &buff[1], buffStr)) {
+				buffStr = "9;";
+				if (askTransportSendRec(id, &buff[2], buffStr)) {
 					send(clientSocket, &buffStr[0], buffStr.size(), 0);
-				}*/
+				}
 				break;
 			case 10:
 				break;
@@ -683,56 +702,289 @@ void handleCellphoneTask(SOCKET clientSocket) {
 	}
 }
 
-bool gatewayRecv(SOCKET clientSocket, char buff[]) {
-	char sendBuff[BUFFSIZE];
-	int errorCode;
-	errorCode = recv(clientSocket, buff, BUFFSIZE, 0);
-	if (errorCode == -1 || errorCode == 0) {
-		cout << "Socket: " << clientSocket << " connection terminate" << endl;
-		closesocket(clientSocket);
-		return false;
-	}
-	cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << buff << endl;
-	
-	for (int i = 0; i < BUFFSIZE; i++) {
-		sendBuff[i] = buff[i];
-	}
+void cellphoneSend(SOCKET clientSocket) {
+	while (true) {
 
-	if (sendBuff[0] == 1 && sendBuff[3] != 1) {
-		sendBuff[0] = 2;
-		sendBuff[3] = 1;
-		send(clientSocket, sendBuff, 4, 0);
+		vector<string> message;
+		getNewTransport(message);
+
+		for (int i = 0; i < message.size(); i++) {
+			cout << "gateway Send have message: " << message[i] << endl;
+		}
+		wakeTime();
 	}
 }
 
+class CarInfo {
+public:
+	int id;
+	int packageNum;
+	int intMessageSize;
+	char buff[BUFFSIZE];
+	char message[BUFFSIZE];
+
+	void changePackageNum() {
+		if (packageNum == 1) {
+			packageNum = 1;
+		}else if (packageNum == 2) {
+			packageNum = 1;
+		}
+	}
+};
+
+vector<SOCKET> socketGateway;
+vector<CarInfo> carInfoSend;
+vector<CarInfo> carInfoReceive;
+
+// Find carInfo with id, if exist return the index, else return -1
+int findCarInfo(int id, vector<CarInfo> carInfo) {
+	for (int i = 0; i < carInfo.size(); i++) {
+		if (id == carInfo[i].id) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 void stateUpdate(int id, int state) {
+
+	lock_guard<mutex> mLock(sqlMutex);
+
 	string idString, stateString;
 	idString = "      ";
 	stateString = " ";
 	sprintf(&idString[0], "%d", id);
 	sprintf(&stateString[0], "%d", state);
-	stmt->execute("UPDATE transport SET state = " + stateString +" WHERE _id = " + idString);
+	stmt->execute("UPDATE transport SET state = " + stateString + " WHERE _id = " + idString);
 }
 
 void handleGatewayTask(SOCKET clientSocket) {
+	int errorCode;
+	int index;
 	cout << "Start gateway task" << endl;
-	string buffStr;
+
+	socketGateway.push_back(clientSocket);
 
 	while (true) {
+		// Receive data
 		char buff[BUFFSIZE] = { '\0' };
-		if (!gatewayRecv(clientSocket, buff)) {
+		errorCode = recv(clientSocket, buff, BUFFSIZE, 0);
+		if (errorCode == -1 || errorCode == 0) {
+			cout << "Socket: " << clientSocket << " connection terminate" << endl;
+			closesocket(clientSocket);
 			return;
 		}
-		lock_guard<mutex> mLock(sqlMutex);
-		switch (buff[3]) {
-		case 2:
-			stateUpdate(buff[4], buff[5]);
-			break;
-		case 3:
-			cout << "car is broken" << endl;
-			break;
-		default:
-		}
+		cout << "Socket: " << clientSocket << " recv size: " << errorCode << endl << "data: " << buff << endl;
+		//
 
+		lock_guard<mutex> mLock(gatewayMutex);
+		
+		// Package check
+		// if index[0] == 1, server handle it
+		if (buff[0] == 1) {
+			// if index[3] == 1, buff is ack
+			if (buff[3]) {
+				// get index of buff in carInfoSend
+				index = findCarInfo(buff[1], carInfoSend);
+				// update package number
+				if (carInfoSend[index].packageNum == buff[2]) {
+					carInfoSend[index].changePackageNum();
+				}
+
+			// buff is instruction from car
+			}else {
+				// get index of buff in carInfoSend
+				index = findCarInfo(buff[1], carInfoReceive);
+				// car isn't in the carInfoRecv
+				if (index == -1) {
+					// add, update and send
+					
+					switch (buff[3]) {
+					case 2:
+						int id, state;
+						char* endP;
+						id = (int)strtol(&buff[4], &endP, 10);
+						state = (int)strtol(endP + 1, &endP, 10);
+						stateUpdate(id, state);
+
+						// make ack package
+						CarInfo carInfo;
+						carInfo.id = buff[1];
+						carInfo.packageNum = buff[2];
+						carInfo.intMessageSize = 3;
+						for (int i = 0; i < BUFFSIZE; i++) {
+							carInfo.buff[i] = buff[i];
+						}
+						carInfo.message[0] = 2;
+						carInfo.message[1] = buff[1];
+						carInfo.message[2] = buff[2];
+						carInfo.message[3] = 1;
+
+						carInfoReceive.push_back(carInfo);
+						send(clientSocket, carInfo.message, carInfo.intMessageSize, 0);
+						break;
+					case 3:
+						cout << "car is broken" << endl;
+						break;
+					default:
+						break;
+					}
+
+				// car is in the carInfoRecv
+				}else {
+					string s1, s2;
+					s1 = carInfoReceive[index].buff;
+					s2 = buff;
+					if (carInfoReceive[index].packageNum == buff[2] && s1 == s2) {
+						// resend
+						send(clientSocket, carInfoReceive[index].message, carInfoReceive[index].intMessageSize, 0);
+					}else {
+						// update and send
+
+						switch (buff[3]) {
+						case 2:
+							int id, state;
+							char* endP;
+							id = (int)strtol(&buff[4], &endP, 10);
+							state = (int)strtol(endP + 1, &endP, 10);
+							stateUpdate(id, state);
+							
+							carInfoReceive[index].message[2] = buff[2];
+							send(clientSocket, carInfoReceive[index].message, carInfoReceive[index].intMessageSize, 0);
+
+							break;
+						case 3:
+							cout << "car is broken" << endl;
+							break;
+						default:
+							break;
+						}
+					}
+				}
+			}
+		}
+		//
+	}
+}
+
+void wakeTime() {
+	using std::chrono::system_clock;
+	time_t tt = system_clock::to_time_t(system_clock::now());
+
+	struct tm * ptm = std::localtime(&tt);
+	cout << "Current time: " << put_time(ptm, "%X") << '\n';
+
+	cout << "Waiting for the next time to fetch data...\n";
+	if (ptm->tm_min < 20) {
+		ptm->tm_min = 20;
+	}else if (ptm->tm_min > 50) {
+		ptm->tm_hour++;
+		ptm->tm_min = 20;
+	}else {
+		ptm->tm_min = 50;
+	}
+	ptm->tm_sec = 0;
+	this_thread::sleep_until(system_clock::from_time_t(mktime(ptm)));
+
+	cout << std::put_time(ptm, "%X") << " reached!\n";
+}
+
+void getNewTransport(vector<string> &message) {
+	lock_guard<mutex> mLock(sqlMutex);
+
+	using std::chrono::system_clock;
+	time_t tt = system_clock::to_time_t(system_clock::now());
+
+	struct tm * ptm = std::localtime(&tt);
+	
+	if (ptm->tm_min >= 50) {
+		ptm->tm_min = 0;
+		ptm->tm_hour++;
+	}else if (ptm->tm_min >= 20 && ptm->tm_min < 30) {
+		ptm->tm_min = 30;
+	}else {
+		return;
+	}
+	ptm->tm_sec = 0;
+	char buff[80];
+	strftime(buff, sizeof(buff), "%Y-%d-%m %I:%M:%S", ptm);
+	string time(buff), header, stringEmpty;
+	vector<int> startId, desId;
+
+	header = "\2  \2";
+	res = stmt->executeQuery("SELECT * FROM transport WHERE requireTime = \"" + time + "\"");
+
+	for (int i = 0; res->next(); i++) {
+		message.push_back(header);
+		header[1] = res->getInt("car_id");
+		message[i].append(res->getString("_id") + ",");
+		message[i].append(res->getString("sender") + ",");
+		message[i].append(res->getString("receiver") + ",");
+		message[i].append(res->getString("key") + ",");
+		message[i].append(res->getString("requireTime") + ",");
+
+		startId.push_back(res->getInt("start_id"));
+		desId.push_back(res->getInt("des_id"));
+	}
+	delete res;
+	for (int i = 0; i < startId.size(); i++) {
+		res = stmt->executeQuery("SELECT * FROM location WHERE _id=" + to_string(startId[i]));
+		message[i].append(res->getString("longitude") + ",");
+		message[i].append(res->getString("latitude") + ",");
+		delete res;
+		res = stmt->executeQuery("SELECT * FROM location WHERE _id=" + to_string(desId[i]));
+		message[i].append(res->getString("longitude") + ",");
+		message[i].append(res->getString("latitude") + ",");
+		delete res;
+	}
+}
+
+void gatewayBackgroundSend(string message) {
+	int index;
+	index = findCarInfo(message[1], carInfoSend);
+	if (index == -1) {
+		lock_guard<mutex> mLock(sqlMutex);
+		
+		// make ack package
+		CarInfo carInfo;
+		carInfo.id = message[1];
+		carInfo.packageNum = 1;
+		carInfo.intMessageSize = message.size();
+		for (int i = 0; i < message.size(); i++) {
+			carInfo.message[i] = message[i];
+		}
+		carInfoSend.push_back(carInfo);
+	}
+	else {
+		lock_guard<mutex> mLock(sqlMutex);
+		for (int i = 0; i < message.size(); i++) {
+			carInfoSend[index].message[i] = message[i];
+		}
+	}
+
+	while (carInfoSend[index].packageNum == message[2]) {
+		gatewayMutex.lock();
+		cout << "gateway background send message" << endl;
+		for (int i = 0; i < socketGateway.size(); i++) {
+			send(socketGateway[i], &message[0], message.size(), 0);
+		}
+		gatewayMutex.unlock();
+		this_thread::sleep_for(chrono::seconds(10));
+	}
+	cout << "gateway background send end" << endl;
+}
+
+void gatewaySend() {
+
+	while (true) {
+
+		vector<string> message;
+		getNewTransport(message);
+
+		for (int i = 0; i < message.size(); i++) {
+			cout << "gateway Send have message: " << message[i] << endl;
+			new thread(gatewayBackgroundSend, message[i]);
+		}
+		wakeTime();
 	}
 }
