@@ -5,6 +5,7 @@
 #include <queue>
 #include <errno.h>
 #include<sys/time.h>
+#include<string>
 
 #ifndef NO_CAR_MODE
 //Include arduPi library
@@ -104,7 +105,10 @@ public:
     int sendState(int id,int state){
         Packet *newPac = new Packet();
         printf("packet : id \n\n\n");
-        sprintf(newPac->send_buffer,"%c%c%c%c%c,%c,\0",1,carID,sendPacNum,2,id + 48,state + 48);
+
+        string idStr = std::to_string(id);
+
+        sprintf(newPac->send_buffer,"%c%c%c%c%s,%c,\0",1,carID,sendPacNum,2,idStr.c_str(),state + 48);
 
         enqueuePacket(newPac);
 
