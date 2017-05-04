@@ -28,4 +28,8 @@
         <item name="android:windowEnterAnimation">@anim/photo_dialog_in_anim</item>
         <item name="android:windowExitAnimation">@anim/photo_dialog_out_anim</item>
     </style>
+    <style name="myRadioButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/inactive_dot</item>
+        <item name="colorControlActivated">@color/active_dot</item>
+    </style>
 </resources>

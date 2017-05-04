@@ -4,4 +4,10 @@
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
     <color name="dialog_blue">#0083FF</color>
+    <color name="colorIntroText">#FFFFFF</color>
+    <color name="colorLogin">#093284</color>
+    <color name="colorRegister">#203CC4</color>
+    <color name="colorHint">#F8F8F8</color>>
+    <color name="inactive_dot">#F2F2F2</color>
+    <color name="active_dot">#203CC4</color>
 </resources>
