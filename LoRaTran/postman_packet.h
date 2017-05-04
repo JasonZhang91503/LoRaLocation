@@ -51,6 +51,7 @@ public:
     }
 
     bool isMyCarIDPacket(){
+        printf("Aasdasdsadsa : %d\n",recv_buffer[1]);
         return recv_buffer[1] == carID;
     }
 
