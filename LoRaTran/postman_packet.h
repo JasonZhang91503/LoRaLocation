@@ -184,7 +184,7 @@ public:
         int carID = pac->send_buffer[1];
         int packNum = pac->send_buffer[2];
         int eventNum = pac->send_buffer[3];
-        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,send_buffer+4);
+        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,pac->send_buffer+4);
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif
