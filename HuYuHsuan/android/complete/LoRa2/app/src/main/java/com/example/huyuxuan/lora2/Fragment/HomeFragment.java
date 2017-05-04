@@ -29,6 +29,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 import com.example.huyuxuan.lora2.RoundImageView;
 import com.example.huyuxuan.lora2.SelectDialog;
@@ -229,7 +230,9 @@ public class HomeFragment extends Fragment {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             // TODO Auto-generated method stub
-            mBoundService = ((ConnectService.LocalBinder)service).getService();
+           // mBoundService = ((ConnectService.LocalBinder)service).getService();
+            mBoundService = MyBoundedService.myService;
+            Log.d("mConnection","onServiceConnected");
         }
 
         @Override

@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     protected EditText editTextAccount;
     protected EditText editTextPassword;
     protected Button btnLogin;
-    protected Button btnSignUp;
+  //  protected Button btnSignUp;
 
     protected String account;
     protected String password;
@@ -46,8 +46,11 @@ public class LoginActivity extends AppCompatActivity {
         editTextAccount = (EditText)findViewById(R.id.editTextAccount);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
         btnLogin = (Button)findViewById(R.id.btnLogin);
-        btnSignUp = (Button)findViewById(R.id.btnToSign);
+      //  btnSignUp = (Button)findViewById(R.id.btnToSign);
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        editTextAccount.setHintTextColor(getResources().getColor(R.color.colorHint));
+        editTextPassword.setHintTextColor(getResources().getColor(R.color.colorHint));
+
 
         isBind=false;
 
@@ -56,26 +59,31 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 account = editTextAccount.getText().toString();
                 password = editTextPassword.getText().toString();
+                if(account != null && password != null){
 
-                Intent intent = new Intent(LoginActivity.this,ConnectService.class);
-                intent.putExtra(getString(R.string.activity),"LoginActivity");
-                intent.putExtra(getString(R.string.id),"3");
-                intent.putExtra(getString(R.string.account),account);
-                intent.putExtra(getString(R.string.password),password);
-                Log.d("LoginActivity","account="+account+"password="+password);
+                    Intent intent = new Intent(LoginActivity.this,ConnectService.class);
+                    intent.putExtra(getString(R.string.activity),"LoginActivity");
+                    intent.putExtra(getString(R.string.id),"3");
+                    intent.putExtra(getString(R.string.account),account);
+                    intent.putExtra(getString(R.string.password),password);
+                    Log.d("LoginActivity","account="+account+"password="+password);
 
-                if(!isBind){
-                    getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
-                    isBind=true;
-                    Log.d("LoginActivity:", "login->bind");
+                    if(!isBind){
+                        getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+                        isBind=true;
+                        Log.d("LoginActivity:", "login->bind");
+                    }
+                    else{
+                        mBoundService.sendToServer(intent);
+                        Log.d("LoginActivity:", "login->sendToService");
+                    }
+                    setReceiver();
+                }else{
+                    Toast.makeText(LoginActivity.this,"請輸入帳號密碼",Toast.LENGTH_SHORT).show();
                 }
-                else{
-                    mBoundService.sendToServer(intent);
-                    Log.d("LoginActivity:", "login->sendToService");
-                }
-                setReceiver();
             }
         });
+        /*
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                 //跳到註冊畫面
             }
         });
+        */
 
     }
 
@@ -129,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             // TODO Auto-generated method stub
             mBoundService = ((ConnectService.LocalBinder)service).getService();
+            MyBoundedService.myService=mBoundService;
             isBind=true;
         }
 

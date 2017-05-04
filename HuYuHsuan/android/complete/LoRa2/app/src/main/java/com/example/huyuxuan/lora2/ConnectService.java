@@ -51,34 +51,37 @@ public class ConnectService extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-
-        new AsyncTask<String,String,String>() {
-            @Override
-            protected String doInBackground(String... strings) {
-                try {
-                    serverAddr = InetAddress.getByName(getString(R.string.ip));
-                    mSocket = new Socket();
-                    sc_add = new InetSocketAddress(serverAddr, Integer.parseInt(getString(R.string.port)));
-                    if (mSocket.isConnected()) {
-                        Log.i("Service", "Socket Connected");
-                    } else {
-                        mSocket.connect(sc_add, 2000);
-                    }
-                    in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
-                    out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
-                    Log.i("Service", "BufferedReader and PrintWriter ready.");
-                    out.write("1");
-                    out.flush();
-                    Log.d("Service", "write 1 to server");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();
-
         Log.i("ConnectService:","onCreate");
+        if(!MyBoundedService.isConnect){
+            new AsyncTask<String,String,String>() {
+                @Override
+                protected String doInBackground(String... strings) {
+                    try {
+                        serverAddr = InetAddress.getByName(getString(R.string.ip));
+                        mSocket = new Socket();
+                        sc_add = new InetSocketAddress(serverAddr, Integer.parseInt(getString(R.string.port)));
+                        if (mSocket.isConnected()) {
+                            Log.i("Service", "Socket Connected");
+                        } else {
+                            mSocket.connect(sc_add, 2000);
+                        }
+                        MyBoundedService.isConnect=true;
+                        in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+                        out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+                        Log.i("Service", "BufferedReader and PrintWriter ready.");
+                        out.write("1");
+                        out.flush();
+                        Log.d("Service", "write 1 to server");
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }.execute();
+        }
+
+
     }
 
     @Override
