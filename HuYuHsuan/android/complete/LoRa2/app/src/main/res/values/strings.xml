@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LoRa2</string>
-    <string name="ip">192.168.0.106</string>
+    <string name="ip">192.168.0.12</string>
     <string name="port">5000</string>
 
     <!--傳給service的key-->
@@ -51,8 +51,10 @@
     <string name="Text1">突破傳統的快遞、物流系統\n提供更快、更即時的服務。</string>
     <string name="introText2">即時訂單管理系統</string>
     <string name="Text2">藉由手機APP訂單管理\n隨時掌握貨品動態。</string>
-    <string name="hintAccount">請輸入帳號</string>
-    <string name="hintPassword">請輸入密碼</string>
-    <string name="hintMail">請輸入信箱</string>
-    <string name="hint"></string>
+    <string name="hintEnterAccount">請輸入帳號</string>
+    <string name="hintEnterPassword">請輸入密碼</string>
+    <string name="hintMail">信箱</string>
+    <string name="hintAccount">帳號</string>
+    <string name="hintName">姓名</string>
+    <string name="hintPassword">密碼</string>
 </resources>

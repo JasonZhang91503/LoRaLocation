@@ -54,6 +54,7 @@ public class BackgroundRecvService extends Service {
     public void onCreate() {
         super.onCreate();
         acquireWakeLock(1);
+        Log.d("BGService","onCreate");
 
         new AsyncTask<String,String,String>() {
             @Override
@@ -84,21 +85,24 @@ public class BackgroundRecvService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("BGService","onDestroy");
         releaseWakeLock();
     }
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId){
 
-
+        Log.d("BGService","onStartCommand");
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
 
                 ensureConnected();
                 try {
-                    rcvMessage = in.readLine();
-                    Log.d("BGRService", "receive " + rcvMessage + " from server");
+                    if(in != null){
+                        rcvMessage = in.readLine();
+                        Log.d("BGRService", "receive " + rcvMessage + " from server");
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

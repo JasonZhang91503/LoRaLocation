@@ -230,8 +230,14 @@ public class HomeFragment extends Fragment {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             // TODO Auto-generated method stub
-           // mBoundService = ((ConnectService.LocalBinder)service).getService();
-            mBoundService = MyBoundedService.myService;
+
+           if(MyBoundedService.myService!=null){
+               mBoundService = MyBoundedService.myService;
+           }
+           else{
+               mBoundService = ((ConnectService.LocalBinder)service).getService();
+           }
+
             Log.d("mConnection","onServiceConnected");
         }
 

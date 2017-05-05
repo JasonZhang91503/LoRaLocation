@@ -49,7 +49,7 @@ public class HistoryFragment extends Fragment {
         myYear = c.get(Calendar.YEAR);
         myMonth = c.get(Calendar.MONTH) + 1;
         myDay = c.get(Calendar.DAY_OF_MONTH);
-        myParent.passOnDateSet(myYear,myMonth,myDay);
+        myParent.passOnDateSet(myYear,myMonth-1,myDay);
         return myview;
     }
 

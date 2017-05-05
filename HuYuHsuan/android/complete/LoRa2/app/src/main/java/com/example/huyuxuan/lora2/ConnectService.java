@@ -112,7 +112,7 @@ public class ConnectService extends Service {
     public int onStartCommand(final Intent intent, int flags, int startId) {
         Log.d("Service:","onHandleIntent called");
 
-        sendToServer(intent);
+      //  sendToServer(intent);
         return START_STICKY;
     }
 
@@ -152,6 +152,7 @@ public class ConnectService extends Service {
                     case "7":
                     case "8":
                     case "9":
+                        Log.d("ConnectService","requireTime="+intent.getStringExtra(getString(R.string.requireTime)));
                         time = intent.getStringExtra(getString(R.string.requireTime));
                         msg = id+","+ time + ",";
                         break;
@@ -342,6 +343,8 @@ public class ConnectService extends Service {
                 dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
                 Log.d("ana:","第二筆"+mesArray[2]);
                 break;
+            default:
+                dataBundle=null;
         }
         return  dataBundle;
     }

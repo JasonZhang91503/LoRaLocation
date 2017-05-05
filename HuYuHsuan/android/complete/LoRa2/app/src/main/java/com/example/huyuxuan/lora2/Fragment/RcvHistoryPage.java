@@ -39,9 +39,7 @@ public class RcvHistoryPage extends Fragment implements Serializable{
     private Button btnPickDate;
 
     private Calendar c;
-    int myYear,myMonth,myDay;
     String formattedDate;
-    DialogFragment newFragment;
 
   static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     @Override
@@ -56,9 +54,7 @@ public class RcvHistoryPage extends Fragment implements Serializable{
         myView = inflater.inflate(R.layout.fragment_recv_history, container, false);
         lv = (ListView)myView.findViewById(R.id.rcvHistoryListView);
         c = Calendar.getInstance();
-        myYear = c.get(Calendar.YEAR);
-        myMonth = c.get(Calendar.MONTH) + 1;
-        myDay = c.get(Calendar.DAY_OF_MONTH);
+        Log.d("RcvhistoryPage","date="+dayDateFormat.format(c.getTime()));
 
         btnPickDate = (Button)myView.findViewById(R.id.btnPickDate);
         btnPickDate.setOnClickListener(new View.OnClickListener() {
@@ -81,14 +77,19 @@ public class RcvHistoryPage extends Fragment implements Serializable{
         //c = Calendar.getInstance(TimeZone.getDefault());
         formattedDate = dayDateFormat.format(c.getTime());
         Log.d("RcvHistoryPage:","updateLV formatted="+formattedDate);
-        ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
-        ListAdapter adapter = new SimpleAdapter(
-                getActivity(), DataList,
-                R.layout.rcvhistory_list_item, new String[] {getString(R.string.requireTime),getString(R.string.arriveTime),getString(R.string.state),
-                getString(R.string.sender),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
-                new int[] {R.id.RcvrequireTime,R.id.RcvarriveTime,R.id.Rcvstate,R.id.Rcvsender,R.id.Rcvdes_id,R.id.Rcvstart,R.id.Rcvkey});
-        lv.setAdapter(adapter);
-
+        //if(bundle != null){
+            ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
+            ListAdapter adapter = new SimpleAdapter(
+                    getActivity(), DataList,
+                    R.layout.rcvhistory_list_item, new String[] {getString(R.string.requireTime),getString(R.string.arriveTime),getString(R.string.state),
+                    getString(R.string.sender),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
+                    new int[] {R.id.RcvrequireTime,R.id.RcvarriveTime,R.id.Rcvstate,R.id.Rcvsender,R.id.Rcvdes_id,R.id.Rcvstart,R.id.Rcvkey});
+            lv.setAdapter(adapter);
+       /* }
+        else{
+            Log.d("RcvHistPage","updateLV bundle is null");
+        }
+        */
     }
 
 }

@@ -28,6 +28,7 @@ import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.example.huyuxuan.lora2.Background.MyAlarmReceiver;
 import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
@@ -59,10 +60,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     String formattedDate;
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    MyAlarmReceiver alarm = new MyAlarmReceiver();
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
+        Log.d("NavigationActivity","onCreate");
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,6 +81,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
+
+        alarm.setAlarm(this);
 
 
 
@@ -99,9 +104,39 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             myFragment = firstFragment;
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
         }
-
-
     }
+
+    @Override
+    protected void onStop() {
+        Log.d("NavigationActivity","onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("NavigationActivity","onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d("NavigationActivity","onStart");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("NavigationActivity","onResume");
+        alarm.setAlarm(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("NavigationActivity","onPause");
+        super.onPause();
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -199,6 +234,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString(getString(R.string.email),"")
                 .putString(getString(R.string.isLogin),"fasle")
                 .apply();
+
+        /*不確定是否要加
+        MyBoundedService.isConnect=false;
+        MyBoundedService.myService=null;
+        */
     }
 
 
@@ -252,7 +292,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 //getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 //把bundle傳給recvHistoryPage
-                if(mRcvHistoryPage!=null){
+                if(mRcvHistoryPage!=null && intent.getStringExtra("result").equals("true")){
                     mRcvHistoryPage.updateListView(bundle);
                 }
                 Intent SendIntent = new Intent(NavigationActivity.this,ConnectService.class);
@@ -293,6 +333,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         registerReceiver(receiver, filter);
         Log.d("NavigationActivity:","register receiver");
     }
+
+
 
     public static class PaperAdapter extends FragmentStatePagerAdapter {
 
