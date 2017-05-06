@@ -3,6 +3,8 @@ package com.example.keng.main;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -71,17 +73,21 @@ public class Mainpage extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if(id==R.id.nav_home){
 
-        } else if (id == R.id.nav_slideshow) {
+        }else if(id==R.id.nav_newOrder){
+            NewOrderFragment newOrderFragment=new NewOrderFragment();
+            FragmentManager fm=getSupportFragmentManager();
+            FragmentTransaction trans=fm.beginTransaction();
+            trans.addToBackStack(null);
+            trans.replace(R.id.frame,newOrderFragment);
+            trans.commit();
 
-        } else if (id == R.id.nav_manage) {
+        }else if(id==R.id.nav_history){
 
-        } else if (id == R.id.nav_share) {
+        }else if(id==R.id.nav_setting){
 
-        } else if (id == R.id.nav_send) {
+        }else if(id==R.id.nav_logout){
 
         }
 

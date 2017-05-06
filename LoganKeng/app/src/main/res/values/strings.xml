@@ -19,4 +19,34 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- 0504後新增 -->
+    <string name="new_Order_set1">選擇地點與時間</string>
+    <string name="new_Order_set1_time">時間（限當日）</string>
+    <string name="new_Order_set1_start">寄件地</string>
+    <string name="new_Order_set1_destination">收件地</string>
+    <string name="new_Order_set2">填寫收件者資料</string>
+    <string name="new_Order_set2_receiver">收件者</string>
+    <string name="new_Order_set2_phone">聯絡電話</string>
+    <string name="new_Order_set2_note">備註</string>
+    <string name="new_Order_set3">確認訂單資訊</string>
+
+    <string name="default_spinner">請選擇地點</string>
+    <string name="next">下一步</string>
+    <string name="confirm">確認無誤</string>
+    <string name="estimate">預估金額</string>
+    <string name="cost">總金額</string>
+    <string-array name="Location">
+
+        <item>商學院</item>
+        <item>法學院</item>
+        <item>行政大樓</item>
+        <item>公共事務學院</item>
+        <item>社會科學院</item>
+        <item>電機資訊院</item>
+        <item>圖書館</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
