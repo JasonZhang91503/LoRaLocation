@@ -30,12 +30,12 @@
     <string name="new_Order_set2_phone">聯絡電話</string>
     <string name="new_Order_set2_note">備註</string>
     <string name="new_Order_set3">確認訂單資訊</string>
-
     <string name="default_spinner">請選擇地點</string>
     <string name="next">下一步</string>
     <string name="confirm">確認無誤</string>
     <string name="estimate">預估金額</string>
     <string name="cost">總金額</string>
+    <string name="home_Latest_order">最新訂單</string>
     <string-array name="Location">
 
         <item>商學院</item>
