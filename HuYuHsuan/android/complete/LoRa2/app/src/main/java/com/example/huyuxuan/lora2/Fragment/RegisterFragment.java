@@ -1,6 +1,9 @@
 package com.example.huyuxuan.lora2.Fragment;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,6 +13,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +22,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.R;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -51,6 +63,7 @@ public class RegisterFragment extends Fragment {
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    final String AVAILABLE_TIME_FRAGMENT = "available_fragment";
 
     @Override
     public void onCreate(Bundle savedInstances){
@@ -206,26 +219,39 @@ public class RegisterFragment extends Fragment {
 
     };
 
+    public void setTime(String tmp){
+        time=tmp;
+    }
+
+
     //接收广播类
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("RegisterFragment")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
+                //getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
 
                     case "5":
                         String msg = bundle.getString("message");
-                        //這裡要把資料放進介面
-                       // char tmp[]=msg.toCharArray();
-                        /*
-                        for(int i=0;i<tmp.length;i++){
 
+
+                        //創basic dialog
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        Fragment prev=getFragmentManager().findFragmentByTag(AVAILABLE_TIME_FRAGMENT);
+                        if(prev != null){
+                            ft.remove(prev);
                         }
-                        */
+                        ft.addToBackStack(null);
+                        DialogFragment mDialogFragment = new BasicDialogFragment();
+                        mDialogFragment.setArguments(bundle);
+                        mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
+                        mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
+
+
                         Log.d("RegisterFragment","id=5,msg="+msg);
                         break;
 
@@ -267,4 +293,83 @@ public class RegisterFragment extends Fragment {
     }
 
 
+    @SuppressLint("ValidFragment")
+    public class BasicDialogFragment extends DialogFragment {
+        View v;
+        ListView lv;
+        private String[] list={"09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"
+                ,"14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"};
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            v = inflater.inflate(R.layout.fragment_available_time, container, false);
+            lv = (ListView) v.findViewById(R.id.available_listview);
+
+            return v;
+        }
+
+        public BasicDialogFragment(){
+            //開啟畫面時把資料放進listView
+            String msg = getArguments().getString(getString(R.string.message));
+           // char tmp[]=msg.toCharArray();
+
+            List<Map<String, String>> items = new ArrayList<Map<String,String>>();
+            for(int i=0;i<msg.length();i++){
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("time",list[i]);
+                if(msg.charAt(i)=='1'){
+                    item.put("text","可以預約");
+                }else{
+                    item.put("text","無法預約");
+                }
+                items.add(item);
+            }
+            SimpleAdapter adapter = new SimpleAdapter(getActivity().getApplicationContext(),items,
+                    R.layout.available_time_list_item,new String[]{"time","text"}
+                    ,new int[]{R.id.LI_time,R.id.LI_Choose});
+            lv.setAdapter(adapter);
+            for(int i=0;i<msg.length();i++){
+                TextView tmpView;
+                tmpView = (TextView)getViewByPosition(i,lv);
+                if(msg.charAt(i)=='0'){
+                    //不能預約，要把該textView的clickable設為false
+                    tmpView.setClickable(false);
+                }
+            }
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("選擇時段")
+                            .setMessage("確定要預約"+list[position]+"嗎？")
+                            .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    RegisterFragment.this.setTime(list[position]);
+                                }
+                            })
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .show();
+                }
+            });
+        }
+
+        public View getViewByPosition(int pos, ListView listView) {
+            final int firstListItemPosition = listView.getFirstVisiblePosition();
+            final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+            if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+                return listView.getAdapter().getView(pos, null, listView);
+            } else {
+                final int childIndex = pos - firstListItemPosition;
+                return listView.getChildAt(childIndex);
+            }
+        }
+    }
 }

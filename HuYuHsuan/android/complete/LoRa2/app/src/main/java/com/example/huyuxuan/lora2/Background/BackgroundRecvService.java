@@ -102,6 +102,9 @@ public class BackgroundRecvService extends Service {
                     if(in != null){
                         rcvMessage = in.readLine();
                         Log.d("BGRService", "receive " + rcvMessage + " from server");
+                        createSimleNotification(rcvMessage);
+                        //強迫螢幕亮起
+                        acquireWakeLock(2);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -111,9 +114,6 @@ public class BackgroundRecvService extends Service {
 
         }.execute();
         //開啟通知
-        createSimleNotification(rcvMessage);
-        //強迫螢幕亮起
-        acquireWakeLock(2);
 
         /*
         //接收完

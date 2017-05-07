@@ -2,6 +2,7 @@ package com.example.huyuxuan.lora2;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ public class ConnectService extends Service {
     private final IBinder binder=new LocalBinder();
 
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
-
+    private SharedPreferences sharedPreferences;
    /*
     public ConnectService(){
         super("ConnectService");
@@ -52,6 +53,8 @@ public class ConnectService extends Service {
     public void onCreate(){
         super.onCreate();
         Log.i("ConnectService:","onCreate");
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        Log.d("ConnectService","isConnect="+MyBoundedService.isConnect);
         if(!MyBoundedService.isConnect){
             new AsyncTask<String,String,String>() {
                 @Override
@@ -72,6 +75,17 @@ public class ConnectService extends Service {
                         out.write("1");
                         out.flush();
                         Log.d("Service", "write 1 to server");
+                        /*
+                        if(sharedPreferences.getString("isLogin","")=="true"){
+                            Intent intent = new Intent();
+                            intent.putExtra(getString(R.string.activity),"NavigationActivity");
+                            intent.putExtra(getString(R.string.id),"3");
+                            intent.putExtra(getString(R.string.account),sharedPreferences.getString("account",""));
+                            intent.putExtra(getString(R.string.password),sharedPreferences.getString("password",""));
+                            Log.d("偷偷登入","account="+sharedPreferences.getString("account","")+"password="+sharedPreferences.getString("password",""));
+                            sendToServer(intent);
+                        }
+                        */
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -181,6 +195,8 @@ public class ConnectService extends Service {
                         e.printStackTrace();
                     }
                 }
+
+                sharedPreferences.edit().putString("BGLogin","false").apply();
                 Intent broadcastIntent = new Intent();
                 broadcastIntent.setAction(ACTION_RECV_MSG);
                 broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -219,11 +235,13 @@ public class ConnectService extends Service {
                     dataBundle.putString(getString(R.string.email),email);
                     Log.d("ana:","id="+id+"type="+type+"name="+name+"email="+email);
                 }
-                else{
+                else if(type.compareTo("0")==0){
                     String error = mes.substring(3);
                     dataBundle.putString(getString(R.string.type),type);
                     dataBundle.putString(getString(R.string.errorMsg),error);
                     Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }else{
+                    Log.d("Service","login type error");
                 }
                 dataBundle.putString("type",type);
                 break;
@@ -341,7 +359,7 @@ public class ConnectService extends Service {
                 mes = mes.substring(mes.indexOf('^')+1);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
-                Log.d("ana:","第二筆"+mesArray[2]);
+                Log.d("ana:","第二筆"+mesArray[1]);
                 break;
             default:
                 dataBundle=null;

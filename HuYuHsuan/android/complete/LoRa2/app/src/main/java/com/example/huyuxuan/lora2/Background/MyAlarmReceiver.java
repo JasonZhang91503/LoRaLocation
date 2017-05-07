@@ -7,10 +7,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by huyuxuan on 2017/4/26.
@@ -20,17 +23,22 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
 
-    static private int serviceCounter = 0;
+    static private int serviceCounter;
     private BgServiceRecver mServiceBroadcastReceiver;
     private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("MyAlarmReceiver","onReceive");
+        sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
+        serviceCounter = sharedPreferences.getInt("BGServiceCount",0);
+        Log.d("MyAlatmReceiver","serviceCounter="+serviceCounter);
         if(serviceCounter == 0){
             Intent service = new Intent(context, BackgroundRecvService.class);
             startWakefulService(context, service);
             serviceCounter++;
+            sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
         }
     }
 
@@ -86,7 +94,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 Log.d("BgServiceReceiver:","state-> "+ state);
                 //開啟notification
                 serviceCounter--;
-
+                sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
             }
 
         }

@@ -52,6 +52,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     private static boolean isBind;
     private ConnectServiceReceiver receiver;
+    public HomeFragment firstFragment;
 
     private static RcvHistoryPage mRcvHistoryPage;
     private static SendHistotyPage mSendHistoryPage;
@@ -61,11 +62,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     MyAlarmReceiver alarm = new MyAlarmReceiver();
+    private SharedPreferences sharedPreferences;
+    Bundle tmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        tmp = savedInstanceState;
         Log.d("NavigationActivity","onCreate");
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,8 +89,33 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         alarm.setAlarm(this);
 
+        Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
+        if(sharedPreferences.getString("BGLogin","").equals("true")){
+            //須偷偷登入才能載入HomeFragment
+            Intent intent = new Intent(NavigationActivity.this,ConnectService.class);
+            intent.putExtra(getString(R.string.activity),"NavigationActivity");
+            intent.putExtra(getString(R.string.id),"3");
+            intent.putExtra(getString(R.string.account),sharedPreferences.getString(getString(R.string.account),""));
+            intent.putExtra(getString(R.string.password),sharedPreferences.getString(getString(R.string.password),""));
+            Log.d("NavigationActivity","偷偷登入");
 
+            if(!isBind){
+                getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+                isBind=true;
+                Log.d("LoginActivity:", "login->bind");
+            }
+            else{
+                mBoundService.sendToServer(intent);
+                Log.d("LoginActivity:", "login->sendToService");
+            }
+            setReceiver();
+        }else{
+            //不用偷偷登入即可載入HomeFragment
+            loadHome(savedInstanceState);
+        }
+    }
 
+    public void loadHome(Bundle tmp2){
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.fragment_container) != null) {
@@ -93,14 +123,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             // However, if we're being restored from a previous state,
             // then we don't need to do anything and should return or else
             // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
+            if (tmp2 != null) {
                 return;
             }
 
             // Create a new Fragment to be placed in the activity layout
             //這裡要放主畫面
-
-            HomeFragment firstFragment = new HomeFragment();
+            if(firstFragment==null){
+                firstFragment = new HomeFragment();
+            }
             myFragment = firstFragment;
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
         }
@@ -115,6 +146,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onDestroy() {
         Log.d("NavigationActivity","onDestroy");
+        sharedPreferences.edit().putString("BGLogin","true").apply();
+        Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
         super.onDestroy();
     }
 
@@ -321,6 +354,18 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     mSendHistoryPage.updateListView(bundle);
                 }
 
+            }else if(intent.getStringExtra("activity").equals("NavigationActivity")){
+                getApplicationContext().unbindService(mConnection);
+                unregisterReceiver(receiver);
+                Bundle bundle = intent.getExtras();
+                String type = bundle.getString(getString(R.string.type));
+                if(type.compareTo("1")==0){
+                    //偷偷登入成功，可以載入HomeFragment要資料了
+                    loadHome(tmp);
+                }else{
+                    String errorMsg=bundle.getString(getString(R.string.errorMsg));
+                    Log.e("NavigationActivity",errorMsg);
+                }
             }
         }
     }

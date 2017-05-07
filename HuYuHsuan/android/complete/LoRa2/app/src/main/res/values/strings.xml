@@ -20,6 +20,7 @@
     <string name="key">key</string>
     <string name="errorMsg">errorMsg</string>
     <string name="packetType">packetType</string>
+    <string name="message">message</string>
 
     <!--service傳回來要用的-->
     <string name="type">type</string>

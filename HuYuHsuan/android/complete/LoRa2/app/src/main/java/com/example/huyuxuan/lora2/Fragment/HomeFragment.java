@@ -211,16 +211,17 @@ public class HomeFragment extends Fragment {
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
                 getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
-                ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
-               // ArrayList list = bundle.getParcelableArrayList("list");
-               // DataList = (ArrayList<HashMap<String, String>>)list.get(0);
-                ListAdapter adapter = new SimpleAdapter(
-                        getActivity(), DataList,
-                        R.layout.list_item, new String[] {getString(R.string.requireTime),getString(R.string.state),
-                        getString(R.string.sender),getString(R.string.receiver),getString(R.string.desLocation),getString(R.string.key)},
-                        new int[] {R.id.requireTime,R.id.state,R.id.sender,R.id.receiver,R.id.des_id,R.id.key});
-                lv.setAdapter(adapter);
-
+                if(bundle != null){
+                    ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));
+                    ListAdapter adapter = new SimpleAdapter(
+                            getActivity(), DataList,
+                            R.layout.list_item, new String[] {getString(R.string.requireTime),getString(R.string.state),
+                            getString(R.string.sender),getString(R.string.receiver),getString(R.string.desLocation),getString(R.string.key)},
+                            new int[] {R.id.requireTime,R.id.state,R.id.sender,R.id.receiver,R.id.des_id,R.id.key});
+                    lv.setAdapter(adapter);
+                }else{
+                    Toast.makeText(getActivity().getApplicationContext(),"伺服器維修中，請稍候:)",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
