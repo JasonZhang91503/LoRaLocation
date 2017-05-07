@@ -177,6 +177,11 @@ public class ConnectService extends Service {
                     case "11"://要大樓資訊
                         msg = id+",";
                         break;
+                    case "12":
+                        password = intent.getStringExtra(getString(R.string.password));
+                        email = intent.getStringExtra(getString(R.string.email));
+                        msg = id+","+password+","+email+",";
+                        break;
                 }
 
                 if (!mSocket.isOutputShutdown() && msg.length() > 0 && !mSocket.isInputShutdown()) {
@@ -361,9 +366,27 @@ public class ConnectService extends Service {
                 dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
                 Log.d("ana:","第二筆"+mesArray[1]);
                 break;
+            case "12":
+                type=mes.substring(commaIndex+1,3);
+                if(type.equals("0")){
+                    String error = mes.substring(3);
+                    dataBundle.putString(getString(R.string.errorMsg),error);
+                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
+                }
+                dataBundle.putString(getString(R.string.type),type);
+                Log.d("ana:","id="+id+"type="+type);
+                break;
             default:
                 dataBundle=null;
         }
         return  dataBundle;
+    }
+
+    public void disconnect(){
+        try {
+            mSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

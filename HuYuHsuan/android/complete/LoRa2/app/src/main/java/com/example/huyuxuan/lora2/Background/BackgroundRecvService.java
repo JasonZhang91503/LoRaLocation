@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -43,6 +44,7 @@ public class BackgroundRecvService extends Service {
     static BufferedWriter out;
 
     String rcvMessage;
+    private SharedPreferences sharedPreferences;
 
     @Nullable
     @Override
@@ -55,6 +57,7 @@ public class BackgroundRecvService extends Service {
         super.onCreate();
         acquireWakeLock(1);
         Log.d("BGService","onCreate");
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
 
         new AsyncTask<String,String,String>() {
             @Override
@@ -71,9 +74,11 @@ public class BackgroundRecvService extends Service {
                     in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                     out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
                     Log.i("BGRService", "BufferedReader and PrintWriter ready.");
-                    out.write("3");
+                    String account = sharedPreferences.getString(getString(R.string.account),"");
+                    String password = sharedPreferences.getString(getString(R.string.password),"");
+                    out.write("3,"+account+","+password+",");
                     out.flush();
-                    Log.d("Service", "write 3 to server");
+                    Log.d("Service", "write 3,"+account+","+password+", to server");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -102,9 +107,11 @@ public class BackgroundRecvService extends Service {
                     if(in != null){
                         rcvMessage = in.readLine();
                         Log.d("BGRService", "receive " + rcvMessage + " from server");
-                        createSimleNotification(rcvMessage);
-                        //強迫螢幕亮起
-                        acquireWakeLock(2);
+                        if(rcvMessage!=null){
+                            createSimleNotification(rcvMessage);
+                            //強迫螢幕亮起
+                            acquireWakeLock(2);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

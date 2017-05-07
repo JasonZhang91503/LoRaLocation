@@ -67,7 +67,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         context.getApplicationContext().registerReceiver(mServiceBroadcastReceiver, filter);
         Log.d("MyAlarmReceiver","register receiver");
     }
-    /*
+
     public void cancelAlarm(Context context) {
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
@@ -82,7 +82,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
     }
-    */
+
 
     public class BgServiceRecver extends BroadcastReceiver {
         @Override

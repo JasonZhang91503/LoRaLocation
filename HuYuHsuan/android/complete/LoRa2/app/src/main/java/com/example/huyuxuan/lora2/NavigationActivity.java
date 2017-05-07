@@ -272,6 +272,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         MyBoundedService.isConnect=false;
         MyBoundedService.myService=null;
         */
+        //service的socket斷線
+        if(mBoundService!=null){
+            mBoundService.disconnect();
+            alarm.cancelAlarm(NavigationActivity.this);
+        }
     }
 
 

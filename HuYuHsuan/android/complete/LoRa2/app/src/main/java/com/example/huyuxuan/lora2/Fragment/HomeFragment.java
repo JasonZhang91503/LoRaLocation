@@ -220,7 +220,7 @@ public class HomeFragment extends Fragment {
                             new int[] {R.id.requireTime,R.id.state,R.id.sender,R.id.receiver,R.id.des_id,R.id.key});
                     lv.setAdapter(adapter);
                 }else{
-                    Toast.makeText(getActivity().getApplicationContext(),"伺服器維修中，請稍候:)",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
                 }
             }
         }
