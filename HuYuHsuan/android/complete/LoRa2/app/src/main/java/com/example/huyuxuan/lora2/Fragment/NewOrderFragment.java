@@ -1,18 +1,19 @@
 package com.example.huyuxuan.lora2.Fragment;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -22,10 +23,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.R;
@@ -37,27 +40,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static android.content.Context.MODE_PRIVATE;
-
 /**
- * Created by huyuxuan on 2017/4/28.
+ * Created by huyuxuan on 2017/5/7.
  */
 
-public class RegisterFragment extends Fragment {
-    private View myview;
-    private static boolean isBind;
-    private Button btnOk;
-    private Button btnSelectTime;
-    private Spinner spnReceiver;
-    private Spinner spnStart;
-    private Spinner spnDes;
-    private SharedPreferences sharedPreferences;
-    private String myName;
-    private boolean getBuildingArray;
+public class NewOrderFragment extends Fragment implements View.OnClickListener{
+    private final String TAG=this.getClass().getSimpleName();
+    String[] location={"",""};
+    String timeText;
+    boolean is_setTime=false;
+    Spinner spnStart;
+    Spinner spnDest;
+    TextView orderTime;
     private String des;
     private String start;
-    private String receiverName;
+    String buildingArray[];
+    private static boolean isBind;
     private String time;
+    String formattedDate;
 
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
@@ -65,61 +65,46 @@ public class RegisterFragment extends Fragment {
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     final String AVAILABLE_TIME_FRAGMENT = "available_fragment";
 
-    @Override
-    public void onCreate(Bundle savedInstances){
-        super.onCreate(savedInstances);
-
-
+    public NewOrderFragment() {
+        // Required empty public constructor
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState){
-        //inflate layout for this fragment
-        myview = inflater.inflate(R.layout.fragment_register,container,false);
-        btnOk = (Button)myview.findViewById(R.id.btnRegisterOk);
-        btnSelectTime = (Button)myview.findViewById(R.id.btnSelectTime);
-        spnReceiver = (Spinner)myview.findViewById(R.id.spinnerReceiver);
-        spnStart = (Spinner)myview.findViewById(R.id.spinnerStart);
-        spnDes = (Spinner)myview.findViewById(R.id.spinnerDes);
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
 
+        View view=inflater.inflate(R.layout.fragment_new_order, container, false);
+        //得到日期資訊並且顯示於Text中
+        LinearLayout time=(LinearLayout)view.findViewById(R.id.time);
+        orderTime=(TextView)view.findViewById(R.id.orderTime);
 
-        isBind = false;
-        sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
-        myName = sharedPreferences.getString(getString(R.string.name),"");
-        getBuildingArray = false;
-
-
-        //向server要有空時段資料
-        Intent intent = new Intent(getActivity(),ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"RegisterFragment");
-        intent.putExtra(getString(R.string.id),"10");
-        intent.putExtra(getString(R.string.name),myName);
+        //要大樓資料
+        Intent tmpIntent = new Intent(getContext(),ConnectService.class);
+        tmpIntent.putExtra(getString(R.string.activity),"NewOrderFragment");
+        tmpIntent.putExtra(getString(R.string.id),"11");
         if(!isBind){
-            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            getActivity().getApplicationContext().bindService(tmpIntent,mConnection, Context.BIND_AUTO_CREATE);
             isBind=true;
-            Log.d("RegisterFragment:", "checkSR->bind");
+            Log.d("NewOrderFragment:", "checkSR->bind");
         }
         else{
-            mBoundService.sendToServer(intent);
-            Log.d("RegisterFragment:", "checkSR->sendToService");
+            mBoundService.sendToServer(tmpIntent);
+            Log.d("NewOrderFragment:", "checkSR->sendToService");
         }
         setReceiver();
 
-        spnReceiver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                receiverName = parent.getItemAtPosition(position).toString();
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        //設定下一步Btn的內容
+        Button btn=(Button)view.findViewById(R.id.btn_next);
+        btn.setOnClickListener(this);
+        spnStart=(Spinner)view.findViewById(R.id.start);
+        spnDest=(Spinner)view.findViewById(R.id.destination);
         spnStart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                start = parent.getItemAtPosition(position).toString();
+
+                location[0] = buildingArray[position];
+                Log.d(TAG,buildingArray[position]);
             }
 
             @Override
@@ -127,10 +112,11 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-        spnDes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spnDest.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                des = parent.getItemAtPosition(position).toString();
+                location[1] = buildingArray[position];
+                Log.e(TAG,buildingArray[position]);
             }
 
             @Override
@@ -138,71 +124,56 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-
-        btnOk.setOnClickListener(new View.OnClickListener() {
+        //替time Linearlayout 設定ClickListener
+        time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //登記
-                Intent intent = new Intent(getActivity(),ConnectService.class);
-                intent.putExtra(getString(R.string.activity),"RegisterFragment");
-                intent.putExtra(getString(R.string.id),"4");
-                //等挑時間的介面寫完再改
-                intent.putExtra(getString(R.string.requireTime),"10:30:00");
-                intent.putExtra(getString(R.string.sender),myName);
-                intent.putExtra(getString(R.string.receiver),receiverName);
-                intent.putExtra(getString(R.string.startLocation),des);
-                intent.putExtra(getString(R.string.desLocation),start);
-
-                if(!isBind){
-                    getActivity().getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-                    isBind=true;
-                    Log.d("RegisterFragment:", "apply->bind");
-                }
-                else{
-                    if(mBoundService == null){
-                        Log.e("RegisterFragment","mBoundService is null");
-                    }
-                    else{
-                        Log.d("MainActivity:", "apply->sendToService");
-                        mBoundService.sendToServer(intent);
-                    }
-
-                }
-                setReceiver();
-            }
-        });
-
-        btnSelectTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //抓手機現在時間
                 Calendar c = Calendar.getInstance();
-                String formattedDate = dayDateFormat.format(c.getTime());
-                Log.d("RegisterFragment","formattedDate:"+formattedDate);
+                formattedDate = dayDateFormat.format(c.getTime());
+                Log.d("NewOrderFragment","formattedDate:"+formattedDate);
 
-                //向server要有空時段資料
                 Intent intent = new Intent(getActivity(),ConnectService.class);
-                intent.putExtra(getString(R.string.activity),"RegisterFragment");
+                intent.putExtra(getString(R.string.activity),"NewOrderFragment");
                 intent.putExtra(getString(R.string.id),"5");
                 intent.putExtra(getString(R.string.requireTime),formattedDate);
                 if(!isBind){
                     getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
                     isBind=true;
-                    Log.d("RegisterFragment:", "checkSR->bind");
+                    Log.d("NewOrderFragment:", "checkSR->bind");
                 }
                 else{
                     mBoundService.sendToServer(intent);
-                    Log.d("RegisterFragment:", "checkSR->sendToService");
+                    Log.d("NewOrderFragment:", "checkSR->sendToService");
                 }
                 setReceiver();
             }
         });
 
-        return myview;
+        return view;
     }
 
-    public void setTime(String tmp){
-        time=tmp;
+    @Override
+    public void onClick(View v) {
+
+        //創造一個可以傳遞參數的Fragment，並且將地點和時間的參數傳遞到下一個Fragment讓最後確認時可以有資訊
+        //傳遞 Location 編號->可以從 string.xml 找到
+        //傳遞 timeText 時間資訊->看看是否要改格式(方便傳遞)
+        if(!is_setTime){
+            //避免沒有選填時間
+            Toast.makeText(getContext(),"請填選時間",Toast.LENGTH_SHORT).show();
+        }else if(location[0]==location[1]){
+            //避免相同收件地
+            Toast.makeText(getContext(),"寄件地收件地不可相同",Toast.LENGTH_SHORT).show();
+        }
+        else {
+            NewOrderFragment2 fragment2 = NewOrderFragment2.newInstance(location, timeText);
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            FragmentTransaction trans = fm.beginTransaction();
+            trans.addToBackStack("null");
+            trans.replace(R.id.fragment_container, fragment2, fragment2.getTag());
+            trans.commit();
+        }
+
     }
 
     private static ServiceConnection mConnection = new ServiceConnection() {
@@ -217,20 +188,18 @@ public class RegisterFragment extends Fragment {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
-            Log.d("RegisterFragment","onServiceDisconnected");
+            Log.d("NewOrderFragment","onServiceDisconnected");
             //mBoundService = null;
             isBind=false;
         }
 
     };
 
-
-
     //接收广播类
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("activity").equals("RegisterFragment")){
+            if(intent.getStringExtra("activity").equals("NewOrderFragment")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
                 //getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
@@ -239,7 +208,6 @@ public class RegisterFragment extends Fragment {
 
                     case "5":
                         String msg = bundle.getString("message");
-
 
                         //創basic dialog
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -253,31 +221,15 @@ public class RegisterFragment extends Fragment {
                         mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
                         mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
 
-
-                        Log.d("RegisterFragment","id=5,msg="+msg);
+                        Log.d("NewOrderFragment","id=5,msg="+msg);
                         break;
 
-                    case "10"://要使用者名單
-                        String nameArray[]=bundle.getStringArray(getString(R.string.nameArray));
-                        ArrayAdapter<String > nameList = new ArrayAdapter<>(getActivity(),
-                                R.layout.support_simple_spinner_dropdown_item,nameArray);
-                        spnReceiver.setAdapter(nameList);
-
-                        if(!getBuildingArray){
-                            Intent tmpIntent = new Intent(getContext(),ConnectService.class);
-                            tmpIntent.putExtra(getString(R.string.activity),"RegisterFragment");
-                            tmpIntent.putExtra(getString(R.string.id),"11");
-                            mBoundService.sendToServer(tmpIntent);
-                            setReceiver();
-                        }
-                        break;
                     case "11"://要大樓資訊
-                        String buildingArray[]=bundle.getStringArray(getString(R.string.buildingArray));
+                        buildingArray=bundle.getStringArray(getString(R.string.buildingArray));
                         ArrayAdapter<String > buildingList = new ArrayAdapter<>(getActivity(),
                                 R.layout.support_simple_spinner_dropdown_item,buildingArray);
                         spnStart.setAdapter(buildingList);
-                        spnDes.setAdapter(buildingList);
-                        getBuildingArray = true;
+                        spnDest.setAdapter(buildingList);
                         break;
                 }
 
@@ -291,9 +243,12 @@ public class RegisterFragment extends Fragment {
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ConnectServiceReceiver();
         getActivity().getApplicationContext().registerReceiver(receiver, filter);
-        Log.d("RegisterFragment","register receiver");
+        Log.d("NewOrderFragment","register receiver");
     }
 
+    public void setTime(String tmp){
+        time=tmp;
+    }
 
     @SuppressLint("ValidFragment")
     public class BasicDialogFragment extends DialogFragment {
@@ -314,7 +269,6 @@ public class RegisterFragment extends Fragment {
         public BasicDialogFragment(){
             //開啟畫面時把資料放進listView
             String msg = getArguments().getString(getString(R.string.message));
-           // char tmp[]=msg.toCharArray();
 
             List<Map<String, String>> items = new ArrayList<Map<String,String>>();
             for(int i=0;i<msg.length();i++){
@@ -348,7 +302,10 @@ public class RegisterFragment extends Fragment {
                             .setPositiveButton("是", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    RegisterFragment.this.setTime(list[position]);
+                                    NewOrderFragment.this.setTime(list[position]);
+                                    timeText=list[position];
+                                    orderTime.setText(timeText);
+                                    is_setTime=true;
                                 }
                             })
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -374,4 +331,5 @@ public class RegisterFragment extends Fragment {
             }
         }
     }
+
 }

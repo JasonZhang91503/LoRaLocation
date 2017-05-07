@@ -32,6 +32,7 @@ import com.example.huyuxuan.lora2.Background.MyAlarmReceiver;
 import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
+import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
 import com.example.huyuxuan.lora2.Fragment.RcvHistoryPage;
 import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
@@ -207,11 +208,18 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
+                /*
                 RegisterFragment registerFragment = new RegisterFragment();
                 myFragment = registerFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,registerFragment).commit();
+                */
+                NewOrderFragment newOrderFragment = new NewOrderFragment();
+                myFragment = newOrderFragment;
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,newOrderFragment).commit();
                 break;
             case R.id.nav_history:
                 HistoryFragment historyFragment = new HistoryFragment();
