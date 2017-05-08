@@ -37,7 +37,6 @@
     <string name="cost">總金額</string>
     <string name="home_Latest_order">最新訂單</string>
     <string-array name="Location">
-
         <item>商學院</item>
         <item>法學院</item>
         <item>行政大樓</item>

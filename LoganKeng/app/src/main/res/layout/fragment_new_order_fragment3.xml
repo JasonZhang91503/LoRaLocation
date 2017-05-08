@@ -51,7 +51,7 @@
             android:background="@android:color/white"
             android:orientation="vertical"
             android:paddingBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_confim"
+            app:layout_constraintBottom_toTopOf="@+id/btn_confirm"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -251,7 +251,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_confim"
+            android:id="@+id/btn_confirm"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"

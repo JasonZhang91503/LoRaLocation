@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -83,8 +84,8 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
         note=(TextView)view.findViewById(R.id.txtNote);
 
         setText();
-        //Button btn_next=(Button)view.findViewById(R.id.btn_next);
-        //btn_next.setOnClickListener(this);
+        Button btn_confirm=(Button)view.findViewById(R.id.btn_confirm);
+        btn_confirm.setOnClickListener(this);
         return view;
     }
     public void setText(){
@@ -101,6 +102,12 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
     }
     @Override
     public void onClick(View v) {
+        HomeFragment hf=new HomeFragment();
+        FragmentManager fm=getActivity().getSupportFragmentManager();
+        FragmentTransaction trans=fm.beginTransaction();
+        trans.replace(R.id.frame,hf,hf.getTag());
+        Toast.makeText(getActivity(),"完成訂單登記",Toast.LENGTH_SHORT).show();
+        trans.commit();
         //回到MainFragment
     }
 }

@@ -15,4 +15,8 @@
     <!--0504後更新-->
     <color name="Cost_Color">#f95959</color>
     <color name="Order">#0E7CF4</color>
+    <color name="orderBar_unprocessed">#DC3737</color>
+    <color name="orderBar_waiting">#F7AF1D</color>
+    <color name="orderBar_complete">#55A44E</color>
+    <color name="orderCard_monthColor">#FF9C00</color>
 </resources>

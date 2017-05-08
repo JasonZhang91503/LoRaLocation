@@ -7,12 +7,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 /**
@@ -80,6 +83,31 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             }
         });
 
+        //設定RecycleView的金額
+        RecyclerView recyclerView;
+
+        ArrayList<Order> dataset = new ArrayList<Order>();
+        String[] resource=getActivity().getResources().getStringArray(R.array.Location);
+
+        Order[] order=new Order[4];
+
+        order[0]=new Order(3,4,50,"耿楷寗","0933232456","2017年5月30日17點05分","",1);
+        order[1]=new Order(0,2,30,"張紘綸","0921357849","2017年4月28日11點25分","記得要做考古題",2);
+        order[2]=new Order(1,5,40,"張主任","0932654378","2017年4月20日14點30分","內有公文記得簽收",3);
+        order[3]=new Order(3,4,20,"電資院","0988960459","2017年4月17日09點25分","最新講座資訊敬請公告",4);
+
+        for(int i=0;i<order.length;i++){
+            dataset.add(order[i]);
+        }
+
+        MyAdapter myAdapter=new MyAdapter(dataset,resource);
+        LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        recyclerView=(RecyclerView)view.findViewById(R.id.recyclerView);
+        //recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(myAdapter);
         return view;
     }
 
