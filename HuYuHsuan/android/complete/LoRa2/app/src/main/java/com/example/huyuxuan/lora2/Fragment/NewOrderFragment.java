@@ -1,6 +1,7 @@
 package com.example.huyuxuan.lora2.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -58,6 +59,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     private static boolean isBind;
     private String time;
     String formattedDate;
+    FragmentTransaction ft;
 
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
@@ -210,16 +212,16 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                         String msg = bundle.getString("message");
 
                         //創basic dialog
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        Fragment prev=getFragmentManager().findFragmentByTag(AVAILABLE_TIME_FRAGMENT);
-                        if(prev != null){
-                            ft.remove(prev);
-                        }
-                        ft.addToBackStack(null);
-                        DialogFragment mDialogFragment = new BasicDialogFragment();
+                        ft = getFragmentManager().beginTransaction();
+                        DialogFragment mDialogFragment;
+                        mDialogFragment = new BasicDialogFragment();
                         mDialogFragment.setArguments(bundle);
-                        mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
-                        mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
+                        mDialogFragment.setTargetFragment(NewOrderFragment.this, 0);
+                      //  mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
+                       // mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
+                        ft.add(R.id.fragment_container,mDialogFragment);
+                        ft.addToBackStack(null);
+                        ft.commit();
 
                         Log.d("NewOrderFragment","id=5,msg="+msg);
                         break;
@@ -256,25 +258,41 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         ListView lv;
         private String[] list={"09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"
                 ,"14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"};
+        String tmp;
+        private String dialogMessage;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             v = inflater.inflate(R.layout.fragment_available_time, container, false);
             lv = (ListView) v.findViewById(R.id.available_listview);
+            tmp = getResources().getString(R.string.message);
 
             return v;
         }
 
+        /*
+        public BasicDialogFragment newInstance(String dialogMessage){
+            BasicDialogFragment fragment = new BasicDialogFragment();
+            Bundle args = new Bundle();
+            args.putString("message", dialogMessage);
+            fragment.setArguments(args);
+            return fragment;
+        }
+        */
+
+
         public BasicDialogFragment(){
-            //開啟畫面時把資料放進listView
-            String msg = getArguments().getString(getString(R.string.message));
+            Bundle bundle = getArguments();
+            if(bundle != null) {
+                dialogMessage = bundle.getString("message");
+            }
 
             List<Map<String, String>> items = new ArrayList<Map<String,String>>();
-            for(int i=0;i<msg.length();i++){
+            for(int i=0;i<dialogMessage.length();i++){
                 Map<String, String> item = new HashMap<String, String>();
                 item.put("time",list[i]);
-                if(msg.charAt(i)=='1'){
+                if(dialogMessage.charAt(i)=='1'){
                     item.put("text","可以預約");
                 }else{
                     item.put("text","無法預約");
@@ -285,10 +303,10 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                     R.layout.available_time_list_item,new String[]{"time","text"}
                     ,new int[]{R.id.LI_time,R.id.LI_Choose});
             lv.setAdapter(adapter);
-            for(int i=0;i<msg.length();i++){
+            for(int i=0;i<dialogMessage.length();i++){
                 TextView tmpView;
                 tmpView = (TextView)getViewByPosition(i,lv);
-                if(msg.charAt(i)=='0'){
+                if(dialogMessage.charAt(i)=='0'){
                     //不能預約，要把該textView的clickable設為false
                     tmpView.setClickable(false);
                 }
@@ -330,6 +348,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                 return listView.getChildAt(childIndex);
             }
         }
+
     }
 
 }

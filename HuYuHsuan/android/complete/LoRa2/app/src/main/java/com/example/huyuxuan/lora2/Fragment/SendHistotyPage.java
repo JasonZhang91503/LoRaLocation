@@ -10,6 +10,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.Order;
 import com.example.huyuxuan.lora2.R;
 
 import java.io.Serializable;
@@ -34,7 +37,7 @@ import java.util.Locale;
 
 public class SendHistotyPage extends Fragment implements Serializable{
     private static View myView;
-    private ListView lv;
+    private RecyclerView recyclerView;
     private Button btnPickTime;
 
     private Calendar c;
@@ -52,7 +55,7 @@ public class SendHistotyPage extends Fragment implements Serializable{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
         myView = inflater.inflate(R.layout.fragment_send_history, container, false);
-        lv = (ListView)myView.findViewById(R.id.sendHistoryListView);
+        recyclerView = (RecyclerView) myView.findViewById(R.id.sendHistoryRecycleView);
         btnPickTime = (Button)myView.findViewById(R.id.btnPickDate2);
 
         c = Calendar.getInstance();
@@ -79,15 +82,12 @@ public class SendHistotyPage extends Fragment implements Serializable{
         //c = Calendar.getInstance(TimeZone.getDefault());
         formattedDate = dayDateFormat.format(c.getTime());
         Log.d("SendHistotyPage:","updateLV formatted="+formattedDate);
-        ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
-        ListAdapter adapter = new SimpleAdapter(
-                getActivity(), DataList,
-                R.layout.sendhistory_list_item, new String[] {getString(R.string.requireTime),getString(R.string.arriveTime),getString(R.string.state),
-                getString(R.string.receiver),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
-                new int[] {R.id.SendrequireTime,R.id.SendarriveTime,R.id.Sendstate,R.id.Sendreceiver,R.id.Senddes_id,R.id.Sendstart,R.id.Sendkey});
-        lv.setAdapter(adapter);
-
-
+        ArrayList<Order> orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
+        MyAdapter myAdapter=new MyAdapter(orderlist);
+        LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(myAdapter);
     }
 
 }

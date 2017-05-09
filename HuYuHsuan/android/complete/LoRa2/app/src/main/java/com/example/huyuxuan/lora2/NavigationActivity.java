@@ -24,9 +24,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.Background.MyAlarmReceiver;
 import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
@@ -34,13 +31,10 @@ import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
 import com.example.huyuxuan.lora2.Fragment.RcvHistoryPage;
-import com.example.huyuxuan.lora2.Fragment.RegisterFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
 import com.example.huyuxuan.lora2.Fragment.SettingFragment;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -140,6 +134,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     @Override
     protected void onStop() {
+        sharedPreferences.edit().putString("BGLogin","true").apply();
         Log.d("NavigationActivity","onStop");
         super.onStop();
     }
@@ -208,13 +203,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
-                /*
-                RegisterFragment registerFragment = new RegisterFragment();
-                myFragment = registerFragment;
-                getSupportFragmentManager().beginTransaction()
-                        .addToBackStack(null)
-                        .replace(R.id.fragment_container,registerFragment).commit();
-                */
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
                 getSupportFragmentManager().beginTransaction()

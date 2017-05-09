@@ -10,6 +10,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.Order;
 import com.example.huyuxuan.lora2.R;
 
 import java.io.Serializable;
@@ -35,7 +38,8 @@ import java.util.Locale;
 public class RcvHistoryPage extends Fragment implements Serializable{
 
     private static  View myView;
-    private ListView lv;
+    //private ListView lv;
+    private RecyclerView recyclerView;
     private Button btnPickDate;
 
     private Calendar c;
@@ -52,7 +56,8 @@ public class RcvHistoryPage extends Fragment implements Serializable{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
         myView = inflater.inflate(R.layout.fragment_recv_history, container, false);
-        lv = (ListView)myView.findViewById(R.id.rcvHistoryListView);
+        //lv = (ListView)myView.findViewById(R.id.rcvHistoryListView);
+        recyclerView = (RecyclerView)myView.findViewById(R.id.rcvHistoryRecycleView);
         c = Calendar.getInstance();
         Log.d("RcvhistoryPage","date="+dayDateFormat.format(c.getTime()));
 
@@ -77,7 +82,8 @@ public class RcvHistoryPage extends Fragment implements Serializable{
         //c = Calendar.getInstance(TimeZone.getDefault());
         formattedDate = dayDateFormat.format(c.getTime());
         Log.d("RcvHistoryPage:","updateLV formatted="+formattedDate);
-        //if(bundle != null){
+        if(bundle != null){
+            /*
             ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
             ListAdapter adapter = new SimpleAdapter(
                     getActivity(), DataList,
@@ -85,11 +91,18 @@ public class RcvHistoryPage extends Fragment implements Serializable{
                     getString(R.string.sender),getString(R.string.desLocation),getString(R.string.startLocation),getString(R.string.key)},
                     new int[] {R.id.RcvrequireTime,R.id.RcvarriveTime,R.id.Rcvstate,R.id.Rcvsender,R.id.Rcvdes_id,R.id.Rcvstart,R.id.Rcvkey});
             lv.setAdapter(adapter);
-       /* }
+            */
+            ArrayList<Order> orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
+            MyAdapter myAdapter=new MyAdapter(orderlist);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(myAdapter);
+        }
         else{
             Log.d("RcvHistPage","updateLV bundle is null");
         }
-        */
+
     }
 
 }

@@ -8,6 +8,7 @@
     <color name="colorLogin">#093284</color>
     <color name="colorRegister">#203CC4</color>
     <color name="colorHint">#F8F8F8</color>>
+    <color name="colorActionBar">#000000</color>
     <color name="inactive_dot">#F2F2F2</color>
     <color name="active_dot">#203CC4</color>
     <color name="BG_Color">#E7E2E2</color>
@@ -15,4 +16,8 @@
 
     <color name="Cost_Color">#f95959</color>
     <color name="Order">#0E7CF4</color>
+    <color name="orderBar_unprocessed">#DC3737</color>
+    <color name="orderBar_waiting">#F7AF1D</color>
+    <color name="orderBar_complete">#55A44E</color>
+    <color name="orderCard_monthColor">#FF9C00</color>
 </resources>

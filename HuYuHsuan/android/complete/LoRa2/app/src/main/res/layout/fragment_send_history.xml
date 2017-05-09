@@ -9,8 +9,16 @@
         android:layout_height="wrap_content"
         android:text="Button" />
 
-    <ListView
-        android:id="@+id/sendHistoryListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/sendHistoryRecycleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingEnd="10dp"
+        android:paddingLeft="0dp"
+        android:paddingStart="10dp"
+        android:scrollbars="vertical" />
 </LinearLayout>

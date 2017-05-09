@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by huyuxuan on 2017/4/26.
@@ -56,6 +57,7 @@ public class ConnectService extends Service {
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         Log.d("ConnectService","isConnect="+MyBoundedService.isConnect);
         if(!MyBoundedService.isConnect){
+            Log.d("ConnectService","in create if");
             new AsyncTask<String,String,String>() {
                 @Override
                 protected String doInBackground(String... strings) {
@@ -90,6 +92,9 @@ public class ConnectService extends Service {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    catch (Exception e1){
+                        Log.d("ConnectService", "do in bg catch ");
+                    }
                     return null;
                 }
             }.execute();
@@ -105,6 +110,7 @@ public class ConnectService extends Service {
         new AsyncTask<String,String,String>(){
             @Override
             protected String doInBackground(String... strings) {
+                Log.d("ConnectService","onBind doinBGcalled");
                 sendToServer(intent);
 
                 return null;
@@ -131,7 +137,7 @@ public class ConnectService extends Service {
     }
 
     public void sendToServer(final Intent intent){
-
+        Log.d("ConnectService","sendToServer called");
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
@@ -198,10 +204,13 @@ public class ConnectService extends Service {
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                    }catch(Exception e1){
+                        Log.d("ConnectService","catch exception");
+                        e1.printStackTrace();
                     }
                 }
 
-                sharedPreferences.edit().putString("BGLogin","false").apply();
+
                 Intent broadcastIntent = new Intent();
                 broadcastIntent.setAction(ACTION_RECV_MSG);
                 broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -239,6 +248,7 @@ public class ConnectService extends Service {
                     dataBundle.putString(getString(R.string.name),name);
                     dataBundle.putString(getString(R.string.email),email);
                     Log.d("ana:","id="+id+"type="+type+"name="+name+"email="+email);
+
                 }
                 else if(type.compareTo("0")==0){
                     String error = mes.substring(3);
@@ -274,85 +284,74 @@ public class ConnectService extends Service {
             case "7":   //寄件資料
                 String numStr = mes.substring(commaIndex+1,3);//抓資料數量
                 int num = Integer.valueOf(numStr);
-                ArrayList<HashMap<String, String>> DataList = new ArrayList<HashMap<String, String>>();
+                ArrayList<Order> orderArrayList = new ArrayList<Order>();
                 String[] mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 for(int i = 0; i < num ; i++){
                     String curStr = mesArray[i]; //抓每筆資料
-                    HashMap<String, String> map = new HashMap<String, String>();
+                    String receiver;
                     if(i==0){
-                        map.put(getString(R.string.receiver),curStr.substring(3,curStr.indexOf('~')));
+                        receiver=curStr.substring(3,curStr.indexOf('~'));
                     }
                     else{
-                        map.put(getString(R.string.receiver),curStr.substring(0,curStr.indexOf('~')));
+                        receiver=curStr.substring(0,curStr.indexOf('~'));
                     }
-                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^')));
-                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')));
-                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
-                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
-                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
-                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
-                    DataList.add(map);
-                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))+"key="+curStr.substring(curStr.indexOf('#')+1));
+                    Order tmp = new Order(curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!'))
+                            ,receiver,sharedPreferences.getString(getString(R.string.name),""),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))
+                            ,curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#'))
+                            ,curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')),curStr.substring(curStr.indexOf('$'+1)));
+                    orderArrayList.add(tmp);
                 }
-                dataBundle.putSerializable("arrayList",DataList);
+                dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "8":   //收件資料
                 numStr = mes.substring(commaIndex+1,3);//抓資料數量
                 num = Integer.valueOf(numStr);
-                DataList = new ArrayList<HashMap<String, String>>();
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                orderArrayList = new ArrayList<Order>();
                 for(int i = 0; i < num ; i++){
                     String curStr = mesArray[i]; //抓每筆資料
                     Log.d("ana","curStr="+curStr);
-                    HashMap<String, String> map = new HashMap<String, String>();
+                    String sender;
                     if(i==0){
-                        map.put(getString(R.string.sender),curStr.substring(3,curStr.indexOf('~')));
+                       sender=curStr.substring(3,curStr.indexOf('~'));
                     }
                     else{
-                        map.put(getString(R.string.sender),curStr.substring(0,curStr.indexOf('~')));
+                       sender=curStr.substring(0,curStr.indexOf('~'));
                     }
-                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^')));
-                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')));
-                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
-                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
-                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
-                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('#')+1));
-                    DataList.add(map);
-                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))+"key="+curStr.substring(curStr.indexOf('#')+1));
-                }
 
-                dataBundle.putSerializable("arrayList",DataList);
+                    Order tmp = new Order(curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!'))
+                            ,sharedPreferences.getString(getString(R.string.name),""),sender,curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))
+                            ,curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#'))
+                            ,curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')),curStr.substring(curStr.indexOf('$'+1)));
+                    orderArrayList.add(tmp);
+                }
+                dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "9":
                 numStr = mes.substring(commaIndex+1,3);//抓資料數量
                 num = Integer.valueOf(numStr);
-                DataList = new ArrayList<HashMap<String, String>>();
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
+                orderArrayList = new ArrayList<Order>();
                 for(int i = 0; i < num ; i++){
                     String curStr = mesArray[i]; //抓每筆資料
-                    HashMap<String, String> map = new HashMap<String, String>();
+                    String sender;
                     if(i==0){
-                        map.put(getString(R.string.packetType),curStr.substring(3,4));//是寄件或收件資料
-                        map.put(getString(R.string.sender),curStr.substring(4,curStr.indexOf('~')));
+                       // map.put(getString(R.string.packetType),curStr.substring(3,4));//是寄件或收件資料
+                      sender=curStr.substring(4,curStr.indexOf('~'));
                     }
                     else{
-                        map.put(getString(R.string.packetType),curStr.substring(0,1));
-                        map.put(getString(R.string.sender),curStr.substring(1,curStr.indexOf('~')));
+                        //map.put(getString(R.string.packetType),curStr.substring(0,1));
+                        sender=curStr.substring(1,curStr.indexOf('~'));
                     }
-                    map.put(getString(R.string.receiver),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^')));
-                    map.put(getString(R.string.requireTime),curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')));
-                    map.put(getString(R.string.arriveTime),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/')));
-                    map.put(getString(R.string.startLocation),curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!')));
-                    map.put(getString(R.string.desLocation),curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')));
-                    map.put(getString(R.string.state),curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')));
-                    map.put(getString(R.string.key),curStr.substring(curStr.indexOf('$')+1));
-                    DataList.add(map);
-                    Log.d("ana:","id="+id+"第"+i+"筆"+"requireTime="+curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))+"key="+curStr.substring(curStr.indexOf('#')+1));
+
+                    Order tmp = new Order(curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!'))
+                            ,curStr.substring(curStr.indexOf('!')+1,curStr.indexOf('#')),curStr.substring(curStr.indexOf('~')+1,curStr.indexOf('^'))
+                            ,sender,curStr.substring(curStr.indexOf('^')+1,curStr.indexOf(';')),curStr.substring(curStr.indexOf(';')+1,curStr.indexOf('/'))
+                            ,curStr.substring(curStr.indexOf('#')+1,curStr.indexOf('$')),curStr.substring(curStr.indexOf('$')+1,curStr.indexOf('%'))
+                            ,curStr.substring(curStr.indexOf('%')+1));
+                    orderArrayList.add(tmp);
                 }
-                //ArrayList tmpList = new ArrayList(); //这个list用于在budnle中传递 需要传递的ArrayList<Object>
-                //tmpList.add(DataList);
-                dataBundle.putSerializable("arrayList",DataList);
-                //dataBundle.putParcelableArrayList("list",tmpList);
+                dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "10":
                 mes = mes.substring(mes.indexOf('^')+1);
@@ -389,4 +388,13 @@ public class ConnectService extends Service {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onDestroy() {
+        Log.d("ConnectService","onDestroy");
+        sharedPreferences.edit().putString("BGLogin","true").apply();
+        MyBoundedService.isConnect=false;
+        super.onDestroy();
+    }
+
 }
