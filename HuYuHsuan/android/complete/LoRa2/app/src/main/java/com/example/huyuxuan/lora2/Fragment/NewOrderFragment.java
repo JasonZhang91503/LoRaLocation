@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
@@ -45,7 +46,7 @@ import java.util.Map;
  * Created by huyuxuan on 2017/5/7.
  */
 
-public class NewOrderFragment extends Fragment implements View.OnClickListener{
+public class NewOrderFragment extends Fragment implements View.OnClickListener,BasicDialogFragment.PassOnTimeChooseListener {
     private final String TAG=this.getClass().getSimpleName();
     String[] location={"",""};
     String timeText;
@@ -130,10 +131,10 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar c = Calendar.getInstance();
+                final Calendar c = Calendar.getInstance();
                 formattedDate = dayDateFormat.format(c.getTime());
                 Log.d("NewOrderFragment","formattedDate:"+formattedDate);
-
+                /*
                 Intent intent = new Intent(getActivity(),ConnectService.class);
                 intent.putExtra(getString(R.string.activity),"NewOrderFragment");
                 intent.putExtra(getString(R.string.id),"5");
@@ -148,6 +149,50 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                     Log.d("NewOrderFragment:", "checkSR->sendToService");
                 }
                 setReceiver();
+                */
+
+                //這是假資料
+                Bundle bundle = new Bundle();
+                bundle.putStringArray("message", new String[]{"101110101011101010"});
+                /*
+
+                ft = getFragmentManager().beginTransaction();
+                DialogFragment mDialogFragment;
+                mDialogFragment = new BasicDialogFragment();
+                mDialogFragment.setArguments(bundle);
+                mDialogFragment.setTargetFragment(NewOrderFragment.this, 0);
+                mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
+                // mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
+                ft.add(R.id.fragment_container,mDialogFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                */
+
+                new TimePickerDialog(getContext(),2, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        String h,m;
+                        //讀取現在的時間資料
+                        int year=c.get(Calendar.YEAR);
+                        int month=c.get(Calendar.MONTH)+1;
+                        int day=c.get(Calendar.DAY_OF_MONTH);
+                        //優化文字介面用
+                        if(hourOfDay<10){
+                            h="0"+String.valueOf(hourOfDay);
+                        }else{
+                            h=String.valueOf(hourOfDay);
+                        }
+                        if(minute<10){
+                            m="0"+String.valueOf(minute);
+                        }else{
+                            m=String.valueOf(minute);
+                        }
+                        timeText=h+":"+m;
+                        orderTime.setText(timeText);
+                        is_setTime=true;
+                    }
+                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
+
             }
         });
 
@@ -197,13 +242,20 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
 
     };
 
+    @Override
+    public void passTime(String str_time) {
+        timeText=str_time;
+        orderTime.setText(timeText);
+        is_setTime=true;
+    }
+
     //接收广播类
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                //getActivity().getApplicationContext().unbindService(mConnection);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
@@ -211,17 +263,18 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                     case "5":
                         String msg = bundle.getString("message");
 
+
                         //創basic dialog
                         ft = getFragmentManager().beginTransaction();
                         DialogFragment mDialogFragment;
-                        mDialogFragment = new BasicDialogFragment();
-                        mDialogFragment.setArguments(bundle);
+                        mDialogFragment = BasicDialogFragment.newInstance(msg);
                         mDialogFragment.setTargetFragment(NewOrderFragment.this, 0);
                       //  mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
                        // mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
                         ft.add(R.id.fragment_container,mDialogFragment);
                         ft.addToBackStack(null);
                         ft.commit();
+
 
                         Log.d("NewOrderFragment","id=5,msg="+msg);
                         break;
@@ -252,103 +305,5 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         time=tmp;
     }
 
-    @SuppressLint("ValidFragment")
-    public class BasicDialogFragment extends DialogFragment {
-        View v;
-        ListView lv;
-        private String[] list={"09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30"
-                ,"14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"};
-        String tmp;
-        private String dialogMessage;
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            v = inflater.inflate(R.layout.fragment_available_time, container, false);
-            lv = (ListView) v.findViewById(R.id.available_listview);
-            tmp = getResources().getString(R.string.message);
-
-            return v;
-        }
-
-        /*
-        public BasicDialogFragment newInstance(String dialogMessage){
-            BasicDialogFragment fragment = new BasicDialogFragment();
-            Bundle args = new Bundle();
-            args.putString("message", dialogMessage);
-            fragment.setArguments(args);
-            return fragment;
-        }
-        */
-
-
-        public BasicDialogFragment(){
-            Bundle bundle = getArguments();
-            if(bundle != null) {
-                dialogMessage = bundle.getString("message");
-            }
-
-            List<Map<String, String>> items = new ArrayList<Map<String,String>>();
-            for(int i=0;i<dialogMessage.length();i++){
-                Map<String, String> item = new HashMap<String, String>();
-                item.put("time",list[i]);
-                if(dialogMessage.charAt(i)=='1'){
-                    item.put("text","可以預約");
-                }else{
-                    item.put("text","無法預約");
-                }
-                items.add(item);
-            }
-            SimpleAdapter adapter = new SimpleAdapter(getActivity().getApplicationContext(),items,
-                    R.layout.available_time_list_item,new String[]{"time","text"}
-                    ,new int[]{R.id.LI_time,R.id.LI_Choose});
-            lv.setAdapter(adapter);
-            for(int i=0;i<dialogMessage.length();i++){
-                TextView tmpView;
-                tmpView = (TextView)getViewByPosition(i,lv);
-                if(dialogMessage.charAt(i)=='0'){
-                    //不能預約，要把該textView的clickable設為false
-                    tmpView.setClickable(false);
-                }
-            }
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("選擇時段")
-                            .setMessage("確定要預約"+list[position]+"嗎？")
-                            .setPositiveButton("是", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    NewOrderFragment.this.setTime(list[position]);
-                                    timeText=list[position];
-                                    orderTime.setText(timeText);
-                                    is_setTime=true;
-                                }
-                            })
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .show();
-                }
-            });
-        }
-
-        public View getViewByPosition(int pos, ListView listView) {
-            final int firstListItemPosition = listView.getFirstVisiblePosition();
-            final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-            if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-                return listView.getAdapter().getView(pos, null, listView);
-            } else {
-                final int childIndex = pos - firstListItemPosition;
-                return listView.getChildAt(childIndex);
-            }
-        }
-
-    }
 
 }

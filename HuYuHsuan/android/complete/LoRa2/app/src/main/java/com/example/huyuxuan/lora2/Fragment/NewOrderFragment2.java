@@ -54,7 +54,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
 
-    String[] packet=new String[4];
+    String[] packet=new String[3];
 
     public NewOrderFragment2() {
         // Required empty public constructor
@@ -172,7 +172,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment2")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                //getActivity().getApplicationContext().unbindService(mConnection);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){

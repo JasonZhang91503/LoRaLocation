@@ -54,6 +54,7 @@ public class Order implements Serializable {
     public String getStr_dest(){return str_dest;}
     public String getStr_key(){return str_key;}
     public String getStr_arrive_time(){return str_arrive_time;}
+    public String getStr_sender(){return str_sender;}
 
     public int getOrder_cost() {
         return order_cost;

@@ -21,6 +21,7 @@
     <string name="errorMsg">errorMsg</string>
     <string name="packetType">packetType</string>
     <string name="message">message</string>
+    <string name="note">note</string>
 
     <!--service傳回來要用的-->
     <string name="type">type</string>
@@ -36,7 +37,7 @@
     <string name="home">主畫面</string>
     <string name="register">登記寄件</string>
     <string name="history">歷史</string>
-    <string name="setting">設定</string>
+    <string name="profile">個人資料</string>
     <string name="logOut">登出</string>
 
 

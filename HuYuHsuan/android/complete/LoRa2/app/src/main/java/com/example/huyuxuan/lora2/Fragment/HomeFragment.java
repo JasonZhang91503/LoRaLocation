@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -225,12 +226,25 @@ public class HomeFragment extends Fragment {
                 getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 if(bundle != null){
-                    ArrayList<Order> orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
+                    final ArrayList<Order> orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
                     MyAdapter myAdapter=new MyAdapter(orderlist);
                     LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     recyclerView.setLayoutManager(layoutManager);
                     recyclerView.setAdapter(myAdapter);
+                    myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            Log.d("HomeFragment","Myadapter onitemClick");
+                            Order tmp = orderlist.get(position);
+                            OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
+                            orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
+                            getFragmentManager().beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container,orderInfoFragment).commit();
+
+                        }
+                    });
                 }else{
                     Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
                 }

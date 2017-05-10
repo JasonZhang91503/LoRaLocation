@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.R;
 
+import java.util.Calendar;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -93,7 +95,11 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         return view;
     }
     public void setText(){
-        time.setText(mParam2[0]);
+        Calendar calendar=Calendar.getInstance();
+        int year=calendar.get(Calendar.YEAR);
+        int month=calendar.get(Calendar.MONTH)+1;
+        int day=calendar.get(Calendar.DAY_OF_MONTH);
+        time.setText(year+"年"+month+"月"+day+"日 "+mParam2[0]);
         name.setText(mParam2[1]);
         if(mParam2[2]!=null){
             note.setText(mParam2[2]);
@@ -117,6 +123,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         intent.putExtra(getString(R.string.receiver),mParam2[1]);
         intent.putExtra(getString(R.string.startLocation),mParam1[0]);
         intent.putExtra(getString(R.string.desLocation),mParam1[1]);
+        intent.putExtra(getString(R.string.note),mParam2[2]);
 
         if(!isBind){
             getActivity().getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
@@ -165,7 +172,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment3")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                //getActivity().getApplicationContext().unbindService(mConnection);
+                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 if(id.equals("4")){//是登記寄件結果

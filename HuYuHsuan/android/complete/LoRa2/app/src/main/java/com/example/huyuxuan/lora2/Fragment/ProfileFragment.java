@@ -98,8 +98,9 @@ public class ProfileFragment extends Fragment{
                 final View tmp = inflater.inflate(R.layout.edit_dialog, null);
                 final EditText editText = (EditText) (tmp.findViewById(R.id.editTextChange));
                 editText.setText(password);
+
                 new AlertDialog.Builder(getContext())
-                        .setTitle("請輸入新信箱")
+                        .setTitle("請輸入新密碼")
                         .setView(tmp)
                         .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                             @Override
@@ -107,6 +108,7 @@ public class ProfileFragment extends Fragment{
                                 password = editText.getText().toString();
                                 myPasswordView.setText(password);
                                 Log.d("changeDialog","new password="+password);
+                                dialog.dismiss();
                             }
                         })
                         .show();
@@ -129,6 +131,7 @@ public class ProfileFragment extends Fragment{
                                 email = editText2.getText().toString();
                                 myEmailView.setText(email);
                                 Log.d("changeDialog","new email="+email);
+                                dialog.dismiss();
                             }
                         })
                         .show();

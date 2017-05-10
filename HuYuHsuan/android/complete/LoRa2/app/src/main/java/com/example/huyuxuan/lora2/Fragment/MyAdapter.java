@@ -19,6 +19,7 @@ import java.util.List;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     //利用建構子將資料清單傳進來
     private List<Order> mDataset;
+    private OnItemClickListener mOnItemClickListener = null;
 
     public  MyAdapter(List<Order> data){
         mDataset=data;
@@ -28,6 +29,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview,parent,false);
         ViewHolder viewHolder=new ViewHolder(view);
+        view.setOnClickListener((View.OnClickListener) this);
         return viewHolder;
     }
     //透過position指定每個item所用到的資料
@@ -39,6 +41,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.Destination.setText(mDataset.get(position).getStr_dest());
         holder.Time.setText(mDataset.get(position).getSend_time());
         holder.Cost.setText("NT$30");
+        holder.itemView.setTag(position);
         switch (mDataset.get(position).getOrder_state()) {
             case 1:
                 holder.status.setImageResource(R.color.orderBar_unprocessed);
@@ -76,5 +79,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             //Note=(TextView)itemView.findViewById(R.id.note);
 
         }
+    }
+
+    public static interface OnItemClickListener {
+        void onItemClick(View view , int position);
+    }
+
+
+    public void onClick(View v) {
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取position
+            mOnItemClickListener.onItemClick(v,(int)v.getTag());
+        }
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
     }
 }

@@ -86,33 +86,6 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:paddingBottom="5dp"
-                android:paddingTop="5dp">
-
-                <TextView
-                    android:id="@+id/txtPhone"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="20dp"
-                    android:text="@string/new_Order_set2_phone"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
-
-                <EditText
-                    android:id="@+id/Phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="請填寫電話"
-                    android:inputType="phone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="8dp">

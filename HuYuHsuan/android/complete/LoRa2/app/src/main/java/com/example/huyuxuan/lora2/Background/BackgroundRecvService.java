@@ -143,14 +143,14 @@ public class BackgroundRecvService extends Service {
         if(msg=="1"){
             mBuilder =
                     new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setSmallIcon(R.drawable.delivery_icon)
                             .setContentTitle("My notification")
                             .setContentText("車子到了下來寄信")
                             .setAutoCancel(true);
         }else{
             mBuilder =
                     new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setSmallIcon(R.drawable.delivery_icon)
                             .setContentTitle("My notification")
                             .setContentText("車子到了下來收信")
                             .setAutoCancel(true);

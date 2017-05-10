@@ -112,7 +112,7 @@ public class ConnectService extends Service {
             protected String doInBackground(String... strings) {
                 Log.d("ConnectService","onBind doinBGcalled");
                 sendToServer(intent);
-
+                rcvMessage=null;
                 return null;
             }
         }.execute();
@@ -126,14 +126,6 @@ public class ConnectService extends Service {
             System.out.println("I am in Localbinder ");
             return ConnectService.this;
         }
-    }
-
-    @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
-        Log.d("Service:","onHandleIntent called");
-
-      //  sendToServer(intent);
-        return START_STICKY;
     }
 
     public void sendToServer(final Intent intent){
@@ -166,7 +158,8 @@ public class ConnectService extends Service {
                         String receiver = intent.getStringExtra(getString(R.string.receiver));
                         String StartId = intent.getStringExtra(getString(R.string.startLocation));
                         String destinationId = intent.getStringExtra(getString(R.string.desLocation));
-                        msg = id +","+ time + "," + sender + "," + receiver + "," + StartId + "," + destinationId + ",";
+                        String note = intent.getStringExtra(getString(R.string.note));
+                        msg = id +","+ time + "," + sender + "," + receiver + "," + StartId + "," + destinationId + ","+note+",";
                         break;
                     case "5"://詢問車子有空時間
                     case "7":
@@ -248,6 +241,7 @@ public class ConnectService extends Service {
                     dataBundle.putString(getString(R.string.name),name);
                     dataBundle.putString(getString(R.string.email),email);
                     Log.d("ana:","id="+id+"type="+type+"name="+name+"email="+email);
+                    sharedPreferences.edit().putString("BGLogin","false").apply();
 
                 }
                 else if(type.compareTo("0")==0){
@@ -392,8 +386,6 @@ public class ConnectService extends Service {
     @Override
     public void onDestroy() {
         Log.d("ConnectService","onDestroy");
-        sharedPreferences.edit().putString("BGLogin","true").apply();
-        MyBoundedService.isConnect=false;
         super.onDestroy();
     }
 

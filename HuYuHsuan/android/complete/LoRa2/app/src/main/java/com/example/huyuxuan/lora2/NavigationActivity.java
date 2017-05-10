@@ -30,9 +30,9 @@ import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
 import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
+import com.example.huyuxuan.lora2.Fragment.ProfileFragment;
 import com.example.huyuxuan.lora2.Fragment.RcvHistoryPage;
 import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
-import com.example.huyuxuan.lora2.Fragment.SettingFragment;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -216,12 +216,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,historyFragment).commit();
                 break;
-            case R.id.nav_setting:
-                SettingFragment settingFragment = new SettingFragment();
-                myFragment = settingFragment;
+            case R.id.nav_profile:
+                ProfileFragment profileFragment = new ProfileFragment();
+                myFragment = profileFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
-                        .replace(R.id.fragment_container,settingFragment).commit();
+                        .replace(R.id.fragment_container,profileFragment).commit();
                 break;
             case R.id.nav_logOut:
                 logOutDialog();
@@ -262,6 +262,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString(getString(R.string.name),"")
                 .putString(getString(R.string.email),"")
                 .putString(getString(R.string.isLogin),"fasle")
+                .putString("BGLogin","false")
                 .apply();
 
         /*不確定是否要加
@@ -323,7 +324,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             if(intent.getStringExtra("activity").equals("RcvHistoryPage")){
                 Log.d("NavigationActivity:","receiver on receive");
                 unregisterReceiver(receiver);
-                //getApplicationContext().unbindService(mConnection);
+                getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 //把bundle傳給recvHistoryPage
                 if(mRcvHistoryPage!=null && intent.getStringExtra("result").equals("true")){
