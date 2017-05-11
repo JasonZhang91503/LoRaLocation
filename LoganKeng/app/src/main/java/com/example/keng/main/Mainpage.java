@@ -26,6 +26,7 @@ public class Mainpage extends AppCompatActivity
     NewOrderFragment newOrderFragment;
     HistoryMainFragment historyFragment;
     HistoryMain_RecvFragment historyMain_recvFragment;
+    ArrayList<Order> dataset;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,21 +44,27 @@ public class Mainpage extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //在Mainpage讀資料，一一將每一筆資料傳遞到每個fragment
-        ArrayList<Order> dataset = new ArrayList<Order>();
+         dataset = new ArrayList<Order>();
 
-        Order[] order=new Order[4];
+        Order[] order=new Order[20];
 
-        order[0]=new Order(3,4,50,"張主任","耿楷寗","0933232456","2017年5月30日17點05分","","1234",1);
-        order[1]=new Order(0,2,30,"張主任","張紘綸","0921357849","2017年4月28日11點25分","記得要做考古題","5678",2);
-        order[2]=new Order(1,5,40,"耿楷寗","張主任","0932654378","2017年4月20日14點30分","內有公文記得簽收","1213",3);
-        order[3]=new Order(3,4,20,"張主任","電資院","0988960459","2017年4月17日09點25分","最新講座資訊敬請公告","1344",4);
-
-        for(int i=0;i<order.length;i++){
+        order[0]=new Order(3,4,50,"耿楷寗","胡育旋","2017-5-01 17:00:00","","1234",1);
+        order[1]=new Order(0,2,30,"張紘綸","耿楷寗","2017-4-28 11:00:00","記得要做考古題","5678",2);
+        order[2]=new Order(1,5,40,"耿楷寗","張主任","2017-4-28 09:00:00","內有公文記得簽收","1213",3);
+        order[3]=new Order(0,4,20,"卓書宇","耿楷寗","2017-4-17 17:30:00","","2042",4);
+        order[4]=new Order(4,2,20,"耿楷寗","謝正鴻","2017-4-17 14:30:00","","1356",1);
+        order[5]=new Order(1,3,20,"周聿晟","耿楷寗","2017-4-17 10:30:00","","9073",2);
+        order[6]=new Order(3,5,20,"張晏誠","耿楷寗","2017-4-10 14:00:00","","7658",3);
+        order[7]=new Order(5,1,20,"耿楷寗","謝正鴻","2017-4-10 13:30:00","吃皮蛋麵","2341",4);
+        order[8]=new Order(0,5,20,"卓書宇","耿楷寗","2017-4-10 10:00:00","吃老虎麵","6455",1);
+        order[9]=new Order(3,1,20,"卓書宇","耿楷寗","2017-4-10 09:30:00","郎有會","9527",4);
+        for(int i=0;i<10;i++){
             dataset.add(order[i]);
+            Log.d("tag",String.valueOf(i));
         }
 
         if(savedInstanceState==null){
-            homeFragment=new HomeFragment();
+            homeFragment=new HomeFragment(dataset);
             newOrderFragment=new NewOrderFragment();
             historyFragment=new HistoryMainFragment(dataset);
             historyMain_recvFragment=new HistoryMain_RecvFragment(dataset);
@@ -151,4 +158,5 @@ public class Mainpage extends AppCompatActivity
         index=i;
         Log.d(getClass().getSimpleName(),"index 已更新");
     }
+
 }

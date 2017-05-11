@@ -24,6 +24,7 @@ public class HistoryMainFragment extends Fragment {
     int type=0;
     public HistoryMainFragment(ArrayList<Order> orderData) {
         // Required empty public constructor
+        dataset=new ArrayList<Order>();
         dataset=orderData;
     }
 

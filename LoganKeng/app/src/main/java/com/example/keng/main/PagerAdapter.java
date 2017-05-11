@@ -20,13 +20,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
     ArrayList<Order> Complete_Dataset;
     ArrayList<Order> Incomplete_Dataset;
     boolean is_send;
-    String name="張主任";
+
+    String name="耿楷寗";
     public PagerAdapter(FragmentManager fm,ArrayList<Order> orderData,int type) {
         super(fm);
+
         Dataset=new ArrayList<Order>();
         if(type==0) {
             Dataset = getSenderData(orderData);
-            Log.d("set sender data","ok");
         }else{
             Dataset = getReceiverData(orderData);
             Log.d("set receiver data","ok");
@@ -79,7 +80,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public ArrayList<Order> getSenderData(ArrayList<Order> temp){
 
         ArrayList<Order> Sender=new ArrayList<Order>();
+        Log.d("enter","ok");
         for(int i=0;i<temp.size();i++){
+            Log.d("name"+i+" ",temp.get(i).getSend_name()+"123");
             if(name==temp.get(i).getSend_name()){
                 Sender.add(temp.get(i));
                 Log.d("tag :",String.valueOf(i));

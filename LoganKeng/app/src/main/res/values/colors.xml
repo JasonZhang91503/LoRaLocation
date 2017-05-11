@@ -19,4 +19,5 @@
     <color name="orderBar_waiting">#F7AF1D</color>
     <color name="orderBar_complete">#55A44E</color>
     <color name="orderCard_monthColor">#FF9C00</color>
+    <color name="money_color">#bd000000</color>
 </resources>

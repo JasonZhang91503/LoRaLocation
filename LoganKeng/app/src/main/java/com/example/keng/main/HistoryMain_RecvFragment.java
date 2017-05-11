@@ -24,6 +24,7 @@ public class HistoryMain_RecvFragment extends Fragment {
     int type=1;
     public HistoryMain_RecvFragment(ArrayList<Order> orderData) {
         // Required empty public constructor
+        dataset=new ArrayList<Order>();
         dataset=orderData;
     }
 

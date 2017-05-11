@@ -24,23 +24,22 @@ public class SplashScreen extends Activity {
          * startActivity(i)
          * finish()
          */
-        new Handler().postDelayed(new Runnable(){
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 Intent i;
-                /*if(!prefManager.isFirstTimeLaunch()){
+
+                if (!prefManager.isFirstTimeLaunch()) {
                     //第一次啟動app，進行註冊程序
-                    i=new Intent(SplashScreen.this,MainActivity.class);
+                    i = new Intent(SplashScreen.this, Mainpage.class);
                     startActivity(i);
                     finish();
-                }else*/
+                } else {
                     //之後啟動ㄧ率跳進登入畫面
                     i = new Intent(SplashScreen.this, IntroSlider.class);
-                    prefManager.setFirstTimeLaunch(false);
                     startActivity(i);
-                    finish();//結束目前的Activity
-                //}
+                    finish();
+                }//結束目前的Activity
             }
         },SPLASH_TIME_OUT);//間隔1.5秒後開啟程式
     }
