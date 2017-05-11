@@ -14,16 +14,20 @@ public class Order {
     private String recv_phone;
     private String send_time;
     private String note;
-
-    public Order(int start,int destination,int cost,String name,String phone,String time,String str,int state){
+    private String key_num;
+    private String send_name;
+    //起始地 終點 花費 寄送者 接收者 電話 時間 備註 密碼 狀態
+    public Order(int start,int destination,int cost,String sender,String receiver,String phone,String time,String str,String key,int state){
         start_place=start;
         final_place=destination;
-        recv_name=name;
+        recv_name=receiver;
         recv_phone=phone;
         send_time=time;
         note=str;
         order_state=state;
         order_cost=cost;
+        key_num=key;
+        send_name=sender;
     }
 
     public int getOrder_cost() {
@@ -40,6 +44,12 @@ public class Order {
         return order_state;
     }
 
+    public String getKey_num(){
+        return key_num;
+    }
+    public String getSend_name(){
+        return send_name;
+    }
     public String getRecv_name() {
         return recv_name;
     }

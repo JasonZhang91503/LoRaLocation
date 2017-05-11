@@ -11,13 +11,17 @@
             android:icon="@drawable/neworder"
             android:title="新增事件" />
         <item
-            android:id="@+id/nav_history"
+            android:id="@+id/nav_sendhistory"
+            android:icon="@drawable/send"
+            android:title="寄件紀錄" />
+        <item
+            android:id="@+id/nav_recvhistory"
             android:icon="@drawable/history"
-            android:title="歷史紀錄" />
+            android:title="收件紀錄" />
         <item
             android:id="@+id/nav_setting"
-            android:icon="@drawable/setting"
-            android:title="設定" />
+            android:icon="@drawable/user"
+            android:title="個人資料" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"

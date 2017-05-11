@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view=inflater.inflate(R.layout.fragment_home, container, false);
         ImageButton addEvent=(ImageButton)view.findViewById(R.id.addEvent);
         addEvent.setOnClickListener(new View.OnClickListener() {
@@ -91,10 +92,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         Order[] order=new Order[4];
 
-        order[0]=new Order(3,4,50,"耿楷寗","0933232456","2017年5月30日17點05分","",1);
-        order[1]=new Order(0,2,30,"張紘綸","0921357849","2017年4月28日11點25分","記得要做考古題",2);
-        order[2]=new Order(1,5,40,"張主任","0932654378","2017年4月20日14點30分","內有公文記得簽收",3);
-        order[3]=new Order(3,4,20,"電資院","0988960459","2017年4月17日09點25分","最新講座資訊敬請公告",4);
+        order[0]=new Order(3,4,50,"張主任","耿楷寗","0933232456","2017年5月30日17點05分","","1234",1);
+        order[1]=new Order(0,2,30,"張主任","張紘綸","0921357849","2017年4月28日11點25分","記得要做考古題","5678",2);
+        order[2]=new Order(1,5,40,"耿楷寗","張主任","0932654378","2017年4月20日14點30分","內有公文記得簽收","1213",3);
+        order[3]=new Order(3,4,20,"張主任","電資院","0988960459","2017年4月17日09點25分","最新講座資訊敬請公告","1344",4);
 
         for(int i=0;i<order.length;i++){
             dataset.add(order[i]);
@@ -104,7 +105,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        recyclerView=(RecyclerView)view.findViewById(R.id.recyclerView);
+        recyclerView=(RecyclerView)view.findViewById(R.id.recycleView);
         //recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);

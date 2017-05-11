@@ -1,0 +1,66 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:tag="history"
+    tools:context="com.example.keng.main.HistoryMainFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/BG_Color">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@android:color/black"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabIndicatorColor="@color/active_dot"
+            app:tabIndicatorHeight="4dp"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextColor="@android:color/white">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/hist_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hist_recv_all" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/hist_recv_incomplete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hist_recv_complete" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/hist_recv_complete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hist_recv_incomplete" />
+        </android.support.design.widget.TabLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/recv_pager"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

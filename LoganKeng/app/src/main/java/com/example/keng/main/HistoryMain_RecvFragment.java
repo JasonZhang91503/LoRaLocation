@@ -16,13 +16,13 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HistoryMainFragment extends Fragment {
+public class HistoryMain_RecvFragment extends Fragment {
 
     ArrayList<Order> dataset;
     ViewPager viewPager;
     View view;
-    int type=0;
-    public HistoryMainFragment(ArrayList<Order> orderData) {
+    int type=1;
+    public HistoryMain_RecvFragment(ArrayList<Order> orderData) {
         // Required empty public constructor
         dataset=orderData;
     }
@@ -31,11 +31,11 @@ public class HistoryMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view=inflater.inflate(R.layout.fragment_history_main, container, false);
+        view=inflater.inflate(R.layout.fragment_history_main_recv, container, false);
         PagerAdapter adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
         Log.d("set adapter",type+" ok");
         TabLayout tabLayout=(TabLayout) view.findViewById(R.id.tabLayout);
-        viewPager=(ViewPager)view.findViewById(R.id.pager);
+        viewPager=(ViewPager)view.findViewById(R.id.recv_pager);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
