@@ -1,6 +1,7 @@
 package com.example.keng.main;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,22 @@ import android.widget.Toast;
  */
 public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
 
+    ListComplete listComplete;
+
+    //建立interface 將重新設定index回主畫面
+    public interface ListComplete{
+        public void setIndex(int i);
+    }
+    //回傳參數的方法
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listComplete = (ListComplete) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
+        }
+    }
     private final String TAG=getClass().getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,6 +71,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,11 +120,14 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
     }
     @Override
     public void onClick(View v) {
-        HomeFragment hf=new HomeFragment();
+
         FragmentManager fm=getActivity().getSupportFragmentManager();
         FragmentTransaction trans=fm.beginTransaction();
-        trans.replace(R.id.frame,hf,hf.getTag());
+        //0509更新內容//
+        trans.detach(this);
+        fm.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         Toast.makeText(getActivity(),"完成訂單登記",Toast.LENGTH_SHORT).show();
+        listComplete.setIndex(0);
         trans.commit();
         //回到MainFragment
     }

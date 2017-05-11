@@ -106,7 +106,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener{
             NewOrderFragment3 fragment3 = NewOrderFragment3.newInstance(mParam1, packet);
             FragmentManager fm = getActivity().getSupportFragmentManager();
             FragmentTransaction trans = fm.beginTransaction();
-            trans.addToBackStack("null");
+            trans.addToBackStack(null);
             trans.replace(R.id.frame, fragment3, fragment3.getTag());
             trans.commit();
         }

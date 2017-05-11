@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:tag="Order"
     tools:context="com.example.keng.main.NewOrderFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -118,8 +119,8 @@
                     android:id="@+id/start"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dialog"
-                    android:prompt="@string/default_spinner"/>
+                    android:prompt="@string/default_spinner"
+                    android:spinnerMode="dialog" />
 
                 <ImageView
                     android:id="@+id/line2"
@@ -155,8 +156,8 @@
                     android:id="@+id/destination"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dialog"
-                    android:prompt="@string/default_spinner"/>
+                    android:prompt="@string/default_spinner"
+                    android:spinnerMode="dialog" />
             </LinearLayout>
 
         </LinearLayout>
