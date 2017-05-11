@@ -34,12 +34,14 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
         serviceCounter = sharedPreferences.getInt("BGServiceCount",0);
         Log.d("MyAlatmReceiver","serviceCounter="+serviceCounter);
+
         if(serviceCounter == 0){
             Intent service = new Intent(context, BackgroundRecvService.class);
             startWakefulService(context, service);
             serviceCounter++;
             sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
         }
+
     }
 
     public void setAlarm(Context context) {
@@ -87,12 +89,12 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     public class BgServiceRecver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             String state = intent.getStringExtra("state");
+            Log.d("BgServiceReceiver:","state-> "+ state);
             // 如果傳回成功
             if(state.equals("true")){
-                Log.d("BgServiceReceiver:","state-> "+ state);
                 //開啟notification
+                sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
                 serviceCounter--;
                 sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
             }

@@ -44,6 +44,8 @@ public class ConnectService extends Service {
 
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     private SharedPreferences sharedPreferences;
+    private boolean isReSend=false;
+    Intent reSendIntent;
    /*
     public ConnectService(){
         super("ConnectService");
@@ -77,17 +79,6 @@ public class ConnectService extends Service {
                         out.write("1");
                         out.flush();
                         Log.d("Service", "write 1 to server");
-                        /*
-                        if(sharedPreferences.getString("isLogin","")=="true"){
-                            Intent intent = new Intent();
-                            intent.putExtra(getString(R.string.activity),"NavigationActivity");
-                            intent.putExtra(getString(R.string.id),"3");
-                            intent.putExtra(getString(R.string.account),sharedPreferences.getString("account",""));
-                            intent.putExtra(getString(R.string.password),sharedPreferences.getString("password",""));
-                            Log.d("偷偷登入","account="+sharedPreferences.getString("account","")+"password="+sharedPreferences.getString("password",""));
-                            sendToServer(intent);
-                        }
-                        */
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -111,6 +102,7 @@ public class ConnectService extends Service {
             @Override
             protected String doInBackground(String... strings) {
                 Log.d("ConnectService","onBind doinBGcalled");
+                reSendIntent=intent;
                 sendToServer(intent);
                 rcvMessage=null;
                 return null;
@@ -133,9 +125,15 @@ public class ConnectService extends Service {
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
+
                 id = intent.getExtras().getString("id");
                 activityName = intent.getExtras().getString("activity");
-                Log.i("Service:","send to server from "+activityName);
+                if(activityName.compareTo("")!=0 ){
+                    Log.i("Service:","send to server from "+activityName);
+                }
+                else{
+                    isReSend=true;
+                }
                 Bundle bundle = new Bundle();
                 Log.i("Service", "id = " + id);
 
@@ -159,7 +157,7 @@ public class ConnectService extends Service {
                         String StartId = intent.getStringExtra(getString(R.string.startLocation));
                         String destinationId = intent.getStringExtra(getString(R.string.desLocation));
                         String note = intent.getStringExtra(getString(R.string.note));
-                        msg = id +","+ time + "," + sender + "," + receiver + "," + StartId + "," + destinationId + ","+note+",";
+                        msg = id +","+sender+","+receiver+","+time+","+StartId+","+destinationId+","+note+",";
                         break;
                     case "5"://詢問車子有空時間
                     case "7":
@@ -194,6 +192,11 @@ public class ConnectService extends Service {
                             rcvMessage.concat("\0");    //*****後面一定要加\0不然會是亂碼
                             Log.d("Service", "receive " + rcvMessage + " from server");
                             bundle = Analyze(rcvMessage);
+                            if(isReSend){
+                                isReSend=false;
+                                sendToServer(reSendIntent);
+                                Log.d("ConnectService","isReSend");
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -202,16 +205,16 @@ public class ConnectService extends Service {
                         e1.printStackTrace();
                     }
                 }
-
-
-                Intent broadcastIntent = new Intent();
-                broadcastIntent.setAction(ACTION_RECV_MSG);
-                broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-                broadcastIntent.putExtra("result", flag.toString());
-                broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
-                broadcastIntent.putExtras(bundle);
-                sendBroadcast(broadcastIntent);
-                Log.i("Service:","sendbroadcast to  "+activityName);
+                if(activityName.compareTo("")!=0 && bundle != null){
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.setAction(ACTION_RECV_MSG);
+                    broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                    broadcastIntent.putExtra("result", flag.toString());
+                    broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
+                    broadcastIntent.putExtras(bundle);
+                    sendBroadcast(broadcastIntent);
+                    Log.i("Service:","sendbroadcast to  "+activityName);
+                }
 
                 rcvMessage="";
                 return  null;
@@ -360,24 +363,34 @@ public class ConnectService extends Service {
                 Log.d("ana:","第二筆"+mesArray[1]);
                 break;
             case "12":
-                type=mes.substring(commaIndex+1,3);
+                type=mes.substring(commaIndex+1,4);
                 if(type.equals("0")){
-                    String error = mes.substring(3);
+                    String error = mes.substring(4);
                     dataBundle.putString(getString(R.string.errorMsg),error);
                     Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
                 }
                 dataBundle.putString(getString(R.string.type),type);
                 Log.d("ana:","id="+id+"type="+type);
                 break;
-            default:
+            case "20":
+                Intent intent = new Intent();
+                intent.putExtra(getString(R.string.activity),"");
+                intent.putExtra(getString(R.string.id),"3");
+                intent.putExtra(getString(R.string.account),sharedPreferences.getString("account",""));
+                intent.putExtra(getString(R.string.password),sharedPreferences.getString("password",""));
+                Log.d("接收到20偷偷登入","account="+sharedPreferences.getString("account","")+"password="+sharedPreferences.getString("password",""));
+                sendToServer(intent);
                 dataBundle=null;
+
         }
         return  dataBundle;
     }
 
     public void disconnect(){
         try {
-            mSocket.close();
+            if(mSocket!=null){
+                mSocket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -386,6 +399,7 @@ public class ConnectService extends Service {
     @Override
     public void onDestroy() {
         Log.d("ConnectService","onDestroy");
+        //disconnect();
         super.onDestroy();
     }
 

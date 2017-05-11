@@ -86,10 +86,7 @@ public class OrderInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d("OrderInfoFragment","btn onclick");
-                FragmentManager fm = getActivity().getFragmentManager();
-                if (fm.getBackStackEntryCount() != 0) {
-                    fm.popBackStack();
-                }
+                getActivity().onBackPressed();
             }
         });
         return myview;

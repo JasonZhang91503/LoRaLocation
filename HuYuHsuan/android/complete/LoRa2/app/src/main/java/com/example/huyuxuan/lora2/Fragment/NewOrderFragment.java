@@ -46,10 +46,9 @@ import java.util.Map;
  * Created by huyuxuan on 2017/5/7.
  */
 
-public class NewOrderFragment extends Fragment implements View.OnClickListener,BasicDialogFragment.PassOnTimeChooseListener {
+public class NewOrderFragment extends Fragment implements View.OnClickListener{
     private final String TAG=this.getClass().getSimpleName();
     String[] location={"",""};
-    String timeText;
     boolean is_setTime=false;
     Spinner spnStart;
     Spinner spnDest;
@@ -57,16 +56,19 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
     private String des;
     private String start;
     String buildingArray[];
-    private static boolean isBind;
+    private static boolean isBind=false;
     private String time;
     String formattedDate;
     FragmentTransaction ft;
+    private String str_show_time="請選擇時間";
 
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     final String AVAILABLE_TIME_FRAGMENT = "available_fragment";
+    public int MY_REQUEST_CODE=11;
+
 
     public NewOrderFragment() {
         // Required empty public constructor
@@ -80,6 +82,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
         //得到日期資訊並且顯示於Text中
         LinearLayout time=(LinearLayout)view.findViewById(R.id.time);
         orderTime=(TextView)view.findViewById(R.id.orderTime);
+        orderTime.setText(str_show_time);
 
         //要大樓資料
         Intent tmpIntent = new Intent(getContext(),ConnectService.class);
@@ -134,7 +137,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
                 final Calendar c = Calendar.getInstance();
                 formattedDate = dayDateFormat.format(c.getTime());
                 Log.d("NewOrderFragment","formattedDate:"+formattedDate);
-                /*
+
                 Intent intent = new Intent(getActivity(),ConnectService.class);
                 intent.putExtra(getString(R.string.activity),"NewOrderFragment");
                 intent.putExtra(getString(R.string.id),"5");
@@ -149,13 +152,13 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
                     Log.d("NewOrderFragment:", "checkSR->sendToService");
                 }
                 setReceiver();
-                */
 
-                //這是假資料
+
+                /*這是假資料
                 Bundle bundle = new Bundle();
                 bundle.putStringArray("message", new String[]{"101110101011101010"});
+                */
                 /*
-
                 ft = getFragmentManager().beginTransaction();
                 DialogFragment mDialogFragment;
                 mDialogFragment = new BasicDialogFragment();
@@ -167,31 +170,6 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
                 ft.addToBackStack(null);
                 ft.commit();
                 */
-
-                new TimePickerDialog(getContext(),2, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        String h,m;
-                        //讀取現在的時間資料
-                        int year=c.get(Calendar.YEAR);
-                        int month=c.get(Calendar.MONTH)+1;
-                        int day=c.get(Calendar.DAY_OF_MONTH);
-                        //優化文字介面用
-                        if(hourOfDay<10){
-                            h="0"+String.valueOf(hourOfDay);
-                        }else{
-                            h=String.valueOf(hourOfDay);
-                        }
-                        if(minute<10){
-                            m="0"+String.valueOf(minute);
-                        }else{
-                            m=String.valueOf(minute);
-                        }
-                        timeText=h+":"+m;
-                        orderTime.setText(timeText);
-                        is_setTime=true;
-                    }
-                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
 
             }
         });
@@ -213,6 +191,8 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
             Toast.makeText(getContext(),"寄件地收件地不可相同",Toast.LENGTH_SHORT).show();
         }
         else {
+          //  getActivity().getApplicationContext().unbindService(mConnection);
+            String timeText = str_show_time.substring(str_show_time.indexOf(" ")+1);
             NewOrderFragment2 fragment2 = NewOrderFragment2.newInstance(location, timeText);
             FragmentManager fm = getActivity().getSupportFragmentManager();
             FragmentTransaction trans = fm.beginTransaction();
@@ -242,12 +222,6 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
 
     };
 
-    @Override
-    public void passTime(String str_time) {
-        timeText=str_time;
-        orderTime.setText(timeText);
-        is_setTime=true;
-    }
 
     //接收广播类
     public class ConnectServiceReceiver extends BroadcastReceiver {
@@ -255,7 +229,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
+//                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
@@ -268,13 +242,10 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
                         ft = getFragmentManager().beginTransaction();
                         DialogFragment mDialogFragment;
                         mDialogFragment = BasicDialogFragment.newInstance(msg);
-                        mDialogFragment.setTargetFragment(NewOrderFragment.this, 0);
-                      //  mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
-                       // mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
-                        ft.add(R.id.fragment_container,mDialogFragment);
+                        mDialogFragment.setTargetFragment(NewOrderFragment.this, MY_REQUEST_CODE);
+                        ft.replace(R.id.fragment_container,mDialogFragment);
                         ft.addToBackStack(null);
                         ft.commit();
-
 
                         Log.d("NewOrderFragment","id=5,msg="+msg);
                         break;
@@ -305,5 +276,35 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener,B
         time=tmp;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("NewOrderFragment","onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        String str_time = data.getStringExtra("time");
+        Calendar c = Calendar.getInstance();
+        int year=c.get(Calendar.YEAR);
+        int month=c.get(Calendar.MONTH)+1;
+        int day=c.get(Calendar.DAY_OF_MONTH);
+        str_show_time=String.valueOf(year)+"年"+String.valueOf(month)+"月"+String.valueOf(day)+"日 "+str_time;
+        orderTime.setText(str_show_time);
+        is_setTime=true;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("NewOrderFragment:", "onDestroy->sendToService");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("NewOrderFragment:", "onStop");
+        if(isBind){
+            getActivity().getApplicationContext().unbindService(mConnection);
+            isBind=false;
+        }
+
+        super.onStop();
+    }
 
 }

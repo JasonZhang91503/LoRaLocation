@@ -43,6 +43,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
     private static boolean isBind;
     private String myName;
     private SharedPreferences sharedPreferences;
+    int year,month,day;
 
     TextView start,destination,name,note,time;
 
@@ -96,9 +97,9 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
     }
     public void setText(){
         Calendar calendar=Calendar.getInstance();
-        int year=calendar.get(Calendar.YEAR);
-        int month=calendar.get(Calendar.MONTH)+1;
-        int day=calendar.get(Calendar.DAY_OF_MONTH);
+        year=calendar.get(Calendar.YEAR);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
         time.setText(year+"年"+month+"月"+day+"日 "+mParam2[0]);
         name.setText(mParam2[1]);
         if(mParam2[2]!=null){
@@ -118,7 +119,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         Intent intent = new Intent(getActivity(),ConnectService.class);
         intent.putExtra(getString(R.string.activity),"NewOrderFragment3");
         intent.putExtra(getString(R.string.id),"4");
-        intent.putExtra(getString(R.string.requireTime),mParam2[0]+":00");
+        intent.putExtra(getString(R.string.requireTime),year+"-0"+month+"-"+day+" "+mParam2[0]+":00");
         intent.putExtra(getString(R.string.sender),myName);
         intent.putExtra(getString(R.string.receiver),mParam2[1]);
         intent.putExtra(getString(R.string.startLocation),mParam1[0]);

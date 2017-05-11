@@ -135,7 +135,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
             Toast.makeText(getContext(),"請填寫姓名",Toast.LENGTH_SHORT).show();
         }else {
             setPacket();
-
+            getActivity().getApplicationContext().unbindService(mConnection);
             NewOrderFragment3 fragment3 = NewOrderFragment3.newInstance(mParam1, packet);
             FragmentManager fm = getActivity().getSupportFragmentManager();
             FragmentTransaction trans = fm.beginTransaction();
@@ -172,7 +172,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment2")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
+                //getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){

@@ -16,7 +16,7 @@ import java.util.List;
  * Created by huyuxuan on 2017/5/9.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements View.OnClickListener {
     //利用建構子將資料清單傳進來
     private List<Order> mDataset;
     private OnItemClickListener mOnItemClickListener = null;
@@ -29,7 +29,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview,parent,false);
         ViewHolder viewHolder=new ViewHolder(view);
-        view.setOnClickListener((View.OnClickListener) this);
+        view.setOnClickListener(this);
         return viewHolder;
     }
     //透過position指定每個item所用到的資料

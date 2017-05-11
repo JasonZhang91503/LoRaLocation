@@ -91,10 +91,18 @@ public class ProfileFragment extends Fragment{
         myEmailView.setText(email);
         myPasswordView.setText(password);
 
+        /*
+        final AlertDialog.Builder build = new AlertDialog.Builder(getContext());
+        final AlertDialog alert;
+        //final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final View tmp = inflater.inflate(R.layout.edit_dialog, null);
+        final EditText editText = (EditText) (tmp.findViewById(R.id.editTextChange));
+        */
+
         btnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                final LayoutInflater inflater = LayoutInflater.from(getActivity());
                 final View tmp = inflater.inflate(R.layout.edit_dialog, null);
                 final EditText editText = (EditText) (tmp.findViewById(R.id.editTextChange));
                 editText.setText(password);
@@ -108,7 +116,9 @@ public class ProfileFragment extends Fragment{
                                 password = editText.getText().toString();
                                 myPasswordView.setText(password);
                                 Log.d("changeDialog","new password="+password);
+                                ((ViewGroup) tmp.getParent()).removeView(tmp);
                                 dialog.dismiss();
+
                             }
                         })
                         .show();
@@ -118,30 +128,51 @@ public class ProfileFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 LayoutInflater inflater = LayoutInflater.from(getActivity());
-                final View tmp = inflater.inflate(R.layout.edit_dialog, null);
-                final EditText editText2 = (EditText) (tmp.findViewById(R.id.editTextChange));
+                final View tmp2 = inflater.inflate(R.layout.edit_dialog, null);
+                final EditText editText2 = (EditText) (tmp2.findViewById(R.id.editTextChange));
                 editText2.setText(email);
                 editText2.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 new AlertDialog.Builder(getContext())
                         .setTitle("請輸入新信箱")
-                        .setView(v)
+                        .setView(tmp2)
                         .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 email = editText2.getText().toString();
                                 myEmailView.setText(email);
                                 Log.d("changeDialog","new email="+email);
+                                ((ViewGroup) tmp2.getParent()).removeView(tmp2);
                                 dialog.dismiss();
                             }
                         })
                         .show();
+
+
+                /*
+                editText.setText(email);
+                editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                build.setTitle("請輸入新密碼")
+                        .setView(tmp)
+                        .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                password = editText.getText().toString();
+                                myPasswordView.setText(password);
+                                Log.d("changeDialog","new password="+password);
+                                dialog.dismiss();
+
+                            }
+                        })
+                        .create();
+                alert.show();
+                */
             }
         });
 
         btnChangeOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!password.equals(sharedPreferences.getString(getString(R.string.password),"")) &&
+                if(!password.equals(sharedPreferences.getString(getString(R.string.password),"")) ||
                         !email.equals(sharedPreferences.getString(getString(R.string.email),""))){
                     //傳給server要求
                     Intent intent = new Intent(getActivity(),ConnectService.class);
@@ -238,5 +269,6 @@ public class ProfileFragment extends Fragment{
         getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("HomeFragment:","register receiver");
     }
+
 
 }

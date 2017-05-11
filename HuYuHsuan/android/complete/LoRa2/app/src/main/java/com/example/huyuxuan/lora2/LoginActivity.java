@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             .putString(getString(R.string.name),name)
                             .putString(getString(R.string.email),mail)
                             .putString(getString(R.string.isLogin),"true")
-                            .putString("BGLogin","true")
+                            .putString("BGLogin","false")
                             .apply();
                     Log.d("LoginActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+mail);
                     Log.d("LoginActivity","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));

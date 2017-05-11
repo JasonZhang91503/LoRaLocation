@@ -97,11 +97,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             if(!isBind){
                 getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
                 isBind=true;
-                Log.d("LoginActivity:", "login->bind");
+                Log.d("NavigationActivity:", "login->bind");
             }
             else{
                 mBoundService.sendToServer(intent);
-                Log.d("LoginActivity:", "login->sendToService");
+                Log.d("NavigationActivity:", "login->sendToService");
             }
             setReceiver();
         }else{
@@ -136,6 +136,17 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onStop() {
         sharedPreferences.edit().putString("BGLogin","true").apply();
         Log.d("NavigationActivity","onStop");
+        if(mBoundService!=null){
+            MyBoundedService.isConnect=false;
+            mBoundService.disconnect();
+//            unregisterReceiver(receiver);
+            /*
+            if(isBind){
+                getApplicationContext().unbindService(mConnection);
+            }
+            */
+
+        }
         super.onStop();
     }
 
@@ -144,6 +155,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         Log.d("NavigationActivity","onDestroy");
         sharedPreferences.edit().putString("BGLogin","true").apply();
         Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
+        if(mBoundService!=null){
+            mBoundService.disconnect();
+            unregisterReceiver(receiver);
+            getApplicationContext().unbindService(mConnection);
+        }
+
         super.onDestroy();
     }
 
@@ -203,6 +220,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
+                getSupportFragmentManager().beginTransaction().remove(myFragment);
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -261,14 +279,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString(getString(R.string.password),"")
                 .putString(getString(R.string.name),"")
                 .putString(getString(R.string.email),"")
-                .putString(getString(R.string.isLogin),"fasle")
+                .putString(getString(R.string.isLogin),"false")
                 .putString("BGLogin","false")
                 .apply();
 
-        /*不確定是否要加
-        MyBoundedService.isConnect=false;
-        MyBoundedService.myService=null;
-        */
+
         //service的socket斷線
         if(mBoundService!=null){
             mBoundService.disconnect();

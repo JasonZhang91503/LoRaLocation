@@ -18,7 +18,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,11 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +77,9 @@ public class HomeFragment extends Fragment {
     private final int PHOTO_PICKED_FROM_FILE = 2; // 用来标识从相册获取头像
     private final int CROP_FROM_CAMERA = 3;
     private Uri imgUri; // 由于android手机的图片基本都会很大，所以建议用Uri，而不用Bitmap
+
+    public static ArrayList<Order> orderlist;
+    boolean resum=false;
 
 
     @Override
@@ -181,6 +179,27 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        if(orderlist!=null){
+            MyAdapter myAdapter=new MyAdapter(orderlist);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(myAdapter);
+            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Log.d("HomeFragment","Myadapter onitemClick");
+                    Order tmp = orderlist.get(position);
+                    OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
+                    orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
+                    getFragmentManager().beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container,orderInfoFragment).commit();
+
+                }
+            });
+        }
+
         return myview;
     }
 
@@ -226,7 +245,7 @@ public class HomeFragment extends Fragment {
                 getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 if(bundle != null){
-                    final ArrayList<Order> orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
+                    orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
                     MyAdapter myAdapter=new MyAdapter(orderlist);
                     LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -289,12 +308,16 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        if(resum){
+           // updateListView();
+        }
         Log.d("Home Fragment","onResume");
     }
 
     @Override
     public void onPause(){
         super.onPause();
+        resum=true;
         Log.d("HomeFragment","onPause");
     }
 
