@@ -66,9 +66,9 @@ Server.cpp(1259): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可�
 Server.cpp(1265): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(1286): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
   正在產生程式碼
-  4 of 718 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
+  3 of 718 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    2 functions had inline decision re-evaluated but remain unchanged
   已完成程式碼產生
   Server.vcxproj -> E:\Users\Documents\GitHub\LoRaLocation\SillyWei\C++\Server\x64\Release\Server.exe
   Server.vcxproj -> E:\Users\Documents\GitHub\LoRaLocation\SillyWei\C++\Server\x64\Release\Server.pdb (Full PDB)

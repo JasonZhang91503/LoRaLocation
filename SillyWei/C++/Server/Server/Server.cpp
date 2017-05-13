@@ -901,10 +901,10 @@ void handleCellphoneTask(SOCKET clientSocket) {
 			case 12:
 				// update user date
 				cout << "Task ask for user data" << endl;
-				if (changeAccountData(id, &buff[2])) {
-					buffStr = "12,1";
+				if (changeAccountData(id, &buff[3])) {
+					buffStr = "12,1\n";
 				}else {
-					buffStr = "12,0";
+					buffStr = "12,0\n";
 				}
 				break;
 			}
@@ -979,7 +979,7 @@ void handleCellphoneBack(SOCKET socketClient) {
 		return;
 	}
 	{
-		sqlMutex.lock();
+		lock_guard<mutex> mLock(sqlMutex);
 		if (!login(charArrayBuff, strTemp, id, strTemp, strTemp)) {
 			cout << "Socket: " << socketClient << " connection terminate" << endl;
 			send(socketClient, "1,0\n", 4, 0);
@@ -1215,7 +1215,7 @@ void getNewTransport(vector<string> &message) {
 	}
 
 	ptm->tm_sec = 0;
-	char buff[80];
+	char buff[80] = {'\0'};
 	strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", ptm);
 	string time(buff), header, stringEmpty;
 	vector<int> startId, desId;
