@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,6 +25,16 @@ import java.util.Calendar;
 public class HistoryMainFragment extends Fragment {
 
     HistMaininterface histMaininterface;
+    ArrayList<Order> dataset;
+    ViewPager viewPager;
+    View view;
+    int type=0;
+    int index_DayOfMonth;
+    int index_Month;
+    int index_Year;
+    ImageButton front,back;
+    Calendar calendar;
+    TextView date;
     public interface HistMaininterface{
         ArrayList<Order>getDataset();
     }
@@ -36,10 +47,6 @@ public class HistoryMainFragment extends Fragment {
             throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
         }
     }
-    ArrayList<Order> dataset;
-    ViewPager viewPager;
-    View view;
-    int type=0;
     public HistoryMainFragment(ArrayList<Order> orderData) {
         // Required empty public constructor
         dataset=new ArrayList<Order>();
@@ -60,8 +67,8 @@ public class HistoryMainFragment extends Fragment {
         viewPager=(ViewPager)view.findViewById(R.id.pager);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        final TextView date=(TextView)view.findViewById(R.id.txtDate);
-        final Calendar calendar=Calendar.getInstance();
+        date=(TextView)view.findViewById(R.id.txtDate);
+        setTime();
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,10 +77,31 @@ public class HistoryMainFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         date.setText(year+"年"+(month+1)+"月"+dayOfMonth+"日");
+                        index_DayOfMonth=dayOfMonth;
+                        index_Month=month+1;
+                        index_Year=year;
                         //更改資料庫資料
                     }
                 },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
+            }
+        });
+        back=(ImageButton)view.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateDecrease();
+                date.setText(index_Year+"年"+(index_Month)+"月"+index_DayOfMonth+"日");
+                //更改資料庫資料
+            }
+        });
+        front=(ImageButton)view.findViewById(R.id.front);
+        front.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateIncrease();
+                date.setText(index_Year+"年"+(index_Month)+"月"+index_DayOfMonth+"日");
+                //更改資料庫資料
             }
         });
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -92,6 +120,7 @@ public class HistoryMainFragment extends Fragment {
 
             }
         });
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,6 +130,123 @@ public class HistoryMainFragment extends Fragment {
         setView();
 
         return view;
+    }
+    public void dateDecrease(){
+        if(index_DayOfMonth>0){
+            index_DayOfMonth--;
+        }else{
+            index_Month--;
+            if(index_Month>0){
+                switch (index_Month){
+                    case 1:
+                        index_DayOfMonth=31;
+                        break;
+                    case 2:
+                        if(index_Year%4!=0) {
+                            index_DayOfMonth = 28;
+                        }else{
+                            index_DayOfMonth=29;
+                        }
+                        break;
+                    case 3:
+                        index_DayOfMonth=31;
+                        break;
+                    case 4:
+                        index_DayOfMonth=30;
+                        break;
+                    case 5:
+                        index_DayOfMonth=31;
+                        break;
+                    case 6:
+                        index_DayOfMonth=30;
+                        break;
+                    case 7:
+                        index_DayOfMonth=31;
+                        break;
+                    case 8:
+                        index_DayOfMonth=31;
+                        break;
+                    case 9:
+                        index_DayOfMonth=30;
+                        break;
+                    case 10:
+                        index_DayOfMonth=31;
+                        break;
+                    case 11:
+                        index_DayOfMonth=30;
+                        break;
+                }
+            }else{
+                index_Month=12;
+                index_DayOfMonth=31;
+                index_Year--;
+            }
+        }
+    }
+    public void dateIncrease(){
+        int MAX_date=0;
+        switch (index_Month){
+            case 1:
+                MAX_date=31;
+                break;
+            case 2:
+                if(index_Year%4!=0) {
+                    MAX_date = 28;
+                }else{
+                    MAX_date=29;
+                }
+                break;
+            case 3:
+                MAX_date=31;
+                break;
+            case 4:
+                MAX_date=30;
+                break;
+            case 5:
+                MAX_date=31;
+                break;
+            case 6:
+                MAX_date=30;
+                break;
+            case 7:
+                MAX_date=31;
+                break;
+            case 8:
+                MAX_date=31;
+                break;
+            case 9:
+                MAX_date=30;
+                break;
+            case 10:
+                MAX_date=31;
+                break;
+            case 11:
+                MAX_date=30;
+                break;
+            case 12:
+                MAX_date=31;
+                break;
+
+        }
+        if(index_DayOfMonth<MAX_date){
+            index_DayOfMonth++;
+        }else{
+            index_Month++;
+            if(index_Month<=12){
+                index_DayOfMonth=1;
+            }else{
+                index_Month=1;
+                index_DayOfMonth=1;
+                index_Year++;
+            }
+        }
+    }
+    public void setTime(){
+        calendar=Calendar.getInstance();
+        index_DayOfMonth=calendar.get(Calendar.DAY_OF_MONTH);
+        index_Month=calendar.get(Calendar.MONTH)+1;
+        index_Year=calendar.get(Calendar.YEAR);
+        date.setText(index_Year+"年"+index_Month+"月"+index_DayOfMonth+"日");
     }
 
 }
