@@ -20,55 +20,55 @@ Server.cpp(129): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能
 Server.cpp(137): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(145): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(148): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(241): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(244): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(271): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(247): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(274): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(277): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(280): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(327): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(338): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(349): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(283): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(330): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(341): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(352): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(363): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(374): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(397): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(406): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(431): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(458): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(466): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(355): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(366): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(377): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(400): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(409): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(434): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(461): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(469): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(472): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(480): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(488): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(514): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(540): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(548): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(475): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(483): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(491): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(517): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(543): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(551): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(554): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(562): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(570): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(596): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(630): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(638): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(646): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(557): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(565): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(573): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(599): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(633): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(641): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(649): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(652): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(660): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(668): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(655): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(663): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
 Server.cpp(671): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(726): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(727): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(829): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(913): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(996): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(1259): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(1265): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
-Server.cpp(1286): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(674): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(729): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(730): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(832): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(916): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(999): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(1262): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(1268): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+Server.cpp(1289): warning C4267: '引數': 將 'size_t' 轉換為 'int'，資料可能遺失
   正在產生程式碼
-  3 of 718 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+  21 of 731 functions ( 2.9%) were compiled, the rest were copied from previous compilation.
+    13 functions were new in current compilation
+    41 functions had inline decision re-evaluated but remain unchanged
   已完成程式碼產生
   Server.vcxproj -> E:\Users\Documents\GitHub\LoRaLocation\SillyWei\C++\Server\x64\Release\Server.exe
   Server.vcxproj -> E:\Users\Documents\GitHub\LoRaLocation\SillyWei\C++\Server\x64\Release\Server.pdb (Full PDB)

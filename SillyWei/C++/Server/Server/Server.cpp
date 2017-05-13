@@ -199,8 +199,11 @@ int main(void) {
 
 void initializeMySQL() {
 	/* Create a MySQL connection */
+	string password;
 	driver = get_driver_instance();
-	con = driver->connect(HOSTNAME, USERNAME, PASSWARD);
+	cout << "put your mysql password =>";
+	cin >> password;
+	con = driver->connect(HOSTNAME, USERNAME, &password[0]);
 	/* Connect to the MySQL postman database */
 	con->setSchema(SCHEMA);
 	stmt = con->createStatement();
