@@ -30,16 +30,15 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private int[] mParam1;
     private String mParam2;
-    EditText name,phone,note;
+    EditText name,note;
     /*---------------------------------
      * 欄位 0 時間
      * 欄位 1 姓名
-     * 欄位 2 電話
-     * 欄位 3 備註
+     * 欄位 2 備註
      */
 
 
-    String[] packet=new String[4];
+    String[] packet=new String[3];
 
     public NewOrderFragment2() {
         // Required empty public constructor
@@ -82,7 +81,6 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener{
         View view=inflater.inflate(R.layout.fragment_new_order_fragment2, container, false);
 
         name=(EditText)view.findViewById(R.id.Name);
-        phone=(EditText)view.findViewById(R.id.Phone);
         note=(EditText)view.findViewById(R.id.Note);
         Button btn_next=(Button)view.findViewById(R.id.btn_next);
         btn_next.setOnClickListener(this);
@@ -91,16 +89,13 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener{
     public void setPacket(){
         packet[0]=mParam2;
         packet[1]=String.valueOf(name.getText());
-        packet[2]=String.valueOf(phone.getText());
-        packet[3]=String.valueOf(note.getText());
+        packet[2]=String.valueOf(note.getText());
     }
     @Override
     public void onClick(View v) {
         //前半部再做防呆
         if(name.getText().length()==0){
             Toast.makeText(getContext(),"請填寫姓名",Toast.LENGTH_SHORT).show();
-        }else if(phone.getText().length()==0){
-            Toast.makeText(getContext(),"請填寫電話",Toast.LENGTH_SHORT).show();
         }else {
             setPacket();
             NewOrderFragment3 fragment3 = NewOrderFragment3.newInstance(mParam1, packet);

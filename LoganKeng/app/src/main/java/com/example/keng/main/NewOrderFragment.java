@@ -108,8 +108,8 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                       }else{
                           m=String.valueOf(minute);
                       }
-                      timeText=year+"年"+month+"月"+day+"日"+h+"時"+m+"分";
-                      orderTime.setText(timeText);
+                      timeText=year+"-"+month+"-"+day+" "+h+":"+m+":"+"00";
+                      orderTime.setText(year+"年"+month+"月"+day+"日"+h+"時"+m+"分");
                       is_setTime=true;
                   }
               }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();

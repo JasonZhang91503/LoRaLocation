@@ -102,7 +102,7 @@
                 android:layout_marginTop="0dp"
                 android:orientation="vertical"
                 android:paddingStart="20dp"
-                app:layout_constraintBottom_toTopOf="@+id/imageView14"
+                app:layout_constraintBottom_toTopOf="@+id/editmail"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -141,7 +141,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView14"
+                app:layout_constraintTop_toBottomOf="@+id/editmail"
                 app:layout_constraintVertical_bias="0.027">
 
                 <TextView

@@ -62,6 +62,7 @@
     <string name="Oct">OCT</string>
     <string name="Nov">NOV</string>
     <string name="Dec">DEC</string>
+    <string name="account_title">基本資料</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -26,7 +26,8 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
 
     //建立interface 將重新設定index回主畫面
     public interface ListComplete{
-        public void setIndex(int i);
+        void setIndex(int i);
+        void setNew_order(Order new_order);
     }
     //回傳參數的方法
     @Override
@@ -49,7 +50,8 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
     private String[] mParam2;
 
     String[] Location;
-    TextView start,destination,name,phone,note,time;
+    TextView start,destination,name,note,time;
+    PrefManager prefManager;
     public NewOrderFragment3() {
         // Required empty public constructor
     }
@@ -87,6 +89,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_new_order_fragment3, container, false);
+        prefManager=new PrefManager(getContext());
         for(int i=0;i<mParam2.length;i++){
             Log.d(TAG,mParam2[i]);
         }
@@ -98,7 +101,6 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
         start=(TextView)view.findViewById(R.id.Start);
         destination=(TextView)view.findViewById(R.id.Destination);
         name=(TextView)view.findViewById(R.id.txtName);
-        phone=(TextView)view.findViewById(R.id.Phone);
         note=(TextView)view.findViewById(R.id.txtNote);
 
         setText();
@@ -107,11 +109,11 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
         return view;
     }
     public void setText(){
+        //Param2 時間 名字 備註
         time.setText(mParam2[0]);
         name.setText(mParam2[1]);
-        phone.setText(mParam2[2]);
-        if(mParam2[3]!=null){
-            note.setText(mParam2[3]);
+        if(mParam2[2]!=null){
+            note.setText(mParam2[2]);
         }else{
             note.setText("");
         }
@@ -120,7 +122,13 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
     }
     @Override
     public void onClick(View v) {
-
+        //起始地 終點 花費 寄送者 接收者 時間 備註 密碼 狀態
+        String sendName,recvName,send_time,send_note;
+        sendName=prefManager.getName();
+        recvName=String.valueOf(name.getText());
+        send_time=String.valueOf(time.getText());
+        send_note=String.valueOf(note.getText());
+        Order order=new Order(mParam1[0],mParam1[1],30,sendName,recvName,send_time,send_note,"1234",0);
         FragmentManager fm=getActivity().getSupportFragmentManager();
         FragmentTransaction trans=fm.beginTransaction();
         //0509更新內容//
@@ -128,6 +136,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener{
         fm.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         Toast.makeText(getActivity(),"完成訂單登記",Toast.LENGTH_SHORT).show();
         listComplete.setIndex(0);
+        listComplete.setNew_order(order);
         trans.commit();
         //回到MainFragment
     }

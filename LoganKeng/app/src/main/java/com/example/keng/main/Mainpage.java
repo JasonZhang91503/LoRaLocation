@@ -20,12 +20,13 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 public class Mainpage extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener ,NewOrderFragment3.ListComplete{
+        implements NavigationView.OnNavigationItemSelectedListener ,NewOrderFragment3.ListComplete,HomeFragment.HFinterface,HistoryMainFragment.HistMaininterface{
         int index=0;
     HomeFragment homeFragment;
     NewOrderFragment newOrderFragment;
     HistoryMainFragment historyFragment;
     HistoryMain_RecvFragment historyMain_recvFragment;
+    AccountFragment accountFragment;
     ArrayList<Order> dataset;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class Mainpage extends AppCompatActivity
             newOrderFragment=new NewOrderFragment();
             historyFragment=new HistoryMainFragment(dataset);
             historyMain_recvFragment=new HistoryMain_RecvFragment(dataset);
+            accountFragment=new AccountFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.frame,homeFragment).commit();
         }
     }
@@ -117,6 +119,11 @@ public class Mainpage extends AppCompatActivity
             }
         }
         else if(id==R.id.nav_setting){
+            if(index!=4) {
+                switchFragment(accountFragment, index);
+                Log.d(getClass().getSimpleName()+" navi","3");
+                index=4;
+            }
 
         }else if(id==R.id.nav_logout){
 
@@ -150,13 +157,28 @@ public class Mainpage extends AppCompatActivity
                 transaction.addToBackStack(null);
                 transaction.hide(historyMain_recvFragment);
                 break;
+            case 4:
+                transaction.addToBackStack(null);
+                transaction.hide(accountFragment);
         }
         transaction.show(to).commit();
     }
+
     @Override
     public void setIndex(int i){
         index=i;
         Log.d(getClass().getSimpleName(),"index 已更新");
     }
 
+    @Override
+    public void setNew_order(Order new_order) {
+        dataset.add(new_order);
+        Log.d("size"," "+dataset.size());
+        //orderArrayList();
+        Log.d(getClass().getSimpleName(),"新增訂單事件");
+    }
+    @Override
+    public ArrayList<Order> getDataset() {
+        return dataset;
+    }
 }

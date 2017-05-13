@@ -1,6 +1,7 @@
 package com.example.keng.main;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,19 @@ import java.util.ArrayList;
  */
 public class HistoryMainFragment extends Fragment {
 
+    HistMaininterface histMaininterface;
+    public interface HistMaininterface{
+        ArrayList<Order>getDataset();
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            histMaininterface= (HistMaininterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
+        }
+    }
     ArrayList<Order> dataset;
     ViewPager viewPager;
     View view;
@@ -27,12 +41,15 @@ public class HistoryMainFragment extends Fragment {
         dataset=new ArrayList<Order>();
         dataset=orderData;
     }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view=inflater.inflate(R.layout.fragment_history_main, container, false);
+    public void onResume(){
+        super.onResume();
+        Log.d("histmain On resume","ok");
+        dataset=histMaininterface.getDataset();
+        setView();
+
+    }
+    public void setView(){
         PagerAdapter adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
         Log.d("set adapter",type+" ok");
         TabLayout tabLayout=(TabLayout) view.findViewById(R.id.tabLayout);
@@ -55,6 +72,13 @@ public class HistoryMainFragment extends Fragment {
 
             }
         });
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view=inflater.inflate(R.layout.fragment_history_main, container, false);
+        setView();
 
         return view;
     }

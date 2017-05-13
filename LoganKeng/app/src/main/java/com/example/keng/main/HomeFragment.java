@@ -1,6 +1,7 @@
 package com.example.keng.main;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +21,20 @@ import java.util.ArrayList;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener{
+
+    HFinterface hfinterface;
+    public interface HFinterface{
+        ArrayList<Order>getDataset();
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            hfinterface= (HomeFragment.HFinterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
+        }
+    }
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,6 +46,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     public ArrayList<Order> dataset;
     String[] resource;
+    View view;
     public HomeFragment(ArrayList<Order> orderData) {
         // Required empty public constructor
         dataset=new ArrayList<Order>();
@@ -45,8 +61,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        View view=inflater.inflate(R.layout.fragment_home, container, false);
+        view=inflater.inflate(R.layout.fragment_home, container, false);
+        setView();
+        return view;
+    }
+    public void setView(){
         PrefManager pref=new PrefManager(getContext());
         TextView txtName=(TextView) view.findViewById(R.id.txtName);
         String name=pref.getName();
@@ -75,10 +94,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         //recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
-        return view;
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d("On resume","ok");
+        dataset=hfinterface.getDataset();
+        setView();
 
-
+    }
     @Override
     public void onClick(View v) {
 

@@ -82,7 +82,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         ArrayList<Order> Sender=new ArrayList<Order>();
         Log.d("enter","ok");
         for(int i=0;i<temp.size();i++){
-            Log.d("name"+i+" ",temp.get(i).getSend_name()+"123");
+            Log.d("name"+i+" ",temp.get(i).getSend_name());
             if(name==temp.get(i).getSend_name()){
                 Sender.add(temp.get(i));
                 Log.d("tag :",String.valueOf(i));
