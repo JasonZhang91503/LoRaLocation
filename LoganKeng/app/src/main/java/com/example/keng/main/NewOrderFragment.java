@@ -53,6 +53,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         //設定下一步Btn的內容
         Button btn=(Button)view.findViewById(R.id.btn_next);
         btn.setOnClickListener(this);
+        //設定Spinner資料內容（透過Adapter）並設置Listener判定是哪一位置的編號
         Spinner start=(Spinner)view.findViewById(R.id.start);
         Spinner dest=(Spinner)view.findViewById(R.id.destination);
         ArrayAdapter<CharSequence> locationList=ArrayAdapter.createFromResource(getActivity(),R.array.Location,R.layout.support_simple_spinner_dropdown_item);
