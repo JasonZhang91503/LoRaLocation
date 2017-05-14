@@ -541,7 +541,7 @@ int moveToSender(UserRequest* req){
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo);
+		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo/10);
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
@@ -635,8 +635,6 @@ int moveToReceiver(UserRequest* req){
 			firstFind = false;
 		}
 
-		unistd::usleep(1000);
-
 		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
 
 		if (isCarReach) {
@@ -645,7 +643,7 @@ int moveToReceiver(UserRequest* req){
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo);
+		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo/10);
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
