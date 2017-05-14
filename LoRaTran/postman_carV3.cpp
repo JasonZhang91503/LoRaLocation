@@ -507,9 +507,7 @@ int moveToSender(UserRequest* req){
 			Coor temp;
 			ss.x = temp.x = sLon;
 			ss.y = temp.y = sLat;
-			cout << "GOOD2" << endl;
 			mapNode = cgms->gpsToCoordinate(temp);
-			cout << "GOOD3" << endl;
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
@@ -530,16 +528,12 @@ int moveToSender(UserRequest* req){
 		#endif
 
 		if(firstFind){
-			cout << "GOOD4" << endl;
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
 			firstFind = false;
-			cout << "GOOD5" << endl;
 		}
 
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
-
-		cout << "GOOD6" << endl;
+		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
 
 		if (isCarReach) {
 			count++;
@@ -603,24 +597,19 @@ int moveToReceiver(UserRequest* req){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 
-	cout << "FINDFIND" << endl;
-
 	ee.x = req->dest_lon;
 	ee.y = req->dest_lat;
-
-	cout << "FINDFIND" << endl;
 
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		if(NOGPS == 2){
-			cout << "FINDFIND" << endl;
 			sLon = req->dest_lon;
 			sLat = req->dest_lat;
-			ss.x = ee.x = sLon;
-			ss.y = ee.y = sLat;
-			mapNode = cgms->gpsToCoordinate(ss);
-			cout << "FINDFIND" << endl;
+			Coor temp;
+			ss.x = temp.x = sLon;
+			ss.y = temp.y = sLat;
+			mapNode = cgms->gpsToCoordinate(temp);
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
@@ -634,22 +623,19 @@ int moveToReceiver(UserRequest* req){
 		#else
 		sLon = req->dest_lon;
 		sLat = req->dest_lat;
-		ss.x = ee.x = sLon;
-		ss.y = ee.y = sLat;
-		mapNode = cgms->gpsToCoordinate(ss);
+		Coor temp;
+		ss.x = temp.x = sLon;
+		ss.y = temp.y = sLat;
+		mapNode = cgms->gpsToCoordinate(temp);
 		#endif
 
 		if(firstFind){
-			cout << "FIND" << endl;
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
 			firstFind = false;
-			cout << "FIND2" << endl;
 		}
 
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
-
-		cout << "FIND2" << endl;
+		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
 
 		if (isCarReach) {
 			count++;
@@ -657,14 +643,14 @@ int moveToReceiver(UserRequest* req){
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.",count,traceVec.size(),directionInfo,distanceInfo);
+		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo);
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
 		#endif
 	} while ( traIt != traceVec.end());
 	
-	cout << "moveToReceiver : reach destnation!" << endl;
+	cout << "moveToReceiver : reach destnation!\n" << endl;
 
 	req->state = 3;
 	
