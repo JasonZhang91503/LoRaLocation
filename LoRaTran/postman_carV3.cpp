@@ -635,6 +635,8 @@ int moveToReceiver(UserRequest* req){
 			firstFind = false;
 		}
 
+		unistd::usleep(1000);
+
 		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
 
 		if (isCarReach) {
@@ -721,7 +723,7 @@ int getGPSLocation(double &sLon,double &sLat){
                     !::isnan(myGPS_Data.fix.latitude) && 
                     !::isnan(myGPS_Data.fix.longitude)) {
                         //gettimeofday(&tv, NULL); EDIT: tv.tv_sec isn't actually the timestamp!
-                        printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
+                        //printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
 						break;
                } else {
                     printf("no GPS data available\n");
