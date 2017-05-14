@@ -626,12 +626,16 @@ int moveToReceiver(UserRequest* req){
 		#endif
 
 		if(firstFind){
+			cout << "FIND" << endl;
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
 			firstFind = false;
+			cout << "FIND2" << endl;
 		}
 
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
+
+		cout << "FIND2" << endl;
 
 		if (isCarReach) {
 			count++;
