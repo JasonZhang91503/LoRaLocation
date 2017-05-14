@@ -493,6 +493,8 @@ int moveToSender(UserRequest* req){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 
+	cout << "GOOD" << endl;
+
 	ee.x = req->src_lon;
 	ee.y = req->src_lat;
 
@@ -505,7 +507,9 @@ int moveToSender(UserRequest* req){
 			Coor temp;
 			temp.x = sLon;
 			temp.y = sLat;
+			cout << "GOOD2" << endl;
 			mapNode = cgms->gpsToCoordinate(temp);
+			cout << "GOOD3" << endl;
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
@@ -526,12 +530,16 @@ int moveToSender(UserRequest* req){
 		#endif
 
 		if(firstFind){
+			cout << "GOOD4" << endl;
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
 			firstFind = false;
+			cout << "GOOD5" << endl;
 		}
 
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
+
+		cout << "GOOD6" << endl;
 
 		if (isCarReach) {
 			count++;
