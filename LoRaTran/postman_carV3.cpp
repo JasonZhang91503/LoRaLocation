@@ -846,13 +846,13 @@ int parseRequestData(UserRequest* req){
 	printf("sendTime :%s\n",req->sendTime.c_str());
 
 	if(NOGPS == 2){
-		req->src_lon = 121.370505;
+		req->src_lon = 121.371575;
 		printf("sLon :%f\n",req->src_lon);
-		req->src_lat = 24.944162;
+		req->src_lat = 24.944779;
 		printf("sLat :%f\n",req->src_lat);
-		req->dest_lon = 121.370505;
+		req->dest_lon = 121.371575;
 		printf("dLon :%f\n",req->dest_lon);
-		req->dest_lat = 24.944162;
+		req->dest_lat = 24.944779;
 		printf("dLat :%f\n",req->dest_lat);
 	}
 	else{
@@ -883,13 +883,13 @@ int parseRequestData(UserRequest* req){
 	printf("packetKey :%s\n",req->packetKey.c_str());
 	req->sendTime.assign("time is money");
 	printf("sendTime :%s\n",req->sendTime.c_str());
-	req->src_lon = 121.370505;
+	req->src_lon = 121.371575;
 	printf("sLon :%f\n",req->src_lon);
-	req->src_lat = 24.944162;
+	req->src_lat = 24.944779;
 	printf("sLat :%f\n",req->src_lat);
-	req->dest_lon = 121.370505;
+	req->dest_lon = 121.371575;
 	printf("dLon :%f\n",req->dest_lon);
-	req->dest_lat = 24.944162;
+	req->dest_lat = 24.944779;
 	printf("dLat :%f\n",req->dest_lat);
 
 	req->state = 0;
