@@ -595,18 +595,24 @@ int moveToReceiver(UserRequest* req){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 
+	cout << "FINDFIND" << endl;
+
 	ee.x = req->dest_lon;
 	ee.y = req->dest_lat;
+
+	cout << "FINDFIND" << endl;
 
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		if(NOGPS == 2){
+			cout << "FINDFIND" << endl;
 			sLon = req->dest_lon;
 			sLat = req->dest_lat;
 			ss.x = ee.x = sLon;
 			ss.y = ee.y = sLat;
 			mapNode = cgms->gpsToCoordinate(ss);
+			cout << "FINDFIND" << endl;
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
