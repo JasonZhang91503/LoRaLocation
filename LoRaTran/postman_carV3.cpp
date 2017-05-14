@@ -733,7 +733,7 @@ int getGPSLocation(double &sLon,double &sLat){
 	sLat = myGPS_Data.fix.latitude;
 
 	Coor gpsData = {myGPS_Data.fix.longitude, myGPS_Data.fix.latitude};
-	mapNode = cgms.gpsToCoordinate(gpsData);
+	mapNode = cgms->gpsToCoordinate(gpsData);
 	
 	return CAR_OK;
 }
