@@ -510,7 +510,7 @@ int moveToSender(UserRequest* req){
 			getGPSLocation(ss.x,ss.y);
 			mapNode = cgms->gpsToCoordinate(ss);
 			if(!cgms->isInsideMap(ss.x,ss.y)){
-				printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf",ss.x,ss.y,mapNode.x,mapNode.y);
+				printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 				unistd::usleep(1000);
 				continue;
 			}
@@ -537,14 +537,14 @@ int moveToSender(UserRequest* req){
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.",count,traceVec.size(),directionInfo,distanceInfo);
+		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo);
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
 		#endif
 	} while ( traIt != traceVec.end());
 	
-	cout << "moveToSender : reach destnation!" << endl;
+	cout << "moveToSender : reach destnation!\n" << endl;
 
 	req->state = 1;
 	
