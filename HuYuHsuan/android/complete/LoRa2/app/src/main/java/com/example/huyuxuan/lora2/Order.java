@@ -1,5 +1,7 @@
 package com.example.huyuxuan.lora2;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 /**
@@ -24,6 +26,8 @@ public class Order implements Serializable {
     private String str_arrive_time;
     private String str_sender;
 
+    private String month,date,minute,hour;
+
     public Order(int start,int destination,int cost,String name,String phone,String time,String str,int state){
         start_place=start;
         final_place=destination;
@@ -43,6 +47,7 @@ public class Order implements Serializable {
         send_time=time;
         str_arrive_time=arriveTime;
         str_state=state;
+        order_state=Integer.valueOf(state);
         //預設每筆訂單30元
         order_cost=30;
         str_key = key;
@@ -84,5 +89,17 @@ public class Order implements Serializable {
 
     public String getNote() {
         return note;
+    }
+
+    public void setSetTime(String time){
+        String[] temp;
+        temp=time.split("-| |:");//進行字串分解 ：0:年 1:月 2:日 3:時 4:分 5:秒
+        Log.d("tag",temp[0]+" "+temp[1]+" "+temp[2]+" "+temp[3]+" "+temp[4]);
+        month=temp[1];
+        date=temp[2];
+        hour=temp[3];
+        minute=temp[4];
+        send_time=temp[3]+"時"+temp[4]+"分";
+
     }
 }

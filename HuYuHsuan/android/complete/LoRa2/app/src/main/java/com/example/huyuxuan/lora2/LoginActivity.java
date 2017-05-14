@@ -99,37 +99,44 @@ public class LoginActivity extends AppCompatActivity {
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("activity").equals("LoginActivity")){
-                getApplicationContext().unbindService(mConnection);
-                unregisterReceiver(receiver);
-                Bundle bundle = intent.getExtras();
-                String type = bundle.getString(getString(R.string.type));
-                if(type.compareTo("1")==0){
-                    String name = bundle.getString(getString(R.string.name));
-                    String mail = bundle.getString(getString(R.string.email));
-                    sharedPreferences.edit()
-                            .putString(getString(R.string.account),account)
-                            .putString(getString(R.string.password),password)
-                            .putString(getString(R.string.name),name)
-                            .putString(getString(R.string.email),mail)
-                            .putString(getString(R.string.isLogin),"true")
-                            .putString("BGLogin","false")
-                            .apply();
-                    Log.d("LoginActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+mail);
-                    Log.d("LoginActivity","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));
-                    //跳到主畫面
-                    Intent intentToMain = new Intent();
-                    intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
-                    startActivity(intentToMain);
-                    LoginActivity.this.finish();
-                    Log.d("LoginActivity","跳到主畫面");
+            if(intent.getStringExtra("result").equals("true")){
+                if(intent.getStringExtra("activity").equals("LoginActivity")){
+                    getApplicationContext().unbindService(mConnection);
+                    unregisterReceiver(receiver);
+                    Bundle bundle = intent.getExtras();
+                    String type = bundle.getString(getString(R.string.type));
+                    if(type.compareTo("1")==0){
+                        String name = bundle.getString(getString(R.string.name));
+                        String mail = bundle.getString(getString(R.string.email));
+                        sharedPreferences.edit()
+                                .putString(getString(R.string.account),account)
+                                .putString(getString(R.string.password),password)
+                                .putString(getString(R.string.name),name)
+                                .putString(getString(R.string.email),mail)
+                                .putString(getString(R.string.isLogin),"true")
+                                .putString("BGLogin","false")
+                                .apply();
+                        Log.d("LoginActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+mail);
+                        Log.d("LoginActivity","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));
+                        //跳到主畫面
+                        Intent intentToMain = new Intent();
+                        intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
+                        startActivity(intentToMain);
+                        LoginActivity.this.finish();
+                        Log.d("LoginActivity","跳到主畫面");
 
-                }else{
-                    //登入失敗
-                    String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                    Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
+                    }else{
+                        //登入失敗
+                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
+                        Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
+            else{
+                //連線有問題
+                Toast.makeText(LoginActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+            }
+
         }
     }
 

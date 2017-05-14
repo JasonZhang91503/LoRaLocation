@@ -14,7 +14,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,16 +22,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.Background.MyAlarmReceiver;
-import com.example.huyuxuan.lora2.Fragment.DatePickerFragment;
-import com.example.huyuxuan.lora2.Fragment.HistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
 import com.example.huyuxuan.lora2.Fragment.ProfileFragment;
-import com.example.huyuxuan.lora2.Fragment.RcvHistoryPage;
-import com.example.huyuxuan.lora2.Fragment.SendHistotyPage;
+import com.example.huyuxuan.lora2.Fragment.RecvHistoryFragment;
+import com.example.huyuxuan.lora2.Fragment.SendHistoryFragment;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -41,7 +38,7 @@ import java.util.Locale;
  * Created by huyuxuan on 2017/4/27.
  */
 
-public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,DatePickerFragment.PassOnDateSetListener{
+public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public Fragment myFragment;
     static ConnectService mBoundService;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
@@ -49,8 +46,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ConnectServiceReceiver receiver;
     public HomeFragment firstFragment;
 
-    private static RcvHistoryPage mRcvHistoryPage;
-    private static SendHistotyPage mSendHistoryPage;
 
     private Calendar c;
     String formattedDate;
@@ -135,18 +130,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onStop() {
         sharedPreferences.edit().putString("BGLogin","true").apply();
+        sharedPreferences.edit().putString("hasStop","true").apply();
         Log.d("NavigationActivity","onStop");
         if(mBoundService!=null){
             MyBoundedService.isConnect=false;
             mBoundService.disconnect();
-//            unregisterReceiver(receiver);
-            /*
-            if(isBind){
-                getApplicationContext().unbindService(mConnection);
-            }
-            */
-
         }
+
         super.onStop();
     }
 
@@ -173,6 +163,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onResume() {
         Log.d("NavigationActivity","onResume");
+        sharedPreferences.edit().putString("hasStop","false").apply();
         alarm.setAlarm(this);
         super.onResume();
     }
@@ -220,19 +211,28 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
-                getSupportFragmentManager().beginTransaction().remove(myFragment);
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,newOrderFragment).commit();
                 break;
-            case R.id.nav_history:
-                HistoryFragment historyFragment = new HistoryFragment();
-                myFragment = historyFragment;
+            case R.id.nav_send_history:
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                SendHistoryFragment sendHistoryFragment = new SendHistoryFragment();
+                myFragment = sendHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
-                        .replace(R.id.fragment_container,historyFragment).commit();
+                        .replace(R.id.fragment_container,sendHistoryFragment).commit();
+                break;
+            case R.id.nav_recv_history:
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                RecvHistoryFragment recvHistoryFragment = new RecvHistoryFragment();
+                myFragment = recvHistoryFragment;
+                getSupportFragmentManager().beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,recvHistoryFragment).commit();
                 break;
             case R.id.nav_profile:
                 ProfileFragment profileFragment = new ProfileFragment();
@@ -273,6 +273,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
     private void clearData(){
+        Log.d("NavigationActivity","clearData");
         SharedPreferences sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         sharedPreferences.edit()
                 .putString(getString(R.string.account),"")
@@ -292,27 +293,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
 
-    @Override
-    public void passOnDateSet(int year, int month, int day) {
-        Log.d("NavigationActivity","passOnDateSet");
-        c.set(year,month,day);
-        formattedDate = dayDateFormat.format(c.getTime());
 
-        Intent intent = new Intent(NavigationActivity.this,ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"RcvHistoryPage");
-        intent.putExtra(getString(R.string.id),"8");
-        intent.putExtra(getString(R.string.requireTime),formattedDate);
-        if(!isBind){
-            getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
-            isBind=true;
-            Log.d("NavigationActivity:", "checkSR->bind");
-        }
-        else{
-            mBoundService.sendToServer(intent);
-            Log.d("NavigationActivity:", "checkSR->sendToService");
-        }
-        setReceiver();
-    }
     private static ServiceConnection mConnection = new ServiceConnection() {
         //EDITED PART
         @Override
@@ -326,7 +307,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
             Log.d("NavigationActivity","onServiceDisconnected");
-            //mBoundService = null;
+            mBoundService = null;
             isBind=false;
         }
 
@@ -336,53 +317,24 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("activity").equals("RcvHistoryPage")){
-                Log.d("NavigationActivity:","receiver on receive");
-                unregisterReceiver(receiver);
-                getApplicationContext().unbindService(mConnection);
-                Bundle bundle = intent.getExtras();
-                //把bundle傳給recvHistoryPage
-                if(mRcvHistoryPage!=null && intent.getStringExtra("result").equals("true")){
-                    mRcvHistoryPage.updateListView(bundle);
+            if(intent.getStringExtra("result").equals("true")){
+                if(intent.getStringExtra("activity").equals("NavigationActivity")){
+                    getApplicationContext().unbindService(mConnection);
+                    unregisterReceiver(receiver);
+                    Bundle bundle = intent.getExtras();
+                    String type = bundle.getString(getString(R.string.type));
+                    if(type.compareTo("1")==0){
+                        //偷偷登入成功，可以載入HomeFragment要資料了
+                        loadHome(tmp);
+                    }else{
+                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
+                        Log.e("NavigationActivity",errorMsg);
+                    }
                 }
-                Intent SendIntent = new Intent(NavigationActivity.this,ConnectService.class);
-                SendIntent.putExtra(getString(R.string.activity),"SendHistoryPage");
-                SendIntent.putExtra(getString(R.string.id),"7");
-                SendIntent.putExtra(getString(R.string.requireTime),formattedDate);
-                if(!isBind){
-                    getApplicationContext().bindService(SendIntent,mConnection, Context.BIND_AUTO_CREATE);
-                    isBind=true;
-                    Log.d("NavigationActivity:", "bind in receiver");
-                }
-                else{
-                    mBoundService.sendToServer(SendIntent);
-                    Log.d("NavigationActivity:", "sendToService in receiver");
-                }
-                setReceiver();
-
             }
-            else if(intent.getStringExtra("activity").equals("SendHistoryPage")){
-                Log.d("NavigationActivity:","receiver on receive");
-                unregisterReceiver(receiver);
-                getApplicationContext().unbindService(mConnection);
-                Bundle bundle = intent.getExtras();
-                //把bundle傳給sendHistoryPage
-                if(mSendHistoryPage!=null){
-                    mSendHistoryPage.updateListView(bundle);
-                }
-
-            }else if(intent.getStringExtra("activity").equals("NavigationActivity")){
-                getApplicationContext().unbindService(mConnection);
-                unregisterReceiver(receiver);
-                Bundle bundle = intent.getExtras();
-                String type = bundle.getString(getString(R.string.type));
-                if(type.compareTo("1")==0){
-                    //偷偷登入成功，可以載入HomeFragment要資料了
-                    loadHome(tmp);
-                }else{
-                    String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                    Log.e("NavigationActivity",errorMsg);
-                }
+           else{
+                //連線有問題
+                Toast.makeText(NavigationActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -396,60 +348,4 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         Log.d("NavigationActivity:","register receiver");
     }
 
-
-
-    public static class PaperAdapter extends FragmentStatePagerAdapter {
-
-        public PaperAdapter(android.support.v4.app.FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position){
-                case 0:
-                    //創收件歷史的fragment
-                    RcvHistoryPage rcpPage = new RcvHistoryPage();
-                    return rcpPage;
-                case 1:
-                    //創寄件歷史的fragment
-                    SendHistotyPage sendPage = new SendHistotyPage();
-                    return sendPage;
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return "ReceiveHistory";
-                case 1:
-                    return "SendHistory";
-            }
-            return null;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            // save the appropriate reference depending on position
-            switch (position) {
-                case 0:
-                    mRcvHistoryPage = (RcvHistoryPage) createdFragment;
-                    break;
-                case 1:
-                    mSendHistoryPage = (SendHistotyPage) createdFragment;
-                    break;
-            }
-            return createdFragment;
-        }
-
-    }
 }
