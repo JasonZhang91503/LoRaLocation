@@ -498,6 +498,8 @@ int moveToSender(UserRequest* req){
 	ee.x = req->src_lon;
 	ee.y = req->src_lat;
 
+	cout << "GOOD2" << endl;
+
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
@@ -510,6 +512,7 @@ int moveToSender(UserRequest* req){
 			mapNode = cgms->gpsToCoordinate(temp);
 		}
 		else{
+			cout << "GOOD3" << endl;
 			getGPSLocation(ss.x,ss.y);
 			mapNode = cgms->gpsToCoordinate(ss);
 			if(!cgms->isInsideMap(ss.x,ss.y)){
@@ -517,6 +520,7 @@ int moveToSender(UserRequest* req){
 				unistd::usleep(1000);
 				continue;
 			}
+			cout << "GOOD4" << endl;
 		}
 		#else
 		sLon = req->src_lon;
@@ -527,13 +531,18 @@ int moveToSender(UserRequest* req){
 		mapNode = cgms->gpsToCoordinate(temp);
 		#endif
 
+
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
 			firstFind = false;
 		}
 
+cout << "GOOD5" << endl;
+
 		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
+
+cout << "GOOD6" << endl;
 
 		if (isCarReach) {
 			count++;
