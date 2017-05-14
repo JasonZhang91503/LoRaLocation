@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -43,6 +44,8 @@ public class BackgroundRecvService extends Service {
     static BufferedWriter out;
 
     String rcvMessage;
+    private SharedPreferences sharedPreferences;
+    NotificationCompat.Builder mBuilder;
 
     @Nullable
     @Override
@@ -54,6 +57,8 @@ public class BackgroundRecvService extends Service {
     public void onCreate() {
         super.onCreate();
         acquireWakeLock(1);
+        Log.d("BGService","onCreate");
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
 
         new AsyncTask<String,String,String>() {
             @Override
@@ -70,9 +75,22 @@ public class BackgroundRecvService extends Service {
                     in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                     out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
                     Log.i("BGRService", "BufferedReader and PrintWriter ready.");
+                    String account = sharedPreferences.getString(getString(R.string.account),"");
+                    String password = sharedPreferences.getString(getString(R.string.password),"");
                     out.write("3");
                     out.flush();
                     Log.d("Service", "write 3 to server");
+                    out.write(account+","+password+",");
+                    out.flush();
+                    Log.d("Service", "write "+account+","+password+", to server");
+                    if(in != null){
+                        rcvMessage = in.readLine();
+                        rcvMessage.concat("\0");
+                        Log.d("BGRService", "receive " + rcvMessage + " from server");
+                        if(rcvMessage!=null){
+                            analyze(rcvMessage);
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -84,21 +102,28 @@ public class BackgroundRecvService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("BGService","onDestroy");
         releaseWakeLock();
     }
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId){
 
-
+        Log.d("BGService","onStartCommand");
         new AsyncTask<String,String,String>() {
             @Override
             protected String doInBackground(String... strings) {
 
                 ensureConnected();
                 try {
-                    rcvMessage = in.readLine();
-                    Log.d("BGRService", "receive " + rcvMessage + " from server");
+                    if(in != null){
+                        rcvMessage = in.readLine();
+                        rcvMessage.concat("\0");
+                        Log.d("BGRService", "receive " + rcvMessage + " from server");
+                        if(rcvMessage!=null){
+                            analyze(rcvMessage);
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -106,45 +131,72 @@ public class BackgroundRecvService extends Service {
             }
 
         }.execute();
-        //開啟通知
-        createSimleNotification(rcvMessage);
-        //強迫螢幕亮起
-        acquireWakeLock(2);
-
-        /*
-        //接收完
-        Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
-        broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        broadcastIntent.putExtra("result", flag.toString());
-        broadcastIntent.putExtra("state","true");
-        sendBroadcast(broadcastIntent);
-        */
-
-
-
 
         return START_STICKY;
     }
 
-    private void createSimleNotification(String msg){
-        NotificationCompat.Builder mBuilder;
-        //開啟notification
-        if(msg=="1"){
-            mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_launcher)
-                            .setContentTitle("My notification")
-                            .setContentText("車子到了下來寄信")
-                            .setAutoCancel(true);
-        }else{
-            mBuilder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_launcher)
-                            .setContentTitle("My notification")
-                            .setContentText("車子到了下來收信")
-                            .setAutoCancel(true);
+    private void analyze(String msg){
+        char type = msg.charAt(0);
+        if(type=='2'){
+            if(msg.equals("2,1")){
+                mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.delivery_icon)
+                                .setContentTitle("My notification")
+                                .setContentText("車子到了下來寄信")
+                                .setAutoCancel(true);
+                createSimleNotification();
+                //接收完
+                Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
+                broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                broadcastIntent.putExtra("result", flag.toString());
+                broadcastIntent.putExtra("state","true");
+                sendBroadcast(broadcastIntent);
+            }else if(msg.equals("2.0")){
+                mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.delivery_icon)
+                                .setContentTitle("My notification")
+                                .setContentText("車子到了下來收信")
+                                .setAutoCancel(true);
+                createSimleNotification();
+                //接收完
+                Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
+                broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                broadcastIntent.putExtra("result", flag.toString());
+                broadcastIntent.putExtra("state","true");
+                sendBroadcast(broadcastIntent);
+            }else{
+                Log.e("BGService","接收到的訊息格式錯誤");
+            }
+        }else if(type == '1'){
+            if(msg.equals("1,1")){
+                Log.d("BGService","認證成功");
+                //接收完
+                Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
+                broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                broadcastIntent.putExtra("result", flag.toString());
+                broadcastIntent.putExtra("state","true");
+                sendBroadcast(broadcastIntent);
+            }else if(msg.equals("1,0")){
+                Log.d("BGService","認證失敗");
+                //接收完
+                Intent broadcastIntent = new Intent(ACTION_RECV_SER_BROD);
+                broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                broadcastIntent.putExtra("result", flag.toString());
+                broadcastIntent.putExtra("state","false");
+                sendBroadcast(broadcastIntent);
+            }else{
+                Log.e("BGService","接收到的訊息格式錯誤");
+            }
         }
+    }
 
+    public void createSimleNotification(){
+        //開啟notification
+
+        //強迫螢幕亮起
+        acquireWakeLock(2);
 
 
         // Creates an explicit intent for an Activity in your app
@@ -169,8 +221,6 @@ public class BackgroundRecvService extends Service {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(notifyId, mBuilder.build());
-
-
     }
 
     private void acquireWakeLock(int type) {

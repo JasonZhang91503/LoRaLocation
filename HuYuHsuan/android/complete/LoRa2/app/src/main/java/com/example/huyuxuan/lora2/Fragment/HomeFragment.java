@@ -1,6 +1,7 @@
 package com.example.huyuxuan.lora2.Fragment;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,19 +18,20 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.MyBoundedService;
+import com.example.huyuxuan.lora2.Order;
 import com.example.huyuxuan.lora2.R;
 import com.example.huyuxuan.lora2.RoundImageView;
 import com.example.huyuxuan.lora2.SelectDialog;
@@ -41,11 +43,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
@@ -55,9 +57,11 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
 public class HomeFragment extends Fragment {
 
     private View myview;
-    private Button btnProfile;
-    private Button btnRegister;
-    private ListView lv;
+    private ImageButton btnProfile;
+    private ImageButton btnRegister;
+    private RecyclerView recyclerView;
+    private TextView tvName;
+    private SharedPreferences sharedPreferences;
 
     private static boolean isBind;
     static ConnectService mBoundService;
@@ -74,6 +78,9 @@ public class HomeFragment extends Fragment {
     private final int CROP_FROM_CAMERA = 3;
     private Uri imgUri; // 由于android手机的图片基本都会很大，所以建议用Uri，而不用Bitmap
 
+    public static ArrayList<Order> orderlist;
+    boolean resum=false;
+
 
     @Override
     public void onCreate(Bundle savedInstances){
@@ -85,10 +92,14 @@ public class HomeFragment extends Fragment {
         Log.d("HomeFragment","onCreateView");
         //inflate layout for this fragment
         myview = inflater.inflate(R.layout.fragment_home,container,false);
-        lv = (ListView)myview.findViewById(R.id.home_listview);
-        btnProfile = (Button)myview.findViewById(R.id.btnProfile);
-        btnRegister = (Button)myview.findViewById(R.id.btnHomeToRegister);
+        recyclerView = (RecyclerView) myview.findViewById(R.id.recyclerView);
+        btnProfile = (ImageButton) myview.findViewById(R.id.btnProfile);
+        btnRegister = (ImageButton) myview.findViewById(R.id.btnHomeToRegister);
         mHeadImage = (RoundImageView)myview.findViewById(R.id.main_roundImage);
+        tvName = (TextView)myview.findViewById(R.id.textViewName);
+        sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
+        tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
+
         isBind = false;
         updateListView();
 
@@ -120,11 +131,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //跳到登記寄件
-                RegisterFragment registerFragment = new RegisterFragment();
-                registerFragment.setTargetFragment(HomeFragment.this, 0);
+                NewOrderFragment newOrderFragment = new NewOrderFragment();
+                newOrderFragment.setTargetFragment(HomeFragment.this, 0);
                 getFragmentManager().beginTransaction()
                         .addToBackStack(null)
-                        .replace(R.id.fragment_container,registerFragment).commit();
+                        .replace(R.id.fragment_container,newOrderFragment).commit();
+
             }
         });
         mHeadImage.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +178,27 @@ public class HomeFragment extends Fragment {
                 },list);
             }
         });
+
+        if(orderlist!=null){
+            MyAdapter myAdapter=new MyAdapter(orderlist);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(myAdapter);
+            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Log.d("HomeFragment","Myadapter onitemClick");
+                    Order tmp = orderlist.get(position);
+                    OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
+                    orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
+                    getFragmentManager().beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container,orderInfoFragment).commit();
+
+                }
+            });
+        }
 
         return myview;
     }
@@ -211,16 +244,29 @@ public class HomeFragment extends Fragment {
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
                 getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
-                ArrayList<HashMap<String, String>> DataList = ((ArrayList<HashMap<String, String>>) bundle.getSerializable("arrayList"));;
-               // ArrayList list = bundle.getParcelableArrayList("list");
-               // DataList = (ArrayList<HashMap<String, String>>)list.get(0);
-                ListAdapter adapter = new SimpleAdapter(
-                        getActivity(), DataList,
-                        R.layout.list_item, new String[] {getString(R.string.requireTime),getString(R.string.state),
-                        getString(R.string.sender),getString(R.string.receiver),getString(R.string.desLocation),getString(R.string.key)},
-                        new int[] {R.id.requireTime,R.id.state,R.id.sender,R.id.receiver,R.id.des_id,R.id.key});
-                lv.setAdapter(adapter);
+                if(bundle != null){
+                    orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
+                    MyAdapter myAdapter=new MyAdapter(orderlist);
+                    LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    recyclerView.setLayoutManager(layoutManager);
+                    recyclerView.setAdapter(myAdapter);
+                    myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            Log.d("HomeFragment","Myadapter onitemClick");
+                            Order tmp = orderlist.get(position);
+                            OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
+                            orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
+                            getFragmentManager().beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container,orderInfoFragment).commit();
 
+                        }
+                    });
+                }else{
+                    Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -230,8 +276,14 @@ public class HomeFragment extends Fragment {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             // TODO Auto-generated method stub
-           // mBoundService = ((ConnectService.LocalBinder)service).getService();
-            mBoundService = MyBoundedService.myService;
+
+           if(MyBoundedService.myService!=null){
+               mBoundService = MyBoundedService.myService;
+           }
+           else{
+               mBoundService = ((ConnectService.LocalBinder)service).getService();
+           }
+
             Log.d("mConnection","onServiceConnected");
         }
 
@@ -256,12 +308,16 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        if(resum){
+           // updateListView();
+        }
         Log.d("Home Fragment","onResume");
     }
 
     @Override
     public void onPause(){
         super.onPause();
+        resum=true;
         Log.d("HomeFragment","onPause");
     }
 

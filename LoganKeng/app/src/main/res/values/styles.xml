@@ -5,7 +5,9 @@
         <!-- Customize your theme here. -->
         <item name="windowNoTitle">true</item>
     </style>
-
+    <style name="MyDatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
     <style name="myRadioButton" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">@color/inactive_dot</item>
         <item name="colorControlActivated">@color/active_dot</item>

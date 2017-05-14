@@ -7,10 +7,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by huyuxuan on 2017/4/26.
@@ -20,18 +23,25 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
 
-    static private int serviceCounter = 0;
+    static private int serviceCounter;
     private BgServiceRecver mServiceBroadcastReceiver;
     private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("MyAlarmReceiver","onReceive");
+        sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
+        serviceCounter = sharedPreferences.getInt("BGServiceCount",0);
+        Log.d("MyAlatmReceiver","serviceCounter="+serviceCounter);
+
         if(serviceCounter == 0){
             Intent service = new Intent(context, BackgroundRecvService.class);
             startWakefulService(context, service);
             serviceCounter++;
+            sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
         }
+
     }
 
     public void setAlarm(Context context) {
@@ -59,7 +69,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         context.getApplicationContext().registerReceiver(mServiceBroadcastReceiver, filter);
         Log.d("MyAlarmReceiver","register receiver");
     }
-    /*
+
     public void cancelAlarm(Context context) {
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
@@ -74,19 +84,19 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
     }
-    */
+
 
     public class BgServiceRecver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             String state = intent.getStringExtra("state");
+            Log.d("BgServiceReceiver:","state-> "+ state);
             // 如果傳回成功
             if(state.equals("true")){
-                Log.d("BgServiceReceiver:","state-> "+ state);
                 //開啟notification
+                sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
                 serviceCounter--;
-
+                sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
             }
 
         }

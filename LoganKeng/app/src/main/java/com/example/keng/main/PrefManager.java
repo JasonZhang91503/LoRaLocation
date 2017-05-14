@@ -12,7 +12,9 @@ public class PrefManager {
 
     private static final String PREF_NAME="com.example.keng.main";
     private static final String Is_First_Time_Launch="IsFirstTimeLaunch";
-
+    private static final String ACCOUNT="Account";
+    private static final String PASSWORD="Password";
+    private static final String NAME="Name";
     public PrefManager(Context context){
         this._context=context;
         pref=context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
@@ -24,6 +26,20 @@ public class PrefManager {
 
     }
     public boolean isFirstTimeLaunch(){
-        return pref.getBoolean(Is_First_Time_Launch,true);//如果沒有Is_First_Time_Launch 傳回Ture
+        return  pref.getBoolean(Is_First_Time_Launch,true);//如果沒有Is_First_Time_Launch 傳回Ture
+    }
+    public void setAccount(String name,String password){
+        editor.putString(ACCOUNT,name);
+        editor.putString(PASSWORD,password);
+        editor.putString(NAME,"耿楷寗");
+    }
+    public String getAccount(){
+        return  pref.getString(ACCOUNT,"test");
+    }
+    public String getPassword(){
+        return  pref.getString(PASSWORD,"1234");
+    }
+    public String getName(){
+        return pref.getString(NAME,"測試帳戶");
     }
 }

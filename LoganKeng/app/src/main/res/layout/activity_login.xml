@@ -136,7 +136,7 @@
         android:background="@android:color/transparent"
         android:ems="10"
         android:hint="@string/Password"
-        android:inputType="textPersonName"
+        android:inputType="textPassword"
         android:singleLine="false"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/line3"

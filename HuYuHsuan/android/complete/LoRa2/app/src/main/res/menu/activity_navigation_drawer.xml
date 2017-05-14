@@ -8,11 +8,15 @@
             android:id="@+id/nav_register"
             android:title="@string/register" />
         <item
-            android:id="@+id/nav_history"
-            android:title="@string/history" />
+            android:id="@+id/nav_send_history"
+            android:title="@string/sendhistory" />
         <item
-            android:id="@+id/nav_setting"
-            android:title="@string/setting" />
+            android:id="@+id/nav_recv_history"
+            android:title="@string/recvhistory" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:title="@string/profile" />
         <item
             android:id="@+id/nav_logOut"
             android:title="@string/logOut" />

@@ -9,7 +9,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="名字："
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_row="0"
+        android:layout_column="0" />
 
     <TextView
         android:id="@+id/tvProfileName"
@@ -37,21 +39,65 @@
         android:layout_row="1"
         android:text="TextView"
         android:textSize="18sp" />
+
     <TextView
-        android:id="@+id/textView23"
+        android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_row="2"
-        android:text="信箱："
+        android:text="密碼："
         android:textSize="18sp" />
+
     <TextView
-        android:id="@+id/tvProfileEmail"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvProfilePassword"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_column="1"
         android:layout_row="2"
         android:text="TextView"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvProfileEmail"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_row="3"
+        android:text="TextView"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_row="3"
+        android:text="信箱："
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/btnChangePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:layout_row="2"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/btnChangeEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:layout_row="3"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/btnChangeOk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_row="4"
+        android:text="確定" />
 
 </GridLayout>

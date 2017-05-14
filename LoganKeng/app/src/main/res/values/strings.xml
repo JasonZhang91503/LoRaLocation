@@ -19,4 +19,54 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- 0504後新增 -->
+    <string name="new_Order_set1">選擇地點與時間</string>
+    <string name="new_Order_set1_time">時間（限當日）</string>
+    <string name="new_Order_set1_start">寄件地</string>
+    <string name="new_Order_set1_destination">收件地</string>
+    <string name="new_Order_set2">填寫收件者資料</string>
+    <string name="new_Order_set2_receiver">收件者</string>
+    <string name="new_Order_set2_phone">聯絡電話</string>
+    <string name="new_Order_set2_note">備註</string>
+    <string name="new_Order_set3">確認訂單資訊</string>
+    <string name="default_spinner">請選擇地點</string>
+    <string name="next">下一步</string>
+    <string name="confirm">確認無誤</string>
+    <string name="estimate">預估金額</string>
+    <string name="cost">總金額</string>
+    <string name="home_Latest_order">最新訂單</string>
+    <string-array name="Location">
+        <item>商學院</item>
+        <item>法學院</item>
+        <item>行政大樓</item>
+        <item>公共事務學院</item>
+        <item>社會科學院</item>
+        <item>電機資訊院</item>
+        <item>圖書館</item>
+    </string-array>
+    <!--0509 後更新-->
+    <string name="hist_recv_all">全部</string>
+    <string name="hist_recv_complete">已完成</string>
+    <string name="hist_recv_incomplete">未完成</string>
+    <string name="remain">帳戶金額</string>
+    <string name="Jan">JAN</string>
+    <string name="Feb">FEB</string>
+    <string name="Mar">MAR</string>
+    <string name="Apr">APR</string>
+    <string name="May">MAY</string>
+    <string name="Jun">JUN</string>
+    <string name="Jul">JUL</string>
+    <string name="Aug">AUG</string>
+    <string name="Sep">SEP</string>
+    <string name="Oct">OCT</string>
+    <string name="Nov">NOV</string>
+    <string name="Dec">DEC</string>
+    <string name="account_title">基本資料</string>
+    <!--0514 後更新-->
+    <string name="new_pwd">輸入新密碼</string>
+    <string name="confirm_new_pwd">確認新密碼</string>
+    <string name="new_email">輸入新信箱</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
