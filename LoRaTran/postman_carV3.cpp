@@ -502,9 +502,10 @@ int moveToSender(UserRequest* req){
 		if(NOGPS == 2){
 			sLon = req->src_lon;
 			sLat = req->src_lat;
-			ss.x = ee.x = sLon;
-			ss.y = ee.y = sLat;
-			mapNode = cgms->gpsToCoordinate(ss);
+			Coor temp;
+			temp.x = sLon;
+			temp.y = sLat;
+			mapNode = cgms->gpsToCoordinate(temp);
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
@@ -518,9 +519,10 @@ int moveToSender(UserRequest* req){
 		#else
 		sLon = req->src_lon;
 		sLat = req->src_lat;
-		ss.x = ee.x = sLon;
-		ss.y = ee.y = sLat;
-		mapNode = cgms->gpsToCoordinate(ss);
+		Coor temp;
+		temp.x = sLon;
+		temp.y = sLat;
+		mapNode = cgms->gpsToCoordinate(temp);
 		#endif
 
 		if(firstFind){
