@@ -54,6 +54,10 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_STATE_4_ERROR 9487004
 #define CAR_OK 9487487
 
+#define MAP_WIDTH 1200
+#define MAP_HEIGHT 600 
+#define ROAD_WIDTH 100
+
 
 #ifndef NO_CAR_MODE
 //Include arduPi library
@@ -65,6 +69,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 //Include Navigation library
 #include "Navigation.h"
+
+//Include CarMapSystem library
+#include "CarMapSystem.h"
 
 #ifndef NO_CAR_MODE
 //Include gps library
@@ -100,14 +107,17 @@ int rc; //GPS的return code
 #ifndef NO_CAR_MODE
 struct gps_data_t myGPS_Data;	//GPS的端口
 #endif
+Coor mapNode;
 //GPS_Data gps_data;
+Coor init,xMax,yMax;
 int pw_size = 4;
-double dest_range = 0.02;
+double dest_range = 20;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
 int NOGPS = 0;
 int receivePeriod = 700;
+float** adj;
 
 
 
@@ -126,6 +136,7 @@ int sendPacket(UserRequest*);
 int parseRequestData(UserRequest*);
 int parseStateData();
 string parsePassword();
+void initCGMS();
 
 void pauseCar(){
 	if(carStatus == 0) return;
@@ -240,7 +251,7 @@ void* asyncRecv(void *arg){
 		else{
 			if(!PacManager->isCorrectPackNum()){
 				cout << "asyncRecv : recvive incorrect packNum, discard it\n";
-				result = PacManager->sendBackACK();
+				//result = PacManager->sendBackACK();
 				cout << "asyncRecv : resend last sended packet\n";
 			}
 			else{
@@ -364,10 +375,23 @@ int main(int argc, const char * argv[]){
 	註:只有state 0 是 gateway主動打過來的
 		剩下的state都是車子本身修改自身state並且傳送出去給gateway和server知道
 	*/
+    init.x = 121.370889;
+    init.y = 24.943544;
+    xMax.x = 121.373223;
+    xMax.y = 24.944915;
+    yMax.x = 121.370456;
+    yMax.y = 24.944184;
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
-	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	ReqManger.addReqestListener(reqObserver);
+	
+	PacketManager *pac = PacketManager::getInstance(receivePeriod);
+	
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+	cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
+    cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
+	initCGMS();
+	
 
 	pthread_mutex_init(&timerMutex, NULL);
 	pthread_cond_init(&timerCond, NULL);
@@ -454,44 +478,74 @@ int recvSenderRequest(UserRequest* req){
 
 int moveToSender(UserRequest* req){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
-	
+	Coor ss,ee;
+	bool firstFind = true;
+	vec_CMnode traceVec;
+	vec_CMnode::iterator traIt;
+	int count = 0; 
+
 	cout << "moveToSender : Begin go to sender location" << endl;
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+
+	ee.x = req->src_lon;
+	ee.y = req->src_lat;
 
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		if(NOGPS == 2){
-			sLon = req->dest_lon;
-			sLat = req->dest_lat;
+			sLon = req->src_lon;
+			sLat = req->src_lat;
+			ss.x = ee.x = sLon;
+			ss.y = ee.y = sLat;
+			mapNode = cgms->gpsToCoordinate(ss);
 		}
 		else{
-			getGPSLocation(sLon,sLat);
+			getGPSLocation(ss.x,ss.y);
+			mapNode = cgms->gpsToCoordinate(ss);
+			if(!cgms->isInsideMap(ss.x,ss.y)){
+				printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf",ss.x,ss.y,mapNode.x,mapNode.y);
+				unistd::usleep(1000);
+				continue;
+			}
 		}
 		#else
-		sLon = req->dest_lon;
-		sLat = req->dest_lat;
+		sLon = req->src_lon;
+		sLat = req->src_lat;
+		ss.x = ee.x = sLon;
+		ss.y = ee.y = sLat;
+		mapNode = cgms->gpsToCoordinate(ss);
 		#endif
-		
-		//去計算是否到達目標
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, req->dest_lon, req->dest_lat);
-		
+
+		if(firstFind){
+			traceVec = cgms->findPath(ss,ee,adj);
+			traIt = traceVec.begin();
+			firstFind = false;
+		}
+
+		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
+
 		if (isCarReach) {
-			cout << "moveToSender : reach destnation!" << endl;
-			break;
+			count++;
+			traIt++;
 		}
 		
-		cout << "You should still go toward "<< directionInfo << " degree for " << distanceInfo << " kilometer." << endl;
+//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
+		printf("%d,%d,go toward %lf degree for %lf meter.",count,traceVec.size(),directionInfo,distanceInfo);
+
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
 		#endif
-	} while ( -180 < sLon && sLon < 180);
+	} while ( traIt != traceVec.end());
 	
+	cout << "moveToSender : reach destnation!" << endl;
+
 	req->state = 1;
 	
 #ifndef NO_CAR_MODE
@@ -530,8 +584,17 @@ int moveToReceiver(UserRequest* req){
 	double sLon, sLat;	//起始地點
 	bool isCarReach;	//車子是否到達
 	int StateCode;
-	
+	Coor ss,ee;
+	bool firstFind = true;
+	vec_CMnode traceVec;
+	vec_CMnode::iterator traIt;
+	int count = 0; 
+
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+
+	ee.x = req->dest_lon;
+	ee.y = req->dest_lat;
 
 	do {
 		//取得車子本身GPS座標
@@ -539,30 +602,49 @@ int moveToReceiver(UserRequest* req){
 		if(NOGPS == 2){
 			sLon = req->dest_lon;
 			sLat = req->dest_lat;
+			ss.x = ee.x = sLon;
+			ss.y = ee.y = sLat;
+			mapNode = cgms->gpsToCoordinate(ss);
 		}
 		else{
-			getGPSLocation(sLon,sLat);
+			getGPSLocation(ss.x,ss.y);
+			mapNode = cgms->gpsToCoordinate(ss);
+			if(!cgms->isInsideMap(ss.x,ss.y)){
+				printf("moveToReceiver : cgms detect gps not in map region, lon:%lf, lat:%lf",ss.x,ss.y,mapNode.x,mapNode.y);
+				unistd::usleep(1000);
+				continue;
+			}
 		}
-		
 		#else
 		sLon = req->dest_lon;
 		sLat = req->dest_lat;
+		ss.x = ee.x = sLon;
+		ss.y = ee.y = sLat;
+		mapNode = cgms->gpsToCoordinate(ss);
 		#endif
-		
-		//去計算是否到達目標
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, sLon, sLat, req->dest_lon, req->dest_lat);
-		
+
+		if(firstFind){
+			traceVec = cgms->findPath(ss,ee,adj);
+			traIt = traceVec.begin();
+			firstFind = false;
+		}
+
+		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
+
 		if (isCarReach) {
-			cout << "moveToReceiver : reach destnation!" << endl;
-			break;
+			count++;
+			traIt++;
 		}
 		
-		cout << "You should still go toward "<< directionInfo << " degree for " << distanceInfo << " kilometer." << endl;
+//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
+		printf("%d,%d,go toward %lf degree for %lf meter.",count,traceVec.size(),directionInfo,distanceInfo);
+
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
 		#endif
-	} while ( -180 < sLon && sLon < 180);
+	} while ( traIt != traceVec.end());
 	
+	cout << "moveToReceiver : reach destnation!" << endl;
 
 	req->state = 3;
 	
@@ -618,6 +700,8 @@ int endTransport(UserRequest* req){
 
 #ifndef NO_CAR_MODE
 int getGPSLocation(double &sLon,double &sLat){
+	Coor init,xMax,yMax;
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 	while (1) {
         /* wait for 2 seconds to receive data */
         if (gps_waiting (&myGPS_Data, 2000000)) {
@@ -647,10 +731,60 @@ int getGPSLocation(double &sLon,double &sLat){
 	
 	sLon = myGPS_Data.fix.longitude;
 	sLat = myGPS_Data.fix.latitude;
+
+	Coor gpsData = {myGPS_Data.fix.longitude, myGPS_Data.fix.latitude};
+	mapNode = cgms.gpsToCoordinate(gpsData);
 	
 	return CAR_OK;
 }
 #endif
+
+void initCGMS(){
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+
+	Stronghold sArr[5][3];
+    int value = 0;
+    int xScale = MAP_WIDTH/4;
+    int yScale = MAP_HEIGHT/2;
+    for(int i = 0 ; i < 5;i++){
+        for(int j = 0; j < 3; j++){
+            value++;
+            sArr[i][j].value = value;
+            sArr[i][j].x = i * xScale - (i==0?0:1);
+            sArr[i][j].y = j * yScale - (j==0?0:1);
+            cgms->addStronghold(sArr[i][j]);
+        }
+    }
+
+    cgms->fillNodeStronghold();
+    //cgms.printNodeStronghold();
+
+    int n = cgms->getStrongholdNum();
+
+    adj = new float*[n + 1];
+    for (int i = 0; i <= n; i++) {
+        adj[i] = new float[n + 1];
+    }
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            adj[i][j] = MAX_FLOAT;
+        }
+    }
+    for(int i = 1; i <= 3 ;i+=2){
+        for(int j = 0; j <= 9; j+=3){
+            adj[i+j][i+j+3] = yScale;
+            adj[i+j+3][i+j] = yScale;
+        }
+    }
+    for(int i = 1; i <= 13;i+=6){
+        for(int j = 0; j < 2; j++){
+            adj[i+j][i+j+1] = xScale;
+            adj[i+j+1][i+j] = xScale;
+        }
+    }
+}
+
 
 #ifndef NO_CAR_MODE
 int sendPacket(UserRequest *req){

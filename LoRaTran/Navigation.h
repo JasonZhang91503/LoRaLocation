@@ -57,6 +57,27 @@ bool isCarReachDestination(double &directionInfo, double &distanceInfo, double r
 	return false;
 }
 
+bool isReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat){
+	double x, y;
+	
+	x = destinationLon - sourceLon;
+	y = destinationLat - sourceLat;
+
+	directionInfo = atan(x / y) * 180 / M_PI;
+
+	if (y < 0) {
+		directionInfo += 180;
+	}else if (x < 0) {
+		directionInfo += 360;
+	}
+
+	distanceInfo = fabs(destinationLon - sourceLon) + fabs(destinationLat - sourceLat);
+	if (reachDistance > distanceInfo) {
+		return true;
+	}
+	return false;
+}
+
 double distanceBetween(double lat1, double lon1, double lat2, double lon2, char unit) {
 	double theta, dist;
 	theta = lon1 - lon2;
