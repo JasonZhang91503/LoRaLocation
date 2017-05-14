@@ -505,8 +505,8 @@ int moveToSender(UserRequest* req){
 			sLon = req->src_lon;
 			sLat = req->src_lat;
 			Coor temp;
-			temp.x = sLon;
-			temp.y = sLat;
+			ss.x = temp.x = sLon;
+			ss.y = temp.y = sLat;
 			cout << "GOOD2" << endl;
 			mapNode = cgms->gpsToCoordinate(temp);
 			cout << "GOOD3" << endl;
@@ -524,8 +524,8 @@ int moveToSender(UserRequest* req){
 		sLon = req->src_lon;
 		sLat = req->src_lat;
 		Coor temp;
-		temp.x = sLon;
-		temp.y = sLat;
+		ss.x = temp.x = sLon;
+		ss.y = temp.y = sLat;
 		mapNode = cgms->gpsToCoordinate(temp);
 		#endif
 
