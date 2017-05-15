@@ -660,6 +660,11 @@ int moveToReceiver(UserRequest* req){
 
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
+			if(traceVec.size() == 0){
+				printf("moveToReceiver : s and d out of bound");
+				unistd::usleep(1000);
+				continue;
+			}
 			traIt = traceVec.begin();
 
 			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
