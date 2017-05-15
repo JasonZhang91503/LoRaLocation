@@ -548,6 +548,11 @@ public:
     //�̭��]A*�t���k�h�M
     vec_CMnode findPath(Coor startGPS, Coor endGPS,float** adj){
         vec_CMnode traceVec;
+
+        if(!isInsideMap(startGPS.x,startGPS.y) || !isInsideMap(endGPS.x,endGPS.y)){
+            return traceVec;
+        }
+
         //�NstartNode�PendNode���������y��
         Coor startCoor = gpsToCoordinate(startGPS);
         Coor endCoor = gpsToCoordinate(endGPS);
@@ -677,15 +682,36 @@ public:
     }
 
     Coor coordinateToGps(Coor coor){
+        Coor rotateCoorXMax = rotationGPS(xMaxCoor,origin,-xRadin);
+        Coor rotateCoorYMax = rotationGPS(yMaxCoor,origin,-xRadin);
+
+        Coor initNode;
+        initNode.x = 0;
+        initNode.y = 0;
+
+        long double xRatio = (coor.x / (long double)maxWidth);
+        long double yRatio = (coor.y / (long double)maxHeight);
+
+        Coor rotatedGPS;
+        rotatedGPS.x = xRatio * (long double)rotateCoorXMax.x;
+        rotatedGPS.y = yRatio * (long double)rotateCoorYMax.y;
+
+        Coor initGPS;
+        initGPS.x = (rotatedGPS.x) * cos(xRadin) - (rotatedGPS.y) * sin(xRadin) + origin.x;
+        initGPS.y = (rotatedGPS.x) * sin(xRadin) + (rotatedGPS.y) * cos(xRadin) + origin.y;
+
+        return initGPS;
+/*
         Coor initNode;
         initNode.x = 0;
         initNode.y = 0;
         Coor rotateNode = rotationGPS(coor,initNode,xRadin);
 
         Coor rotateGps;
-        rotateNode.x = origin.x + rotateNode.x * ( (xMaxCoor.x - origin.x) / (double)maxWidth);
-        rotateNode.y = origin.y + rotateNode.y * ( (yMaxCoor.y - origin.y) / (double)maxHeight);
-        return rotateNode;
+        rotateGps.x = origin.x + rotateNode.x * ( (xMaxCoor.x - origin.x) / (double)maxWidth);
+        rotateGps.y = origin.y + rotateNode.y * ( (yMaxCoor.y - origin.y) / (double)maxHeight);
+        return rotateGps;
+        */
     }
 
     Coor rotationGPS(Coor rot,Coor ori,double radin){

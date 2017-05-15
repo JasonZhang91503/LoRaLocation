@@ -7,9 +7,9 @@ using namespace std;
 //#define NO_CAR_MODE
 Coor init,xMax,yMax;
 
-#define MAP_WIDTH 140
-#define MAP_HEIGHT 40
-#define ROAD_WIDTH 5
+#define MAP_WIDTH 1400
+#define MAP_HEIGHT 400
+#define ROAD_WIDTH 50
 
 
 float** adj;
@@ -32,7 +32,7 @@ void initCGMS(){
     }
 
     cgms->fillNodeStronghold();
-    cgms->printNodeStronghold();
+    //cgms->printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 
@@ -80,8 +80,8 @@ int main(){
     
     ss1.x =  121.370505;
     ss1.y =  24.944162;
-    ee1.x = 121.373262;
-    ee1.y = 24.944943;
+    ee1.x = 121.371751;
+    ee1.y =24.944498;
 
 
 /*
@@ -92,7 +92,14 @@ int main(){
     */
     Coor ss2 = cgms->gpsToCoordinate(ss1);
     Coor ee2 = cgms->gpsToCoordinate(ee1);
+/*
 
+    ss2.x = 1;
+    ss2.y = 40;
+    ee2.x = 65;
+    ee2.y = 22;
+
+*/
     Coor ss3 = cgms->coordinateToGps(ss2);
     Coor ee3 = cgms->coordinateToGps(ee2);
 

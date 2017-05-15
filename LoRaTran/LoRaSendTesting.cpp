@@ -88,7 +88,6 @@ void inputHeader(){
     printf("Input EventNum: ");
     scanf("%d",&temp);
     message1[3] = temp;
-
 }
 
 void setHeaderFromRecv(){
@@ -98,6 +97,8 @@ void setHeaderFromRecv(){
     message1[3] = 1;
 }
 
+
+
 void sendRequest(){
     char buffer[256];
     inputHeader();
@@ -105,6 +106,26 @@ void sendRequest(){
 //    message1[0] = 1;
     e = sx1272.sendPacketTimeout(0, message1);
     printf("Packet sent, state %d\n",e);
+}
+
+void sendGPS(){
+    char buffer[256];
+    inputHeader();
+    double slon,slat,dlon,dlat;
+    
+    cout << "slon : ";
+    cin >> slon;
+    cout << "slat : ";
+    cin >> slat;
+    cout << "dlon : ";
+    cin >> dlon;
+    cout << "dlat : ";
+    cin >> dlat;
+    sprintf(message1+4, "1,1,2,1234,timeIsMoney,%lf,%lf,%lf,%lf,",slon,slat,dlon,dlat);
+//    message1[0] = 1;
+    e = sx1272.sendPacketTimeout(0, message1);
+    printf("Packet sent, state %d\n",e);
+
 }
 
 void sendACK(){
@@ -176,6 +197,9 @@ void loop(void)
             recvState();
             sendACK();
             break;
+        case 3:
+            sendGPS();
+            recvACK();
     }
     
 }

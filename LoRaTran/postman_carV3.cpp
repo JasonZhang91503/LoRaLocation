@@ -452,6 +452,103 @@ int main(int argc, const char * argv[]){
 	return 0;
 }
 
+void goToLocation(double lon,double lat){
+	double directionInfo, distanceInfo;	//方位與距離之回傳
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
+	double sLon, sLat;	//起始地點
+	bool isCarReach;	//車子是否到達
+	int StateCode;
+	Coor ss,ee;
+	bool firstFind = true;
+	vec_CMnode traceVec;
+	vec_CMnode::iterator traIt;
+	vec_CMnode::iterator printIt;
+	int count = 0;
+	
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+
+	cout << "GOOD" << endl;
+
+	ee.x = lon;
+	ee.y = lat;
+
+	cout << "GOOD2" << endl;
+
+	do {
+		//取得車子本身GPS座標
+		#ifndef NO_CAR_MODE
+		if(NOGPS == 2){
+			sLon = lon;
+			sLat = lat;
+			Coor temp;
+			ss.x = temp.x = sLon;
+			ss.y = temp.y = sLat;
+		}
+		else{
+			cout << "GOOD3" << endl;
+			getGPSLocation(ss.x,ss.y);
+			
+		}
+		#else
+		sLon = lon;
+		sLat = lat;
+		Coor temp;
+		ss.x = temp.x = sLon;
+		ss.y = temp.y = sLat;
+		#endif
+
+		mapNode = cgms->gpsToCoordinate(ss);
+		if(!cgms->isInsideMap(ss.x,ss.y)){
+			printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			#ifndef NO_CAR_MODE
+			unistd::usleep(1000);
+			#endif
+			continue;
+		}
+		cout << "GOOD4" << endl;
+
+
+		if(firstFind){
+			traceVec = cgms->findPath(ss,ee,adj);
+			traIt = traceVec.begin();
+
+			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				fileInput(buff1);
+			}
+
+			firstFind = false;
+		}
+
+cout << "GOOD5" << endl;
+		Coor traCoor;
+		traCoor.x = (*traIt)->GetCor_x();
+		traCoor.y = (*traIt)->GetCor_y();
+		Coor traGPS = cgms->coordinateToGps(traCoor);
+
+		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, traGPS.y);
+
+cout << "GOOD6" << endl;
+
+		if (isCarReach) {
+			count++;
+			traIt++;
+		}
+		
+//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
+		char buff[256];
+		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
+		printf(buff);
+		fileInput(buff);
+
+
+		#ifndef NO_CAR_MODE
+		unistd::usleep(1000);
+		#endif
+	} while ( traIt != traceVec.end());
+}
+
 UserRequest* waitRequest(RequestObserver *reqObserver){
 	cout<<"waitRequest : Wait for SenderRequest..."<<endl;
 	while(!reqObserver->HasRequest()){
@@ -484,97 +581,11 @@ int recvSenderRequest(UserRequest* req){
 }
 
 int moveToSender(UserRequest* req){
-	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
-	double sLon, sLat;	//起始地點
-	bool isCarReach;	//車子是否到達
-	int StateCode;
-	Coor ss,ee;
-	bool firstFind = true;
-	vec_CMnode traceVec;
-	vec_CMnode::iterator traIt;
-	vec_CMnode::iterator printIt;
-	int count = 0; 
-
 	cout << "moveToSender : Begin go to sender location" << endl;
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
-	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
-
-	cout << "GOOD" << endl;
-
-	ee.x = req->src_lon;
-	ee.y = req->src_lat;
-
-	cout << "GOOD2" << endl;
-
-	do {
-		//取得車子本身GPS座標
-		#ifndef NO_CAR_MODE
-		if(NOGPS == 2){
-			sLon = req->src_lon;
-			sLat = req->src_lat;
-			Coor temp;
-			ss.x = temp.x = sLon;
-			ss.y = temp.y = sLat;
-			mapNode = cgms->gpsToCoordinate(temp);
-		}
-		else{
-			cout << "GOOD3" << endl;
-			getGPSLocation(ss.x,ss.y);
-			mapNode = cgms->gpsToCoordinate(ss);
-			if(!cgms->isInsideMap(ss.x,ss.y)){
-				printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
-				unistd::usleep(1000);
-				continue;
-			}
-			cout << "GOOD4" << endl;
-		}
-		#else
-		sLon = req->src_lon;
-		sLat = req->src_lat;
-		Coor temp;
-		ss.x = temp.x = sLon;
-		ss.y = temp.y = sLat;
-		mapNode = cgms->gpsToCoordinate(temp);
-		#endif
-
-
-		if(firstFind){
-			traceVec = cgms->findPath(ss,ee,adj);
-			traIt = traceVec.begin();
-
-			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
-				fileInput(buff1);
-			}
-
-			firstFind = false;
-		}
-
-cout << "GOOD5" << endl;
-
-		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
-
-cout << "GOOD6" << endl;
-
-		if (isCarReach) {
-			count++;
-			traIt++;
-		}
-		
-//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		char buff[256];
-		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf meter.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo + cgms->getAngle(),distanceInfo/10);
-		printf(buff);
-		fileInput(buff);
-
-
-		#ifndef NO_CAR_MODE
-		unistd::usleep(1000);
-		#endif
-	} while ( traIt != traceVec.end());
+	
+	goToLocation(req->src_lon,req->src_lat);
 	
 	cout << "moveToSender : reach destnation!\n" << endl;
 
@@ -611,90 +622,9 @@ int beginTransport(UserRequest* req){
 }
 
 int moveToReceiver(UserRequest* req){
-	double directionInfo, distanceInfo;	//方位與距離之回傳
-	double reachDistance = dest_range;	//判定多少距離內算到達(單位公里)
-	double sLon, sLat;	//起始地點
-	bool isCarReach;	//車子是否到達
-	int StateCode;
-	Coor ss,ee;
-	bool firstFind = true;
-	vec_CMnode traceVec;
-	vec_CMnode::iterator traIt;
-	vec_CMnode::iterator printIt;
-	int count = 0; 
-
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
-	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
-
-	ee.x = req->dest_lon;
-	ee.y = req->dest_lat;
-
-	do {
-		//取得車子本身GPS座標
-		#ifndef NO_CAR_MODE
-		if(NOGPS == 2){
-			sLon = req->dest_lon;
-			sLat = req->dest_lat;
-			Coor temp;
-			ss.x = temp.x = sLon;
-			ss.y = temp.y = sLat;
-			mapNode = cgms->gpsToCoordinate(temp);
-		}
-		else{
-			getGPSLocation(ss.x,ss.y);
-			mapNode = cgms->gpsToCoordinate(ss);
-			if(!cgms->isInsideMap(ss.x,ss.y)){
-				printf("moveToReceiver : cgms detect gps not in map region, lon:%lf, lat:%lf",ss.x,ss.y,mapNode.x,mapNode.y);
-				unistd::usleep(1000);
-				continue;
-			}
-		}
-		#else
-		sLon = req->dest_lon;
-		sLat = req->dest_lat;
-		Coor temp;
-		ss.x = temp.x = sLon;
-		ss.y = temp.y = sLat;
-		mapNode = cgms->gpsToCoordinate(temp);
-		#endif
-
-		if(firstFind){
-			traceVec = cgms->findPath(ss,ee,adj);
-			if(traceVec.size() == 0){
-				printf("moveToReceiver : s and d out of bound");
-				unistd::usleep(1000);
-				continue;
-			}
-			traIt = traceVec.begin();
-
-			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
-				fileInput(buff1);
-			}
-
-			firstFind = false;
-		}
-
-		isCarReach = isReachDestination(directionInfo, distanceInfo, reachDistance, mapNode.x, mapNode.y, (*traIt)->GetCor_x(), (*traIt)->GetCor_y());
-
-		if (isCarReach) {
-			count++;
-			traIt++;
-		}
-		
-//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		char buff[256];
-		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf meter.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo + cgms->getAngle(),distanceInfo/10);
-		printf(buff);
-		fileInput(buff);
-
-
-
-		#ifndef NO_CAR_MODE
-		unistd::usleep(1000);
-		#endif
-	} while ( traIt != traceVec.end());
+	
+	goToLocation(req->dest_lon,req->dest_lat);
 	
 	cout << "moveToReceiver : reach destnation!\n" << endl;
 
