@@ -584,7 +584,7 @@ int recvSenderRequest(UserRequest* req){
 	}
 	
 
-	printf("recvSenderRequest : recv source longitude = %lf ,latitude = %lf\n", req->src_lon, req->src_latendl);
+	printf("recvSenderRequest : recv source longitude = %lf ,latitude = %lf\n", req->src_lon, req->src_lat);
 	printf("recvSenderRequest : recv destnation longitude = %lf,latitude = %lf\n",req->dest_lon,req->dest_lat);
 	printf("recvSenderRequest : recv state = %d\n",req->state);
 	
