@@ -25,6 +25,8 @@
 // Include the SX1272 and SPI library: 
 #include "arduPiLoRa.h"
 #include <unistd.h>
+#include <iostream>
+using namespace std;
 
 int e;
 
@@ -200,6 +202,7 @@ void loop(void)
         case 3:
             sendGPS();
             recvACK();
+            break;
     }
     
 }
