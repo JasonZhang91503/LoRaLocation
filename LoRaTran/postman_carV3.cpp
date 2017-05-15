@@ -52,6 +52,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_STATE_2_ERROR 9487002
 #define CAR_STATE_3_ERROR 9487003
 #define CAR_STATE_4_ERROR 9487004
+#define CAR_NOT_FOUND_ROAD 9487005
 #define CAR_OK 9487487
 
 #define MAP_WIDTH 1400
@@ -510,6 +511,10 @@ void goToLocation(double lon,double lat){
 
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
+			if(traceVec.size()==0){
+				return CAR_NOT_FOUND_ROAD;
+			}
+
 			traIt = traceVec.begin();
 
 			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
@@ -531,6 +536,14 @@ cout << "GOOD5" << endl;
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, traGPS.y);
 
 cout << "GOOD6" << endl;
+		if(NOGPS == 2){
+			isCarReach = true;
+		}
+		#ifndef NO_CAR_MODE
+		isCarReach = true;
+		#endif
+
+
 
 		if (isCarReach) {
 			count++;
@@ -548,6 +561,9 @@ cout << "GOOD6" << endl;
 		unistd::usleep(1000);
 		#endif
 	} while ( traIt != traceVec.end());
+
+
+	return CAR_OK;
 }
 
 UserRequest* waitRequest(RequestObserver *reqObserver){
@@ -574,21 +590,21 @@ int recvSenderRequest(UserRequest* req){
 	}
 	
 
-	cout << "recvSenderRequest : recv source longitude = " << req->src_lon << ", latitude = " << req->src_lat << endl;
-	cout << "recvSenderRequest : recv destnation longitude = " << req->dest_lon << ", latitude = " << req->dest_lat << endl;
-	cout << "recvSenderRequest : recv state = " << req->state << endl;
+	printf("recvSenderRequest : recv source longitude = %lf ,latitude = %lf\n", req->src_lon, req->src_latendl);
+	printf("recvSenderRequest : recv destnation longitude = %lf,latitude = %lf\n",req->dest_lon,req->dest_lat);
+	printf("recvSenderRequest : recv state = %d\n",req->state);
 	
 	return CAR_OK;
 }
 
 int moveToSender(UserRequest* req){
-	cout << "moveToSender : Begin go to sender location" << endl;
+	printf("moveToSender : Begin go to sender location\n");
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
 	goToLocation(req->src_lon,req->src_lat);
 	
-	cout << "moveToSender : reach destnation!\n" << endl;
+	printf("moveToSender : reach destnation!\n");
 
 	req->state = 1;
 	
@@ -601,7 +617,7 @@ int moveToSender(UserRequest* req){
 
 int beginTransport(UserRequest* req){
 	
-	cout << "beginTransport : Wait for sender place the file" << endl;
+	printf("beginTransport : Wait for sender place the file\n");
 	
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
@@ -610,8 +626,8 @@ int beginTransport(UserRequest* req){
 	//判定使用者放入文件，目前使用enter做為判定
 	getchar();
 	
-	cout << "beginTransport : Sender placed file" << endl;
-	cout << "beginTransport : goto longitude = " << req->dest_lon << ", latitude = " << req->dest_lat << endl;
+	printf("beginTransport : Sender placed file\n");
+	printf("beginTransport : goto longitude =  %lf, latitude = %lf\n",req->src_lon, req->src_lat);
 	
 	req->state = 2;
 
@@ -627,7 +643,7 @@ int moveToReceiver(UserRequest* req){
 	
 	goToLocation(req->dest_lon,req->dest_lat);
 	
-	cout << "moveToReceiver : reach destnation!\n" << endl;
+	printf("moveToReceiver : reach destnation!\n");
 
 	req->state = 3;
 	
@@ -647,22 +663,22 @@ int endTransport(UserRequest* req){
 	//!!!以後可能直接用Request直接有
 	req->packetKey = parsePassword();
 	
-	cout << "endTransport : Wait for password input" << endl << endl;
+	printf("endTransport : Wait for password input\n");
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
 	do{
-		cout << "Password :";
+		printf("Password :");
 		getline(cin,input,'\n');
 		
 		if(input != req->packetKey){
-			cout << "Error! Please enter password again" << endl;
+			printf("Error! Please enter password again\n");
 		}
 		else{isCorrect = true;}
 	}while(!isCorrect);
 	
-	cout << "Password correct!" << endl;
-	cout << "Press enter to end transport!" << endl;
+	printf("Password correct!\n");
+	printf("Press enter to end transport!\n");
 	
 	/*
 		密碼箱打開後
