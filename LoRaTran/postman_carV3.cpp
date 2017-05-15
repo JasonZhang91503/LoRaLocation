@@ -896,13 +896,13 @@ int parseRequestData(UserRequest* req){
 	printf("sendTime :%s\n",req->sendTime.c_str());
 
 	if(NOGPS == 2){
-		req->src_lon = 121.371575;
+		req->src_lon = 121.370889;
 		printf("sLon :%f\n",req->src_lon);
-		req->src_lat = 24.944779;
+		req->src_lat = 24.943592;
 		printf("sLat :%f\n",req->src_lat);
-		req->dest_lon = 121.371575;
+		req->dest_lon = 121.370522;
 		printf("dLon :%f\n",req->dest_lon);
-		req->dest_lat = 24.944779;
+		req->dest_lat = 24.944187;
 		printf("dLat :%f\n",req->dest_lat);
 	}
 	else{
