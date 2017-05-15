@@ -92,14 +92,14 @@ int main(){
     */
     Coor ss2 = cgms->gpsToCoordinate(ss1);
     Coor ee2 = cgms->gpsToCoordinate(ee1);
-/*
 
-    ss2.x = 1;
-    ss2.y = 40;
-    ee2.x = 65;
-    ee2.y = 22;
 
-*/
+    ss2.x = 1399;
+    ss2.y = 0;
+    ee2.x = 0;
+    ee2.y = 399;
+
+
     Coor ss3 = cgms->coordinateToGps(ss2);
     Coor ee3 = cgms->coordinateToGps(ee2);
 

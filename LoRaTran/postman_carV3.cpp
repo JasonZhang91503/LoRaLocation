@@ -113,7 +113,7 @@ Coor mapNode;
 //GPS_Data gps_data;
 Coor init,xMax,yMax;
 int pw_size = 4;
-double dest_range = 20;
+double dest_range = 0.001;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
@@ -515,6 +515,7 @@ void goToLocation(double lon,double lat){
 			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
 				char buff1[256];
 				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				printf(buff1);
 				fileInput(buff1);
 			}
 
