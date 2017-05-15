@@ -479,8 +479,9 @@ int goToLocation(double lon,double lat){
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		if(NOGPS == 2){
-			ss.x = init.x;
-			ss.y = init.y;
+			//leftdown
+			ss.x = 121.370905;
+			ss.y = 24.943603;
 		}
 		else{
 			cout << "GOOD3" << endl;
@@ -488,8 +489,9 @@ int goToLocation(double lon,double lat){
 			
 		}
 		#else
-		ss.x = init.x;
-		ss.y = init.y;
+		//leftdown
+		ss.x = 121.370905;
+		ss.y = 24.943603;
 		#endif
 
 		mapNode = cgms->gpsToCoordinate(ss);

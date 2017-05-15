@@ -81,11 +81,7 @@ int main(){
     ss1.x =  121.370505;
     ss1.y =  24.944162;
     ee1.x = 121.371751;
-    ee1.y =24.944498;
-
-    for(int i = 0 ; i < 0;i++){
-        cout <<"aaaa";
-    }
+    ee1.y =24.944498;   
 /*
     ss1.x = init.x;
     ss1.y = init.y;
