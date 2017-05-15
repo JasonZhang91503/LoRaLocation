@@ -120,11 +120,11 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //跳到個人資料介面
-                ProfileFragment profileFragment = new ProfileFragment();
-                profileFragment.setTargetFragment(HomeFragment.this,0);
+                AccountFragment accountFragment = new AccountFragment();
+                accountFragment.setTargetFragment(HomeFragment.this,0);
                 getFragmentManager().beginTransaction()
                         .addToBackStack(null)
-                        .replace(R.id.fragment_container,profileFragment).commit();
+                        .replace(R.id.fragment_container,accountFragment).commit();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {

@@ -36,13 +36,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-
+        String time = mDataset.get(position).getSend_time();
+        time = time.substring(time.indexOf(" ")+1);
         holder.Start.setText(mDataset.get(position).getStr_start());
         holder.Destination.setText(mDataset.get(position).getStr_dest());
-        holder.Time.setText(mDataset.get(position).getSend_time());
+        holder.Time.setText(time);
         holder.Cost.setText("NT$30");
         holder.itemView.setTag(position);
         switch (mDataset.get(position).getOrder_state()) {
+            case 0:
             case 1:
                 holder.status.setImageResource(R.color.orderBar_unprocessed);
                 break;

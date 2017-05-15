@@ -152,7 +152,7 @@ public class BackgroundRecvService extends Service {
                 broadcastIntent.putExtra("result", flag.toString());
                 broadcastIntent.putExtra("state","true");
                 sendBroadcast(broadcastIntent);
-            }else if(msg.equals("2.0")){
+            }else if(msg.equals("2,0")){
                 mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.delivery_icon)

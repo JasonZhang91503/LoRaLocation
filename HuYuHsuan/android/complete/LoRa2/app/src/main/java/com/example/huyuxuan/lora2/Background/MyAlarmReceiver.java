@@ -95,7 +95,7 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
             if(state.equals("true")){
                 //開啟notification
                 sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
-                serviceCounter--;
+                serviceCounter=0;
                 sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
             }
 

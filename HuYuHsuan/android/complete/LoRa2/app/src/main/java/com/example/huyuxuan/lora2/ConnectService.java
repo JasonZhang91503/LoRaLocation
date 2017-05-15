@@ -63,30 +63,7 @@ public class ConnectService extends Service {
             new AsyncTask<String,String,String>() {
                 @Override
                 protected String doInBackground(String... strings) {
-                    try {
-                        serverAddr = InetAddress.getByName(getString(R.string.ip));
-                        mSocket = new Socket();
-                        sc_add = new InetSocketAddress(serverAddr, Integer.parseInt(getString(R.string.port)));
-                        if (mSocket.isConnected()) {
-                            Log.i("Service", "Socket Connected");
-                        } else {
-                            mSocket.connect(sc_add, 2000);
-
-                        }
-                        MyBoundedService.isConnect=true;
-                        in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
-                        out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
-                        Log.i("Service", "BufferedReader and PrintWriter ready.");
-                        out.write("1");
-                        out.flush();
-                        Log.d("Service", "write 1 to server");
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    catch (Exception e1){
-                        Log.d("ConnectService", "do in bg catch ");
-                    }
+                    connectToServer();
                     return null;
                 }
             }.execute();
@@ -228,6 +205,11 @@ public class ConnectService extends Service {
                     broadcastIntent.putExtras(bundle);
                     sendBroadcast(broadcastIntent);
                     Log.i("Service:","sendbroadcast to  "+activityName);
+                    //嘗試重新連線
+                    int sta=connectToServer();
+                    if(sta==1){
+                        sendToServer(reSendIntent);
+                    }
 
                 }
                 rcvMessage="";
@@ -369,13 +351,13 @@ public class ConnectService extends Service {
                 mes = mes.substring(mes.indexOf('^')+1);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 dataBundle.putStringArray(getString(R.string.nameArray),mesArray);
-                Log.d("ana:","第二筆"+mesArray[2]);
+                Log.d("ana:","第一筆"+mesArray[0]);
                 break;
             case "11":
                 mes = mes.substring(mes.indexOf('^')+1);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 dataBundle.putStringArray(getString(R.string.buildingArray),mesArray);
-                Log.d("ana:","第二筆"+mesArray[1]);
+                Log.d("ana:","第一筆"+mesArray[0]);
                 break;
             case "12":
                 type=mes.substring(commaIndex+1,4);
@@ -416,6 +398,36 @@ public class ConnectService extends Service {
         Log.d("ConnectService","onDestroy");
         //disconnect();
         super.onDestroy();
+    }
+
+    public int connectToServer(){
+        try {
+            Log.e("Service", "connectToServer");
+            serverAddr = InetAddress.getByName(getString(R.string.ip));
+            mSocket = new Socket();
+            sc_add = new InetSocketAddress(serverAddr, Integer.parseInt(getString(R.string.port)));
+            if (mSocket.isConnected()) {
+                Log.i("Service", "Socket Connected");
+            } else {
+                mSocket.connect(sc_add, 2000);
+
+            }
+            MyBoundedService.isConnect=true;
+            in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+            out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+            Log.i("Service", "BufferedReader and PrintWriter ready.");
+            out.write("1");
+            out.flush();
+            Log.d("Service", "write 1 to server");
+            return 1;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        catch (Exception e1){
+            Log.d("ConnectService", "do in bg catch ");
+            return -1;
+        }
     }
 
 }

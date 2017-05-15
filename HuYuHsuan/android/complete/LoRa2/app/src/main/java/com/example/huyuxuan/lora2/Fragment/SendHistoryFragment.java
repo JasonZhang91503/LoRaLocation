@@ -39,7 +39,6 @@ import static android.content.Context.MODE_PRIVATE;
  */
 @SuppressLint("ValidFragment")
 public class SendHistoryFragment extends Fragment {
-  //  HistMaininterface histMaininterface;
     ArrayList<Order> dataset;
     ViewPager viewPager;
     View view;
@@ -61,20 +60,6 @@ public class SendHistoryFragment extends Fragment {
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
 
-    /*
-    public interface HistMaininterface{
-        ArrayList<Order>getDataset();
-    }
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            histMaininterface= (HistMaininterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
-        }
-    }
-    */
 
     @Override
     public void onResume(){
@@ -173,10 +158,9 @@ public class SendHistoryFragment extends Fragment {
         date=(TextView)view.findViewById(R.id.txtDate);
 
         setTime();
+        tmp=false;
         formattedDate = dayDateFormat.format(calendar.getTime());
         sendToService();
-
-
 
         return view;
     }
@@ -374,7 +358,13 @@ public class SendHistoryFragment extends Fragment {
         Log.d("SendHistoryFragment:","onStop");
         SharedPreferences sharedPreferences= getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         if(sharedPreferences.getString("hasStop","false").equals("false")){
-            getActivity().getApplicationContext().unbindService(mConnection);
+            try{
+                getActivity().getApplicationContext().unbindService(mConnection);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+
         }
 
         tmp=true;
@@ -384,7 +374,6 @@ public class SendHistoryFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.d("SendHistoryFragment:","onDestroy");
-        //getActivity().getApplicationContext().unbindService(mConnection);
         super.onDestroy();
     }
 
