@@ -73,6 +73,8 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 //Include CarMapSystem library
 #include "CarMapSystem.h"
 
+#include "FileTran.h"
+
 #ifndef NO_CAR_MODE
 //Include gps library
 #include <gps.h>
@@ -342,6 +344,11 @@ int main(int argc, const char * argv[]){
 	cout << "Receive period?:";
 	cin >> receivePeriod;
 
+	char fileName[256];
+	cout << "File name?:";
+	cin >> fileName;
+	fileOpen(fileName);
+
 	UserRequest *req;
 
 	#ifndef NO_CAR_MODE
@@ -486,6 +493,7 @@ int moveToSender(UserRequest* req){
 	bool firstFind = true;
 	vec_CMnode traceVec;
 	vec_CMnode::iterator traIt;
+	vec_CMnode::iterator printIt;
 	int count = 0; 
 
 	cout << "moveToSender : Begin go to sender location" << endl;
@@ -535,6 +543,13 @@ int moveToSender(UserRequest* req){
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
+
+			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				fileInput(buff1);
+			}
+
 			firstFind = false;
 		}
 
@@ -550,7 +565,11 @@ cout << "GOOD6" << endl;
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo/10);
+		char buff[256];
+		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf meter.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo + cgms->getAngle(),distanceInfo/10);
+		printf(buff);
+		fileInput(buff);
+
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);
@@ -601,6 +620,7 @@ int moveToReceiver(UserRequest* req){
 	bool firstFind = true;
 	vec_CMnode traceVec;
 	vec_CMnode::iterator traIt;
+	vec_CMnode::iterator printIt;
 	int count = 0; 
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
@@ -641,6 +661,13 @@ int moveToReceiver(UserRequest* req){
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
 			traIt = traceVec.begin();
+
+			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				fileInput(buff1);
+			}
+
 			firstFind = false;
 		}
 
@@ -652,7 +679,12 @@ int moveToReceiver(UserRequest* req){
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		printf("%d,%d,go toward %lf degree for %lf meter.\n",count,traceVec.size(),directionInfo,distanceInfo/10);
+		char buff[256];
+		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf meter.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo + cgms->getAngle(),distanceInfo/10);
+		printf(buff);
+		fileInput(buff);
+
+
 
 		#ifndef NO_CAR_MODE
 		unistd::usleep(1000);

@@ -698,6 +698,9 @@ public:
         return CarMapSystem::isInsideMap(mapNode.x,mapNode.y);
     }
 
+    double getAngle(){
+        return xRadin * 180 / PI;
+    }
 
 
 protected:
