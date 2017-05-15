@@ -54,8 +54,8 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_STATE_4_ERROR 9487004
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 1200
-#define MAP_HEIGHT 600 
+#define MAP_WIDTH 2800
+#define MAP_HEIGHT 820 
 #define ROAD_WIDTH 100
 
 
@@ -375,12 +375,12 @@ int main(int argc, const char * argv[]){
 	註:只有state 0 是 gateway主動打過來的
 		剩下的state都是車子本身修改自身state並且傳送出去給gateway和server知道
 	*/
-    init.x = 121.370889;
-    init.y = 24.943544;
-    xMax.x = 121.373223;
-    xMax.y = 24.944915;
-    yMax.x = 121.370456;
-    yMax.y = 24.944184;
+    init.x = 121.370854;
+    init.y = 24.943516;
+    xMax.x = 121.373225;
+    xMax.y = 24.944878;
+    yMax.x = 121.370426;
+    yMax.y = 24.944117;
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
 	ReqManger.addReqestListener(reqObserver);
@@ -759,14 +759,14 @@ void initCGMS(){
 
 	Stronghold sArr[5][3];
     int value = 0;
-    int xScale = MAP_WIDTH/4;
-    int yScale = MAP_HEIGHT/2;
+    int xScale = (MAP_WIDTH - ROAD_WIDTH)/4;
+    int yScale = (MAP_HEIGHT - ROAD_WIDTH)/2;
     for(int i = 0 ; i < 5;i++){
         for(int j = 0; j < 3; j++){
             value++;
             sArr[i][j].value = value;
-            sArr[i][j].x = i * xScale - (i==0?0:1);
-            sArr[i][j].y = j * yScale - (j==0?0:1);
+            sArr[i][j].x = i * xScale + ROAD_WIDTH/2;
+            sArr[i][j].y = j * yScale + ROAD_WIDTH/2;
             cgms->addStronghold(sArr[i][j]);
         }
     }

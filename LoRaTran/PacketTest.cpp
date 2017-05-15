@@ -7,16 +7,73 @@ using namespace std;
 //#define NO_CAR_MODE
 Coor init,xMax,yMax;
 
+#define MAP_WIDTH 140
+#define MAP_HEIGHT 40
+#define ROAD_WIDTH 5
+
+
+float** adj;
+
+void initCGMS(){
+	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+
+	Stronghold sArr[5][3];
+    int value = 0;
+    int xScale = (MAP_WIDTH - ROAD_WIDTH)/4;
+    int yScale = (MAP_HEIGHT - ROAD_WIDTH)/2;
+    for(int i = 0 ; i < 5;i++){
+        for(int j = 0; j < 3; j++){
+            value++;
+            sArr[i][j].value = value;
+            sArr[i][j].x = i * xScale + ROAD_WIDTH/2;
+            sArr[i][j].y = j * yScale + ROAD_WIDTH/2;
+            cgms->addStronghold(sArr[i][j]);
+        }
+    }
+
+    cgms->fillNodeStronghold();
+    cgms->printNodeStronghold();
+
+    int n = cgms->getStrongholdNum();
+
+    adj = new float*[n + 1];
+    for (int i = 0; i <= n; i++) {
+        adj[i] = new float[n + 1];
+    }
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            adj[i][j] = MAX_FLOAT;
+        }
+    }
+    for(int i = 1; i <= 3 ;i+=2){
+        for(int j = 0; j <= 9; j+=3){
+            adj[i+j][i+j+3] = yScale;
+            adj[i+j+3][i+j] = yScale;
+        }
+    }
+    for(int i = 1; i <= 13;i+=6){
+        for(int j = 0; j < 2; j++){
+            adj[i+j][i+j+1] = xScale;
+            adj[i+j+1][i+j] = xScale;
+        }
+    }
+}
+
 int main(){
-    init.x = 121.370889;
-    init.y = 24.943544;
-    xMax.x = 121.373223;
-    xMax.y = 24.944915;
-    yMax.x = 121.370456;
-    yMax.y = 24.944184;
 
+    init.x = 121.370854;
+    init.y = 24.943516;
+    xMax.x = 121.373225;
+    xMax.y = 24.944878;
+    yMax.x = 121.370426;
+    yMax.y = 24.944117;
 
-    CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(1200,600,init,xMax,yMax);
+    CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
+    cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
+    cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
+
+    initCGMS();
 
 
     Coor ss1,ee1;

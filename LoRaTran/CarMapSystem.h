@@ -530,7 +530,7 @@ public:
                     c = s - 36 + 'A';
                 }
 
-                cout << c << " ";
+                cout << c;
 
             }
             cout << endl;
