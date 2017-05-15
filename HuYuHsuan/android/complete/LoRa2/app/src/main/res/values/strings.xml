@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LoRa2</string>
-    <string name="ip">192.168.0.12</string>
-    <string name="port">5000</string>
+    <string name="ip">192.168.43.164</string>
+    <string name="port">5555</string>
 
     <!--傳給service的key-->
     <string name="id">id</string>

@@ -25,9 +25,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.Background.MyAlarmReceiver;
+import com.example.huyuxuan.lora2.Fragment.AccountFragment;
 import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
-import com.example.huyuxuan.lora2.Fragment.ProfileFragment;
 import com.example.huyuxuan.lora2.Fragment.RecvHistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistoryFragment;
 
@@ -181,7 +181,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-          //  super.onBackPressed();
             FragmentManager fm = this.getFragmentManager();
 
             if (fm.getBackStackEntryCount() == 0) {
@@ -235,11 +234,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,recvHistoryFragment).commit();
                 break;
             case R.id.nav_profile:
-                ProfileFragment profileFragment = new ProfileFragment();
-                myFragment = profileFragment;
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                AccountFragment accountFragment = new AccountFragment();
+                myFragment = accountFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
-                        .replace(R.id.fragment_container,profileFragment).commit();
+                        .replace(R.id.fragment_container,accountFragment).commit();
                 break;
             case R.id.nav_logOut:
                 logOutDialog();

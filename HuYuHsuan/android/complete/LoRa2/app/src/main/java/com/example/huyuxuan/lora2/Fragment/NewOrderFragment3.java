@@ -41,7 +41,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
     private String[] mParam2;
     Button btn_confirm;
     private static boolean isBind;
-    private String myName;
+    private String myName,myAccount;
     private SharedPreferences sharedPreferences;
     int year,month,day;
 
@@ -114,13 +114,14 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         myName = sharedPreferences.getString(getString(R.string.name),"");
+        myAccount = sharedPreferences.getString(getString(R.string.account),"");
 
         //向server登記
         Intent intent = new Intent(getActivity(),ConnectService.class);
         intent.putExtra(getString(R.string.activity),"NewOrderFragment3");
         intent.putExtra(getString(R.string.id),"4");
         intent.putExtra(getString(R.string.requireTime),year+"-0"+month+"-"+day+" "+mParam2[0]+":00");
-        intent.putExtra(getString(R.string.sender),myName);
+        intent.putExtra(getString(R.string.sender),myAccount);
         intent.putExtra(getString(R.string.receiver),mParam2[1]);
         intent.putExtra(getString(R.string.startLocation),mParam1[0]);
         intent.putExtra(getString(R.string.desLocation),mParam1[1]);
