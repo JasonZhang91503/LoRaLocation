@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.example.huyuxuan.lora2.Order;
 
@@ -59,30 +60,35 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public ArrayList<Order> getSpecifieyStateData(boolean is_State4){
         Complete_Dataset=new ArrayList<Order>();
         Incomplete_Dataset=new ArrayList<Order>();
-        if(is_State4) {
-            for (int i = 0; i < Dataset.size(); i++) {
-                if (Dataset.get(i).getOrder_state() == 4) {
-                    Log.d("state 4","ok");
-                    Complete_Dataset.add(Dataset.get(i));
+        if(Dataset != null){
+            if(is_State4) {
+                for (int i = 0; i < Dataset.size(); i++) {
+                    if (Dataset.get(i).getOrder_state() == 4) {
+                        Log.d("state 4","ok");
+                        Complete_Dataset.add(Dataset.get(i));
+                    }
                 }
-            }
-            return Complete_Dataset;
-        }else{
-            for (int i = 0; i < Dataset.size(); i++) {
-                if (Dataset.get(i).getOrder_state() != 4) {
-                    Log.d("not state 4","ok");
-                    Incomplete_Dataset.add(Dataset.get(i));
+                return Complete_Dataset;
+            }else{
+                for (int i = 0; i < Dataset.size(); i++) {
+                    if (Dataset.get(i).getOrder_state() != 4) {
+                        Log.d("not state 4","ok");
+                        Incomplete_Dataset.add(Dataset.get(i));
+                    }
                 }
+                return Incomplete_Dataset;
             }
-            return Incomplete_Dataset;
         }
-
+        else{
+            return null;
+        }
     }
     public ArrayList<Order> getSenderData(ArrayList<Order> temp){
 
         ArrayList<Order> Sender=new ArrayList<Order>();
         Log.d("enter","ok");
         for(int i=0;i<temp.size();i++){
+            Log.d("requireTime"+i,temp.get(i).getSend_time());
             Log.d("name"+i+" ",temp.get(i).getStr_sender());
 
             Sender.add(temp.get(i));
@@ -94,10 +100,13 @@ public class PagerAdapter extends FragmentPagerAdapter {
     private ArrayList<Order> getReceiverData(ArrayList<Order> temp) {
 
         ArrayList<Order> Receiver=new ArrayList<Order>();
-        for(int i=0;i<temp.size();i++){
-            Receiver.add(temp.get(i));
-            Log.d("tag :",String.valueOf(i));
+        if(temp!=null){
+            for(int i=0;i<temp.size();i++){
+                Log.d("requireTime"+i,temp.get(i).getSend_time());
+                Receiver.add(temp.get(i));
+                Log.d("tag :",String.valueOf(i));
 
+            }
         }
         return Receiver;
     }
@@ -105,4 +114,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return TAB_NUM;
     }
+
+
+    /*
+    @Override
+    public void finishUpdate(ViewGroup container){
+        super.finishUpdate(container);
+        this.notifyDataSetChanged();
+    }
+*/
+
 }

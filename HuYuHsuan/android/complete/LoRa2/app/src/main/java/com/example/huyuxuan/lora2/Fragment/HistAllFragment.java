@@ -1,5 +1,6 @@
 package com.example.huyuxuan.lora2.Fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import com.example.huyuxuan.lora2.R;
 import java.util.ArrayList;
 
 
+@SuppressLint("ValidFragment")
 public class HistAllFragment extends Fragment {
     ArrayList<Order> dataset ;
     public HistAllFragment(ArrayList<Order> allData) {
