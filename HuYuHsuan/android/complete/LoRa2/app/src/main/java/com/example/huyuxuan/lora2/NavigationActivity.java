@@ -234,7 +234,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,recvHistoryFragment).commit();
                 break;
             case R.id.nav_profile:
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                //getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
                 AccountFragment accountFragment = new AccountFragment();
                 myFragment = accountFragment;
                 getSupportFragmentManager().beginTransaction()

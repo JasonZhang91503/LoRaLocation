@@ -40,8 +40,8 @@ public class Order implements Serializable {
     }
 
     public Order(String start,String dest,String receiver,String sender,String time,String arriveTime,String state,String key,String not){
-        str_start=start;
-        str_dest=dest;
+        str_start=start.substring(4);
+        str_dest=dest.substring(4);
         recv_name=receiver;
         str_sender=sender;
         send_time=time;

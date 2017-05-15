@@ -227,39 +227,45 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("activity").equals("NewOrderFragment")){
-                getActivity().getApplicationContext().unregisterReceiver(receiver);
-//                getActivity().getApplicationContext().unbindService(mConnection);
-                Bundle bundle = intent.getExtras();
-                String id = bundle.getString(getString(R.string.id));
-                switch(id){
+            if(intent.getStringExtra("result").equals("true")){
+                if(intent.getStringExtra("activity").equals("NewOrderFragment")){
+                    if(isAdded()){
+                        getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    }
+                    Bundle bundle = intent.getExtras();
+                    String id = bundle.getString(getString(R.string.id));
+                    switch(id){
 
-                    case "5":
-                        String msg = bundle.getString("message");
+                        case "5":
+                            String msg = bundle.getString("message");
 
+                            //創basic dialog
+                            ft = getFragmentManager().beginTransaction();
+                            DialogFragment mDialogFragment;
+                            mDialogFragment = BasicDialogFragment.newInstance(msg);
+                            mDialogFragment.setTargetFragment(NewOrderFragment.this, MY_REQUEST_CODE);
+                            ft.replace(R.id.fragment_container,mDialogFragment);
+                            ft.addToBackStack(null);
+                            ft.commit();
 
-                        //創basic dialog
-                        ft = getFragmentManager().beginTransaction();
-                        DialogFragment mDialogFragment;
-                        mDialogFragment = BasicDialogFragment.newInstance(msg);
-                        mDialogFragment.setTargetFragment(NewOrderFragment.this, MY_REQUEST_CODE);
-                        ft.replace(R.id.fragment_container,mDialogFragment);
-                        ft.addToBackStack(null);
-                        ft.commit();
+                            Log.d("NewOrderFragment","id=5,msg="+msg);
+                            break;
 
-                        Log.d("NewOrderFragment","id=5,msg="+msg);
-                        break;
+                        case "11"://要大樓資訊
+                            buildingArray=bundle.getStringArray(getString(R.string.buildingArray));
+                            ArrayAdapter<String > buildingList = new ArrayAdapter<>(getActivity(),
+                                    R.layout.support_simple_spinner_dropdown_item,buildingArray);
+                            spnStart.setAdapter(buildingList);
+                            spnDest.setAdapter(buildingList);
+                            break;
+                    }
 
-                    case "11"://要大樓資訊
-                        buildingArray=bundle.getStringArray(getString(R.string.buildingArray));
-                        ArrayAdapter<String > buildingList = new ArrayAdapter<>(getActivity(),
-                                R.layout.support_simple_spinner_dropdown_item,buildingArray);
-                        spnStart.setAdapter(buildingList);
-                        spnDest.setAdapter(buildingList);
-                        break;
                 }
-
+                else{
+                    Toast.makeText(getActivity(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                }
             }
+
         }
     }
 
@@ -292,7 +298,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onDestroy() {
-        Log.d("NewOrderFragment:", "onDestroy->sendToService");
+        Log.d("NewOrderFragment:", "onDestroy");
         super.onDestroy();
     }
 

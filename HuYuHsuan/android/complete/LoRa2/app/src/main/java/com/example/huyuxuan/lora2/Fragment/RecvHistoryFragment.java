@@ -34,10 +34,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 
 public class RecvHistoryFragment extends Fragment {
-    ArrayList<Order> dataset;
+    static ArrayList<Order> dataset;
     ViewPager viewPager;
     View view;
     ImageButton front,back;
+    TabLayout tabLayout;
     Calendar calendar;
     TextView date;
     int index_DayOfMonth;
@@ -47,6 +48,7 @@ public class RecvHistoryFragment extends Fragment {
     String str_date;
     boolean tmp=false;
     SharedPreferences sharedPreferences;
+    PagerAdapter adapter;
 
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     String formattedDate;
@@ -60,40 +62,32 @@ public class RecvHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view=inflater.inflate(R.layout.fragment_history_main_recv, container, false);
+        tabLayout=(TabLayout) view.findViewById(R.id.tabLayout);
+        date=(TextView)view.findViewById(R.id.txtDate);
+        viewPager=(ViewPager)view.findViewById(R.id.recv_pager);
+        back=(ImageButton)view.findViewById(R.id.back);
 
+        setTime();
         Calendar c = Calendar.getInstance();
         formattedDate = dayDateFormat.format(c.getTime());
-
-        Intent intent = new Intent(getActivity(),ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"RecvHistoryFragment");
-        intent.putExtra(getString(R.string.id),"8");
-        intent.putExtra(getString(R.string.requireTime),formattedDate);
-        if(!isBind){
-            getActivity().getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
-            isBind=true;
-            Log.d("RecvHistoryFragment:", "checkSR->bind");
-        }
-        else{
-            mBoundService.sendToServer(intent);
-            Log.d("RecvHistoryFragment:", "checkSR->sendToService");
-        }
-        setReceiver();
+        tmp=false;
+        sendToService();
 
         return view;
     }
 
     public void setView(){
-        PagerAdapter adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
-        Log.d("set adapter",type+" ok");
-        TabLayout tabLayout=(TabLayout) view.findViewById(R.id.tabLayout);
+        if(adapter != null){
+            adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
+        }else{
 
-        date=(TextView)view.findViewById(R.id.txtDate);
-        setTime();
-        viewPager=(ViewPager)view.findViewById(R.id.recv_pager);
+        }
+
+
+        Log.d("set adapter",type+" ok");
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        back=(ImageButton)view.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,8 +98,6 @@ public class RecvHistoryFragment extends Fragment {
                 //向資料庫要資料
                 formattedDate=index_Year+"-"+index_Month+"-"+index_DayOfMonth;
                 sendToService();
-
-
             }
         });
         front=(ImageButton)view.findViewById(R.id.front);
@@ -281,7 +273,8 @@ public class RecvHistoryFragment extends Fragment {
         index_DayOfMonth=calendar.get(Calendar.DAY_OF_MONTH);
         index_Month=calendar.get(Calendar.MONTH)+1;
         index_Year=calendar.get(Calendar.YEAR);
-        date.setText(index_Year+"年"+index_Month+"月"+index_DayOfMonth+"日");
+        str_date = index_Year+"年"+index_Month+"月"+index_DayOfMonth+"日";
+        date.setText(str_date);
     }
 
     private static ServiceConnection mConnection = new ServiceConnection() {
@@ -310,10 +303,16 @@ public class RecvHistoryFragment extends Fragment {
             if(intent.getStringExtra("result").equals("true")){
                 if(intent.getStringExtra("activity").equals("RecvHistoryFragment")){
                     Log.d("RecvHistoryFragment:","receiver on receive");
-//                    getActivity().getApplicationContext().unregisterReceiver(receiver);
-                    //getActivity().getApplicationContext().unbindService(mConnection);
                     Bundle bundle = intent.getExtras();
-                    dataset = (ArrayList<Order>)bundle.getSerializable("arrayList");
+                    ArrayList<Order> orderArrayList = new ArrayList<Order>();
+                    orderArrayList = (ArrayList<Order>)bundle.getSerializable("arrayList");
+                    if(orderArrayList.isEmpty()){
+                        dataset=null;
+                        Log.d("RecvHistoryFragment","dataset is null");
+                    }
+                    else{
+                        dataset = orderArrayList;
+                    }
                     setView();
                 }
             }
@@ -366,10 +365,16 @@ public class RecvHistoryFragment extends Fragment {
         Log.d("RecvHistoryFragment:","onStop");
         sharedPreferences= getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         if(sharedPreferences.getString("hasStop","false").equals("false")){
-            getActivity().getApplicationContext().unbindService(mConnection);
+            try{
+                getActivity().getApplicationContext().unbindService(mConnection);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
         }
         tmp=true;
         super.onStop();
     }
+
 
 }

@@ -64,7 +64,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     //傳回清單的數量
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        if(mDataset!=null){
+            return mDataset.size();
+        }else{
+            return 0;
+        }
     }
     //透過View Holder定義介面和邏輯
     public class ViewHolder extends RecyclerView.ViewHolder{

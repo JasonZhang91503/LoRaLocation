@@ -3,22 +3,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
+            android:icon="@drawable/home"
             android:title="@string/home" />
         <item
             android:id="@+id/nav_register"
+            android:icon="@drawable/neworder"
             android:title="@string/register" />
         <item
             android:id="@+id/nav_send_history"
+            android:icon="@drawable/send"
             android:title="@string/sendhistory" />
         <item
             android:id="@+id/nav_recv_history"
+            android:icon="@drawable/history"
             android:title="@string/recvhistory" />
 
         <item
             android:id="@+id/nav_profile"
+            android:icon="@drawable/user"
             android:title="@string/profile" />
         <item
             android:id="@+id/nav_logOut"
+            android:icon="@drawable/logout"
             android:title="@string/logOut" />
     </group>
 </menu>
