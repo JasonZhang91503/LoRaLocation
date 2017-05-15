@@ -54,9 +54,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_STATE_4_ERROR 9487004
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 2800
-#define MAP_HEIGHT 820
-#define ROAD_WIDTH 100
+#define MAP_WIDTH 280
+#define MAP_HEIGHT 82
+#define ROAD_WIDTH 10
 
 
 #ifndef NO_CAR_MODE
