@@ -453,7 +453,7 @@ int main(int argc, const char * argv[]){
 	return 0;
 }
 
-void goToLocation(double lon,double lat){
+int goToLocation(double lon,double lat){
 	double directionInfo, distanceInfo;	//方位與距離之回傳
 	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
 	double sLon, sLat;	//起始地點
@@ -596,8 +596,13 @@ int moveToSender(UserRequest* req){
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
-	goToLocation(req->src_lon,req->src_lat);
-	
+	int e = goToLocation(req->src_lon,req->src_lat);
+	if(e != CAR_OK){
+		printf("moveToSender : goToLocation error\n");
+		return e;
+	}
+
+
 	printf("moveToSender : reach destnation!\n");
 
 	req->state = 1;
