@@ -19,5 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center"
         android:paddingTop="50dp"
+        android:scaleType="fitStart"
         app:srcCompat="@drawable/navi_title" />
 </LinearLayout>

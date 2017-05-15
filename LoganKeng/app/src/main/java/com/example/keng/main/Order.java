@@ -12,7 +12,7 @@ public class Order {
     private int final_place;
     private int order_state;
     private int order_cost;
-    private String month,date,minute,hour;
+    private String month,date,minute,hour,year;
     private String recv_name;
     private String send_time;
     private String note;
@@ -64,10 +64,12 @@ public class Order {
     public String getDate(){ return date; }
     public String getMinute(){return minute;}
     public String getHour(){return  hour;}
+    public String getYear(){return  year;}
     public void setSetTime(String time){
         String[] temp;
         temp=time.split("-| |:");//進行字串分解 ：0:年 1:月 2:日 3:時 4:分 5:秒
         Log.d("tag",temp[0]+" "+temp[1]+" "+temp[2]+" "+temp[3]+" "+temp[4]);
+        year=temp[0];
         month=temp[1];
         date=temp[2];
         hour=temp[3];

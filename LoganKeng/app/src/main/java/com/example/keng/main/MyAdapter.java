@@ -1,7 +1,13 @@
 package com.example.keng.main;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.res.Resources;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +29,7 @@ public class  MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     //利用建構子將資料清單傳進來
     private List<Order> mDataset;
     private String[] location;
-
+    Context context;
     public  MyAdapter(List<Order> data,String[] resource){
         mDataset=data;
         location=resource;
@@ -33,6 +39,7 @@ public class  MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview,parent,false);
         ViewHolder viewHolder=new ViewHolder(view);
+        this.context=parent.getContext();
         return viewHolder;
     }
     //透過position指定每個item所用到的資料
@@ -125,6 +132,81 @@ public class  MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
             Date=(TextView)itemView.findViewById(R.id.date);
             Month=(TextView)itemView.findViewById(R.id.month);
            // Note=(TextView)itemView.findViewById(R.id.note);
+
+            //透過itemview 註冊一個Item 的 Click 事件，點擊後將顯示對應的訂單的詳細資料
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("jwzhangjie", "当前点击的位置："+getPosition());
+                    Order temp=mDataset.get(getPosition());
+                    //傳遞Order資料至Dialog，必須先擷取資料內容，再將資料一一設定
+                    View mView =((AppCompatActivity)context).getLayoutInflater().inflate(R.layout.ordercard,null);
+                    String[] location=context.getResources().getStringArray(R.array.Location);
+                    TextView time=(TextView)mView.findViewById(R.id.txtTime);
+                    TextView sender=(TextView)mView.findViewById(R.id.txtSendName);
+                    TextView receiver=(TextView)mView.findViewById(R.id.txtRecvName);
+                    TextView start=(TextView)mView.findViewById(R.id.Start);
+                    TextView destination=(TextView)mView.findViewById(R.id.Destination);
+                    TextView pwd=(TextView)mView.findViewById(R.id.pwd);
+                    TextView cost=(TextView)mView.findViewById(R.id.cost);
+                    TextView status=(TextView)mView.findViewById(R.id.status);
+                    TextView note=(TextView)mView.findViewById(R.id.txtNote);
+                    TextView txtTotal=(TextView)mView.findViewById(R.id.txtTotal);
+                    TextView txtPwd=(TextView)mView.findViewById(R.id.txtPwd);
+                    String txtTime=temp.getYear()+"年"+temp.getMonth()+"月"+temp.getDate()+"日"+temp.getHour()+"時"+temp.getMinute()+"分";
+                    time.setText(txtTime);
+                    sender.setText(temp.getSend_name());
+                    receiver.setText(temp.getRecv_name());
+                    start.setText(location[temp.getStartPlace()]);
+                    destination.setText(location[temp.getFinal_place()]);
+                    pwd.setText(temp.getKey_num());
+
+                    if(temp.getNote().length()!=0){
+                        note.setText(temp.getNote());
+                    }else{
+                        note.setText("");
+                    }
+                    switch (temp.getOrder_state()){
+                        case 0:
+                            time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            status.setText(R.string.order_inprocess);
+                            break;
+                        case 1:
+                            time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            status.setText(R.string.order_inprocess);
+                            break;
+                        case 2:
+                            time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            status.setText(R.string.order_waiting);
+                            break;
+                        case 3:
+                            time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
+                            status.setText(R.string.order_arrive);
+                            break;
+                        case 4:
+                            time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
+                            txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
+                            status.setText(R.string.order_complete);
+                            break;
+                    }
+
+
+                    AlertDialog.Builder builder=new AlertDialog.Builder(context).setView(mView);
+                    builder.create();
+                    builder.show();
+
+
+                }
+            });
 
         }
     }

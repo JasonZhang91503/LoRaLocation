@@ -67,6 +67,13 @@
     <string name="new_pwd">輸入新密碼</string>
     <string name="confirm_new_pwd">確認新密碼</string>
     <string name="new_email">輸入新信箱</string>
+    <string name="sender">寄件者</string>
+    <string name="get_pwd">取件密碼</string>
+    <string name="orderStatus">訂單狀態</string>
+    <string name="order_inprocess">訂單未處理</string>
+    <string name="order_waiting">出貨處理中</string>
+    <string name="order_arrive">貨物到達指定位置</string>
+    <string name="order_complete">貨物到達</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
