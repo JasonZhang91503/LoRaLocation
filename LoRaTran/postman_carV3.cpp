@@ -537,7 +537,7 @@ int goToLocation(double lon,double lat){
 			}
 
 			traIt = traceVec.begin();
-
+/*
 			sprintf(bufferN,"Real info\n");
 			cout << bufferN;
 			fileInput(bufferN);
@@ -547,6 +547,7 @@ int goToLocation(double lon,double lat){
 				printf(buff1);
 				fileInput(buff1);
 			}
+			*/
 
 			firstFind = false;
 		}
