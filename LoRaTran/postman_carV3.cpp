@@ -461,7 +461,7 @@ int goToLocation(double lon,double lat){
 	int StateCode;
 	Coor ss,ee;
 	bool firstFind = true;
-	//vec_CMnode traceVec;
+	vec_CMnode traceVec;
 	vec_CMnode::iterator traIt;
 	vec_CMnode::iterator printIt;
 	int count = 0;
@@ -506,7 +506,7 @@ int goToLocation(double lon,double lat){
 
 
 		if(firstFind){
-			vec_CMnode &traceVec = cgms->findPath(ss,ee,adj);
+			cgms->findPath(traceVec,ss,ee,adj);
 
 			char bufferN[256];
 			sprintf(bufferN,"Debug info\n");

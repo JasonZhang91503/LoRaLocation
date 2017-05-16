@@ -546,15 +546,14 @@ public:
     }
 
     //�̭��]A*�t���k�h�M
-    vec_CMnode findPath(Coor startGPS, Coor endGPS,float** adj){
-        vec_CMnode traceVec;
+    void findPath(vec_CMnode &traceVec,Coor startGPS, Coor endGPS,float** adj){
 
         cout << "cgms : startGPS :" << startGPS.x << "," << startGPS.y << endl;
         cout << "cgms : endGPS :" << endGPS.x << "," << endGPS.y << endl;
 
         if(!isInsideMap(startGPS.x,startGPS.y) || !isInsideMap(endGPS.x,endGPS.y)){
             printf("cgms : gps not in map\n");
-            return traceVec;
+            return;
         }
 
         //�NstartNode�PendNode���������y��
@@ -572,7 +571,7 @@ public:
 
         if(s <= 0 || 15 < s || d <= 0 || 15 < d){
             printf("cgms : strongHold not in exist\n");
-            return traceVec;
+            return;
         }
 
         //���X�_�IStronghold�����IStronghold��Stronghold���|
@@ -626,7 +625,7 @@ public:
         //�γ\�i�H�����ɯ������I�T�����m
 
 
-        return traceVec;
+        return;
     }
 
     vector<int> findStrongholdPath(int s,int d,float** adj){
