@@ -549,6 +549,9 @@ public:
     vec_CMnode findPath(Coor startGPS, Coor endGPS,float** adj){
         vec_CMnode traceVec;
 
+        cout << "cgms : startGPS :" << startGPS.x << "," startGPS.y << endl;
+        cout << "cgms : endGPS :" << endGPS.x << "," endGPS.y << endl;
+
         if(!isInsideMap(startGPS.x,startGPS.y) || !isInsideMap(endGPS.x,endGPS.y)){
             printf("cgms : gps not in map\n");
             return traceVec;
@@ -557,6 +560,9 @@ public:
         //�NstartNode�PendNode���������y��
         Coor startCoor = gpsToCoordinate(startGPS);
         Coor endCoor = gpsToCoordinate(endGPS);
+        
+        cout << "cgms : startCoor :" << startCoor.x << "," startCoor.y << endl;
+        cout << "cgms : endCoor :" << endCoor.x << "," endCoor.y << endl;
 
         //���X��startNode�PendNode�̪���Stronghold
         int s = carMapNode[(int)startCoor.x][(int)startCoor.y].GetStronghold();
