@@ -114,17 +114,33 @@ void sendGPS(){
     char buffer[256];
     inputHeader();
     double slon,slat,dlon,dlat;
+    int start,end;
+
+    double gpsData[100]={
+        24.943617, 121.370906,
+        24.943592, 121.370889,  //1.接近原點
+        24.943891, 121.370717,  //2.圖書館前
+        24.944171, 121.370530,  //3.社科道路轉角
+        24.943911, 121.371423,  //4.公院前
+        24.944224, 121.371951,  //5.法商大道法院測
+        24.944509, 121.371739,  //6.法商大道中間
+        24.944781, 121.371573,  //7.法商大道商院測
+        24.945151, 121.372155,  //8.商院前
+        24.945487, 121.372747,  //9.商院正門轉角
+        24.945202, 121.372979,  //10.正門
+        24.944927, 121.373166,  //11.法院正門轉角
+        24.944572, 121.372549,  //12.法院前
+        24.944502, 121.371028   //13.行政前
+    }
     
-    cout << "slon : ";
-    cin >> slon;
-    cout << "slat : ";
-    cin >> slat;
-    cout << "dlon : ";
-    cin >> dlon;
-    cout << "dlat : ";
-    cin >> dlat;
-    sprintf(message1+4, "1,1,2,1234,timeIsMoney,%lf,%lf,%lf,%lf,",slon,slat,dlon,dlat);
-//    message1[0] = 1;
+    printf("start:");
+    scanf("%d",start);
+    printf("end:");
+    scanf("%d",end);
+
+
+
+    sprintf(message1+4, "1,1,2,1234,timeIsMoney,%lf,%lf,%lf,%lf,",gpsData[start*2],gpsData[start*2+1],gpsData[end*2],gpsData[end*2+1]);
     e = sx1272.sendPacketTimeout(0, message1);
     printf("Packet sent, state %d\n",e);
 

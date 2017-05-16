@@ -561,7 +561,7 @@ public:
         int s = carMapNode[(int)startCoor.x][(int)startCoor.y].GetStronghold();
         int d = carMapNode[(int)endCoor.x][(int)endCoor.y].GetStronghold();
 
-        if(s < 0 || 15 < s || d < 0 || 15 < d){
+        if(s <= 0 || 15 < s || d <= 0 || 15 < d){
             return traceVec;
         }
 
