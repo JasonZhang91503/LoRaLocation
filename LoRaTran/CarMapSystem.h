@@ -624,11 +624,12 @@ public:
         //�ثe�u�ɯ����̫��@�Ӥ��~�I
         //�γ\�i�H�����ɯ������I�T�����m
 
-			for(int i = 0;i < traceVec.size();i++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",traceVec[i]->GetCor_x(),traceVec[i]->GetCor_y());
-				printf(buff1);
-			}
+            cout << "traceStrongholdVec x -> 0\n";
+            for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
+                cout << "x:" << (*it)->GetCor_x()
+                        << ",y:"<< (*it)->GetCor_y()
+                        <<endl;
+            }
 
         return;
     }

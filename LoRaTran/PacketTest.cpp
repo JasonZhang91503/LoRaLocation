@@ -110,5 +110,9 @@ int main(){
     printf("ee3.x = %lf,%lf\n",ee3.y,ee3.x);
 
 
+    for(int i = 0 ; i < 0; i++){
+        printf("gaga");
+    }
+
     cin.get();
 }
