@@ -550,6 +550,7 @@ public:
         vec_CMnode traceVec;
 
         if(!isInsideMap(startGPS.x,startGPS.y) || !isInsideMap(endGPS.x,endGPS.y)){
+            printf("cgms : gps not in map\n");
             return traceVec;
         }
 
@@ -561,7 +562,10 @@ public:
         int s = carMapNode[(int)startCoor.x][(int)startCoor.y].GetStronghold();
         int d = carMapNode[(int)endCoor.x][(int)endCoor.y].GetStronghold();
 
+        cout << "cgms : findPath : s = " << s <<",d = "<< d <<endl;
+
         if(s <= 0 || 15 < s || d <= 0 || 15 < d){
+            printf("cgms : strongHold not in exist\n");
             return traceVec;
         }
 
