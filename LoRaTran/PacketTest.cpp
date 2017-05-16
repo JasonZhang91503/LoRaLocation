@@ -108,11 +108,6 @@ int main(){
     printf("ee2.x = %lf,%lf\n",ee2.y,ee2.x);
     printf("ss3.x = %lf,%lf\n",ss3.y,ss3.x);
     printf("ee3.x = %lf,%lf\n",ee3.y,ee3.x);
-
-
-    for(int i = 0 ; i < 0; i++){
-        printf("gaga");
-    }
-
+    
     cin.get();
 }

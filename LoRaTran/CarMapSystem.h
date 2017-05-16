@@ -631,6 +631,12 @@ public:
                         <<endl;
             }
 
+			for(int i = 0;i < traceVec.size();i++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",traceVec[i]->GetCor_x(),traceVec[i]->GetCor_y());
+				printf(buff1);
+			}
+
         return;
     }
 
