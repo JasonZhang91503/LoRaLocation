@@ -140,7 +140,7 @@ void sendGPS(){
 
 
 
-    sprintf(message1+4, "1,1,2,1234,timeIsMoney,%lf,%lf,%lf,%lf,",gpsData[start*2],gpsData[start*2+1],gpsData[end*2],gpsData[end*2+1]);
+    sprintf(message1+4, "1,1,2,1234,timeIsMoney,%lf,%lf,%lf,%lf,",gpsData[start*2+1],gpsData[start*2],gpsData[end*2+1],gpsData[end*2]);
     e = sx1272.sendPacketTimeout(0, message1);
     printf("Packet sent, state %d\n",e);
 

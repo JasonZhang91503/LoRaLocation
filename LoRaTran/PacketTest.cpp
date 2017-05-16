@@ -8,7 +8,7 @@ using namespace std;
 Coor init,xMax,yMax;
 
 #define MAP_WIDTH 1400
-#define MAP_HEIGHT 400
+#define MAP_HEIGHT 410
 #define ROAD_WIDTH 50
 
 
@@ -108,6 +108,19 @@ int main(){
     printf("ee2.x = %lf,%lf\n",ee2.y,ee2.x);
     printf("ss3.x = %lf,%lf\n",ss3.y,ss3.x);
     printf("ee3.x = %lf,%lf\n",ee3.y,ee3.x);
+
+
+    Coor ee;
+    ee.x = 121.370717;
+	ee.y = 24.943891;
+    Coor	mapNode = cgms->gpsToCoordinate(ee);
+	if(!cgms->isInsideMap(ee.x,ee.y)){
+			printf("goToLocation : cgms detect destmation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			return 0;
+	}
+    else{
+        printf("goToLocation :  lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+    }
     
     cin.get();
 }
