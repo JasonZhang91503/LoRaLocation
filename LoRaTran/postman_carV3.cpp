@@ -513,32 +513,14 @@ int goToLocation(double lon,double lat){
 			cout << bufferN;
 			fileInput(bufferN);
 
-			            cout << "traceStrongholdVec x -> 10000\n";
-            for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
+            for(traIt = traceVec.begin(); traIt != traceVec.end();traIt++){
                 cout << "x:" << (*it)->GetCor_x()
                         << ",y:"<< (*it)->GetCor_y()
                         <<endl;
+				char buff1[256];
+				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+				fileInput(buff1);
             }
-
-
-			/*for(traIt = traceVec.begin();traIt != traceVec.end();traIt++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
-				printf(buff1);
-				fileInput(buff1);
-			}*/
-			/* test */
-
-			/*
-			for(int i = 0;i < traceVec.size();i++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",traceVec[i]->GetCor_x(),traceVec[i]->GetCor_y());
-				printf(buff1);
-				fileInput(buff1);
-			}
-*/
-
-
 
 
 			if(traceVec.size()==0){
@@ -546,18 +528,6 @@ int goToLocation(double lon,double lat){
 			}
 
 			traIt = traceVec.begin();
-/*
-			sprintf(bufferN,"Real info\n");
-			cout << bufferN;
-			fileInput(bufferN);
-			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
-				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
-				printf(buff1);
-				fileInput(buff1);
-			}
-			*/
-
 			firstFind = false;
 		}
 
@@ -566,6 +536,7 @@ cout << "GOOD5" << endl;
 		traCoor.x = (*traIt)->GetCor_x();
 		traCoor.y = (*traIt)->GetCor_y();
 		Coor traGPS = cgms->coordinateToGps(traCoor);
+
 
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, traGPS.y);
 
@@ -586,7 +557,7 @@ cout << "GOOD6" << endl;
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
 		char buff[256];
-		sprintf(buff,"%lf,%lf,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
+		sprintf(buff,"%f,%f,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
 		printf(buff);
 		fileInput(buff);
 
