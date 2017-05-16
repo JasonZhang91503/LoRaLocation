@@ -512,12 +512,25 @@ int goToLocation(double lon,double lat){
 			sprintf(bufferN,"Debug info\n");
 			cout << bufferN;
 			fileInput(bufferN);
-			for(traIt = traceVec.begin();traIt != traceVec.end();traIt++){
+			/*for(traIt = traceVec.begin();traIt != traceVec.end();traIt++){
 				char buff1[256];
 				sprintf(buff1,"Node : %lf,%lf\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				printf(buff1);
 				fileInput(buff1);
+			}*/
+			/* test */
+
+			
+			for(int i = 0;traIt != traceVec.size();i++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",traceVec[i]->GetCor_x(),traceVec[i]->GetCor_y());
+				printf(buff1);
+				fileInput(buff1);
 			}
+
+
+
+
 
 			if(traceVec.size()==0){
 				return CAR_NOT_FOUND_ROAD;
