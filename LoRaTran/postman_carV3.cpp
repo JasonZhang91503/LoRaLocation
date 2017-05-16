@@ -567,6 +567,9 @@ cout << "GOOD6" << endl;
 		if (isCarReach) {
 			count++;
 			traIt++;
+			if(count == traceVec.size()){
+				break;
+			}
 		}
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
