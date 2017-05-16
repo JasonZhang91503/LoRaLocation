@@ -512,6 +512,15 @@ int goToLocation(double lon,double lat){
 			sprintf(bufferN,"Debug info\n");
 			cout << bufferN;
 			fileInput(bufferN);
+
+			            cout << "traceStrongholdVec x -> 10000\n";
+            for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
+                cout << "x:" << (*it)->GetCor_x()
+                        << ",y:"<< (*it)->GetCor_y()
+                        <<endl;
+            }
+
+
 			/*for(traIt = traceVec.begin();traIt != traceVec.end();traIt++){
 				char buff1[256];
 				sprintf(buff1,"Node : %lf,%lf\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
