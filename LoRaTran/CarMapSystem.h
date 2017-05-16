@@ -622,7 +622,7 @@ public:
             return traceVec;
         }
         do{
-            for(vector<int>::iterator it = traceStrongholdVec.begin(); it != traceStrongholdVec.end();it++){
+            for(vector<int>::iterator it = traceVec.begin(); it != traceVec.end();it++){
                 cout << *it << " ";
             }
             cout << endl;
