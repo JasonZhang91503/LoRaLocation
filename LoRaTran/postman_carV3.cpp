@@ -507,6 +507,15 @@ int goToLocation(double lon,double lat){
 
 		if(firstFind){
 			traceVec = cgms->findPath(ss,ee,adj);
+
+			cout << "Debug info\n";
+			for(traIt = traceVec.begin();printIt != traceVec.end();printIt++){
+				char buff1[256];
+				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				printf(buff1);
+				fileInput(buff1);
+			}
+
 			if(traceVec.size()==0){
 				return CAR_NOT_FOUND_ROAD;
 			}

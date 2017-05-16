@@ -585,7 +585,7 @@ public:
         if(hasPath){
             traceVec = tracePath(it->x,it->y);
             
-            cout << "traceStrongholdVec x -> 0";
+            cout << "traceStrongholdVec x -> 0\n";
             for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
                 cout << "x:" << (*it)->GetCor_x()
                         << ",y:"<< (*it)->GetCor_y()
@@ -605,7 +605,7 @@ public:
                 vec_CMnode tempVec;
                 tempVec = tracePath(itE->x,itE->y);
 
-                cout << "traceStrongholdVec "<< traceStrongholdVec[i] -1 << " -> " <<traceStrongholdVec[i+1] -1;
+                cout << "traceStrongholdVec "<< traceStrongholdVec[i] -1 << " -> " <<traceStrongholdVec[i+1] -1 << endl;
                 for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
                     cout << "x:" << (*it)->GetCor_x()
                             << ",y:"<< (*it)->GetCor_y()
