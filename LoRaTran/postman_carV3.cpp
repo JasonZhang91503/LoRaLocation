@@ -55,9 +55,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_NOT_FOUND_ROAD 9487005
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 1400
-#define MAP_HEIGHT 410
-#define ROAD_WIDTH 50
+#define MAP_WIDTH 140
+#define MAP_HEIGHT 41
+#define ROAD_WIDTH 5
 
 
 #ifndef NO_CAR_MODE
@@ -757,7 +757,7 @@ void initCGMS(){
     }
 
     cgms->fillNodeStronghold();
-    //cgms.printNodeStronghold();
+    cgms.printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 
