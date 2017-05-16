@@ -477,10 +477,7 @@ int goToLocation(double lon,double lat){
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			printf("goToLocation : cgms detect destmation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
-			#ifndef NO_CAR_MODE
-			unistd::usleep(1000);
-			#endif
-			continue;
+			return;
 	}
 
 
