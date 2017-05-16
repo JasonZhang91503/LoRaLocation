@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         });
 
         //設定RecycleView的金額
-        RecyclerView recyclerView;
+        final RecyclerView recyclerView;
         resource=getResources().getStringArray(R.array.Location);
         MyAdapter myAdapter=new MyAdapter(dataset,resource);
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
