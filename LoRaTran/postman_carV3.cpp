@@ -509,9 +509,9 @@ int goToLocation(double lon,double lat){
 			traceVec = cgms->findPath(ss,ee,adj);
 
 			cout << "Debug info\n";
-			for(traIt = traceVec.begin();printIt != traceVec.end();printIt++){
+			for(traIt = traceVec.begin();traIt != traceVec.end();traIt++){
 				char buff1[256];
-				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
+				sprintf(buff1,"Node : %lf,%lf\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				printf(buff1);
 				fileInput(buff1);
 			}
@@ -522,6 +522,7 @@ int goToLocation(double lon,double lat){
 
 			traIt = traceVec.begin();
 
+			cout << "Real info\n";
 			for(printIt = traceVec.begin();printIt != traceVec.end();printIt++){
 				char buff1[256];
 				sprintf(buff1,"Node : %lf,%lf\n",(*printIt)->GetCor_x(),(*printIt)->GetCor_y());
