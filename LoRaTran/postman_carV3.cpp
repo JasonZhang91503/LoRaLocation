@@ -557,7 +557,7 @@ cout << "GOOD6" << endl;
 		
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
 		char buff[256];
-		sprintf(buff,"%f,%f,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
+		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
 		printf(buff);
 		fileInput(buff);
 
