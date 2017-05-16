@@ -506,6 +506,9 @@ int goToLocation(double lon,double lat){
 
 
 		if(firstFind){
+			cout << "cgms : startGPS :" << ss.x << "," << ss.y << endl;
+        	cout << "cgms : endGPS :" << ee.x << "," << ee.y << endl;
+
 			cgms->findPath(traceVec,ss,ee,adj);
 
 			char bufferN[256];
