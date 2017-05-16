@@ -131,12 +131,12 @@ void sendGPS(){
         24.944927, 121.373166,  //11.法院正門轉角
         24.944572, 121.372549,  //12.法院前
         24.944502, 121.371028   //13.行政前
-    }
+    };
     
     printf("start:");
-    scanf("%d",start);
+    scanf("%d",&start);
     printf("end:");
-    scanf("%d",end);
+    scanf("%d",&end);
 
 
 
