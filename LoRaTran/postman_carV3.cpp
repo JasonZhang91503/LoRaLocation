@@ -757,7 +757,7 @@ void initCGMS(){
     }
 
     cgms->fillNodeStronghold();
-    cgms.printNodeStronghold();
+    cgms->printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 
