@@ -55,9 +55,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_NOT_FOUND_ROAD 9487005
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 140
-#define MAP_HEIGHT 41
-#define ROAD_WIDTH 5
+#define MAP_WIDTH 1400
+#define MAP_HEIGHT 410
+#define ROAD_WIDTH 50
 
 
 #ifndef NO_CAR_MODE
@@ -496,7 +496,7 @@ int goToLocation(double lon,double lat){
 
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
-			printf("moveToSender : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
 			#endif
@@ -757,7 +757,7 @@ void initCGMS(){
     }
 
     cgms->fillNodeStronghold();
-    cgms->printNodeStronghold();
+    //cgms->printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 

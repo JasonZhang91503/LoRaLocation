@@ -622,6 +622,12 @@ public:
             return traceVec;
         }
         do{
+            for(vector<int>::iterator it = traceStrongholdVec.begin(); it != traceStrongholdVec.end();it++){
+                cout << *it << " ";
+            }
+            cout << endl;
+
+
             traceVec.push_back(parent[d]);
             d = parent[d];
         }while(parent[d]);
