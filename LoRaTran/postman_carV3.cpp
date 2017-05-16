@@ -514,8 +514,8 @@ int goToLocation(double lon,double lat){
 			fileInput(bufferN);
 
             for(traIt = traceVec.begin(); traIt != traceVec.end();traIt++){
-                cout << "x:" << (*it)->GetCor_x()
-                        << ",y:"<< (*it)->GetCor_y()
+                cout << "x:" << (*traIt)->GetCor_x()
+                        << ",y:"<< (*traIt)->GetCor_y()
                         <<endl;
 				char buff1[256];
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
