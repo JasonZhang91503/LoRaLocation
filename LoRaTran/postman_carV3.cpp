@@ -473,6 +473,17 @@ int goToLocation(double lon,double lat){
 	ee.x = lon;
 	ee.y = lat;
 
+	
+	mapNode = cgms->gpsToCoordinate(ee);
+	if(!cgms->isInsideMap(ee.x,ee.y)){
+			printf("goToLocation : cgms detect destmation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			#ifndef NO_CAR_MODE
+			unistd::usleep(1000);
+			#endif
+			continue;
+	}
+
+
 	cout << "GOOD2" << endl;
 
 	do {
@@ -496,12 +507,14 @@ int goToLocation(double lon,double lat){
 
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
-			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
 			#endif
 			continue;
 		}
+
+
 		cout << "GOOD4" << endl;
 
 
@@ -855,6 +868,7 @@ int parseRequestData(UserRequest* req){
 	req->sendTime.assign(timePtr);
 	printf("sendTime :%s\n",req->sendTime.c_str());
 
+/*
 	if(NOGPS == 2){
 		req->src_lon = 121.370889;
 		printf("sLon :%f\n",req->src_lon);
@@ -876,6 +890,17 @@ int parseRequestData(UserRequest* req){
 		printf("dLat :%f\n",req->dest_lat);
 		
 	}
+	*/
+
+	req->src_lon = atof(sLonPtr);
+	printf("sLon :%f\n",req->src_lon);
+	req->src_lat = atof(sLatPtr);
+	printf("sLat :%f\n",req->src_lat);
+	req->dest_lon = atof(dLonPtr);
+	printf("dLon :%f\n",req->dest_lon);
+	req->dest_lat = atof(dLatPtr);
+	printf("dLat :%f\n",req->dest_lat);
+
 	req->state = 0;
 	printf("state :%f\n",req->state);
 
