@@ -625,6 +625,13 @@ public:
         //�γ\�i�H�����ɯ������I�T�����m
 
 
+                    cout << "traceStrongholdVec x -> 0\n";
+            for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
+                cout << "x:" << (*it)->GetCor_x()
+                        << ",y:"<< (*it)->GetCor_y()
+                        <<endl;
+            }
+
         return;
     }
 
