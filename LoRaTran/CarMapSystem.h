@@ -627,19 +627,11 @@ public:
             }
             cout << endl;
 
-
             traceVec.push_back(parent[d]);
             d = parent[d];
         }while(parent[d]);
 
         reverse(traceVec.begin(),traceVec.end());
-
-        sss;
-        testtest;
-        add;
-        asd;
-        qew;
-
 
         return traceVec;
     }
