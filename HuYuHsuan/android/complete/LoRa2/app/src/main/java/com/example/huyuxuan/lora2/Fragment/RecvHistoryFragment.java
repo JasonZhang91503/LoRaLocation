@@ -77,15 +77,18 @@ public class RecvHistoryFragment extends Fragment {
     }
 
     public void setView(){
-        if(adapter != null){
+        if(adapter == null){
             adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
+            viewPager.setAdapter(adapter);
+            Log.d("RcvHistoryFragment","adapter == null");
         }else{
-
+            adapter = (PagerAdapter) viewPager.getAdapter();
+            adapter.update(dataset);
+            viewPager.setAdapter(adapter);
+            Log.d("RcvHistoryFragment","adapter != null");
         }
-
-
         Log.d("set adapter",type+" ok");
-        viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -304,16 +307,9 @@ public class RecvHistoryFragment extends Fragment {
                 if(intent.getStringExtra("activity").equals("RecvHistoryFragment")){
                     Log.d("RecvHistoryFragment:","receiver on receive");
                     Bundle bundle = intent.getExtras();
-                    ArrayList<Order> orderArrayList = new ArrayList<Order>();
-                    orderArrayList = (ArrayList<Order>)bundle.getSerializable("arrayList");
-                    if(orderArrayList.isEmpty()){
-                        dataset=null;
-                        Log.d("RecvHistoryFragment","dataset is null");
-                    }
-                    else{
-                        dataset = orderArrayList;
-                    }
+                    dataset = (ArrayList<Order>)bundle.getSerializable("arrayList");
                     setView();
+
                 }
             }
             else{

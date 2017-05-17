@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,12 @@ public class HistIncompleteFragment extends Fragment{
     public HistIncompleteFragment(ArrayList<Order> incompleteDataset) {
         // Required empty public constructor
         dataset=incompleteDataset;
+        if(dataset!=null){
+            Log.d("HistinComple",String.valueOf(dataset.size()));
+        }
+        else{
+            Log.d("HistinComple","dataset = null");
+        }
     }
 
 

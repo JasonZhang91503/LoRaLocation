@@ -63,6 +63,7 @@ public class HomeFragment extends Fragment {
     private TextView tvName;
     private SharedPreferences sharedPreferences;
 
+
     private static boolean isBind;
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
@@ -99,6 +100,7 @@ public class HomeFragment extends Fragment {
         tvName = (TextView)myview.findViewById(R.id.textViewName);
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
+
 
         isBind = false;
         updateListView();
@@ -185,19 +187,7 @@ public class HomeFragment extends Fragment {
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(myAdapter);
-            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    Log.d("HomeFragment","Myadapter onitemClick");
-                    Order tmp = orderlist.get(position);
-                    OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
-                    orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
-                    getFragmentManager().beginTransaction()
-                            .addToBackStack(null)
-                            .replace(R.id.fragment_container,orderInfoFragment).commit();
 
-                }
-            });
         }
 
         return myview;
@@ -251,19 +241,6 @@ public class HomeFragment extends Fragment {
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     recyclerView.setLayoutManager(layoutManager);
                     recyclerView.setAdapter(myAdapter);
-                    myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            Log.d("HomeFragment","Myadapter onitemClick");
-                            Order tmp = orderlist.get(position);
-                            OrderInfoFragment orderInfoFragment = OrderInfoFragment.newInstance(tmp);
-                            orderInfoFragment.setTargetFragment(HomeFragment.this, 0);
-                            getFragmentManager().beginTransaction()
-                                    .addToBackStack(null)
-                                    .replace(R.id.fragment_container,orderInfoFragment).commit();
-
-                        }
-                    });
                 }else{
                     Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
                 }

@@ -23,10 +23,11 @@ public class Order implements Serializable {
     private String str_dest;
     private String str_state;
     private String str_key;
+    private String str_require_time;
     private String str_arrive_time;
     private String str_sender;
 
-    private String month,date,minute,hour;
+    private String year,month,date,minute,hour;
 
     public Order(int start,int destination,int cost,String name,String phone,String time,String str,int state){
         start_place=start;
@@ -40,11 +41,12 @@ public class Order implements Serializable {
     }
 
     public Order(String start,String dest,String receiver,String sender,String time,String arriveTime,String state,String key,String not){
-        str_start=start.substring(4);
-        str_dest=dest.substring(4);
+        str_start=start;
+        str_dest=dest;
         recv_name=receiver;
         str_sender=sender;
-        send_time=time;
+        str_require_time=time;
+        setSetTime(str_require_time);
         str_arrive_time=arriveTime;
         str_state=state;
         order_state=Integer.valueOf(state);
@@ -60,6 +62,7 @@ public class Order implements Serializable {
     public String getStr_key(){return str_key;}
     public String getStr_arrive_time(){return str_arrive_time;}
     public String getStr_sender(){return str_sender;}
+    public String getStr_require_time(){return str_require_time;}
 
     public int getOrder_cost() {
         return order_cost;
@@ -83,18 +86,21 @@ public class Order implements Serializable {
         return send_time;
     }
 
-    public String getRecv_phone() {
-        return recv_phone;
-    }
-
     public String getNote() {
         return note;
     }
+
+    public String getMonth(){ return month; }
+    public String getDate(){ return date; }
+    public String getMinute(){return minute;}
+    public String getHour(){return  hour;}
+    public String getYear(){return  year;}
 
     public void setSetTime(String time){
         String[] temp;
         temp=time.split("-| |:");//進行字串分解 ：0:年 1:月 2:日 3:時 4:分 5:秒
         Log.d("tag",temp[0]+" "+temp[1]+" "+temp[2]+" "+temp[3]+" "+temp[4]);
+        year=temp[0];
         month=temp[1];
         date=temp[2];
         hour=temp[3];

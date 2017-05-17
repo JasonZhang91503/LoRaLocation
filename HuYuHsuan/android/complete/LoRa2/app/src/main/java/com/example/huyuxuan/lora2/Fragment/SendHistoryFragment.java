@@ -52,6 +52,7 @@ public class SendHistoryFragment extends Fragment {
     TextView date;
     boolean tmp=false;
     String str_date;
+    PagerAdapter adapter;
 
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     String formattedDate;
@@ -72,10 +73,17 @@ public class SendHistoryFragment extends Fragment {
         }
     }
     public void setView(){
-        PagerAdapter adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
-        Log.d("set adapter",type+" ok");
-
-        viewPager.setAdapter(adapter);
+        int tmp = viewPager.getCurrentItem();
+        if(adapter == null){
+            adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
+            viewPager.setAdapter(adapter);
+            Log.d("RcvHistoryFragment","adapter == null");
+        }else{
+            adapter = (PagerAdapter) viewPager.getAdapter();
+            adapter.update(dataset);
+            viewPager.setAdapter(adapter);
+            Log.d("RcvHistoryFragment","adapter != null");
+        }
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         date.setOnClickListener(new View.OnClickListener() {
@@ -376,6 +384,7 @@ public class SendHistoryFragment extends Fragment {
         Log.d("SendHistoryFragment:","onDestroy");
         super.onDestroy();
     }
+
 
 
 }
