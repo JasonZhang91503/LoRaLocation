@@ -21,7 +21,12 @@ public class HistCompleteFragment extends Fragment {
     public HistCompleteFragment(ArrayList<Order> completeDataset) {
         // Required empty public constructor
         dataset=completeDataset;
-        Log.d("new Fragment",String.valueOf(dataset.size()));
+        if(dataset!=null){
+            Log.d("HistComple",String.valueOf(dataset.size()));
+        }
+        else{
+            Log.d("HistComple","dataset = null");
+        }
     }
 
 

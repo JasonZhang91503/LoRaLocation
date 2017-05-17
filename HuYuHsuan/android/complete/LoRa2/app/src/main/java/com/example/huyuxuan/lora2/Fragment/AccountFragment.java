@@ -43,9 +43,12 @@ public class AccountFragment extends Fragment {
     TextView myNameView;
     TextView myAccountView;
     RoundImageView photoView;
+    TextView mMoneyView;
+    Button btnStore;
 
     String password;
     String email;
+    String mMoney;
 
     private SharedPreferences sharedPreferences;
     private static boolean isBind;
@@ -67,6 +70,7 @@ public class AccountFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         password = sharedPreferences.getString(getString(R.string.password),"");
         email = sharedPreferences.getString(getString(R.string.email),"");
+        mMoney=sharedPreferences.getString("Money","100");
 
         editMail=(ImageView)view.findViewById(R.id.editmail);
         editPwd=(ImageView)view.findViewById(R.id.editpwd);
@@ -75,11 +79,14 @@ public class AccountFragment extends Fragment {
         pwd=(TextView)view.findViewById(R.id.password);
         mail=(TextView)view.findViewById(R.id.mail);
         photoView = (RoundImageView) view.findViewById(R.id.acc_roundImage);
+        mMoneyView = (TextView)view.findViewById(R.id.txtmoney);
+        btnStore = (Button)view.findViewById(R.id.btn_Store);
 
         myNameView.setText(sharedPreferences.getString(getString(R.string.name),""));
         myAccountView.setText(sharedPreferences.getString(getString(R.string.account),""));
         pwd.setText(sharedPreferences.getString(getString(R.string.password),""));
         mail.setText(sharedPreferences.getString(getString(R.string.email),""));
+        mMoneyView.setText(mMoney);
 
         String sd = Environment.getExternalStorageDirectory().toString();
         Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
@@ -166,6 +173,18 @@ public class AccountFragment extends Fragment {
             }
 
 
+        });
+
+        btnStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int tmp = Integer.valueOf(mMoney);
+                tmp += 100;
+                mMoney = String.valueOf(tmp);
+                mMoneyView.setText(mMoney);
+                sharedPreferences.edit().putString("Money",mMoney).apply();
+                Toast.makeText(getContext(),"儲值成功",Toast.LENGTH_SHORT).show();
+            }
         });
         return view;
     }

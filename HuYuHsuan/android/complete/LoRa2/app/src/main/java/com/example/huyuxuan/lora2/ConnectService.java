@@ -179,6 +179,11 @@ public class ConnectService extends Service {
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
+                            //嘗試重新連線
+                            int sta=connectToServer();
+                            if(sta==1){
+                                sendToServer(reSendIntent);
+                            }
                         }catch(Exception e1){
                             Log.d("ConnectService","catch exception");
                             e1.printStackTrace();

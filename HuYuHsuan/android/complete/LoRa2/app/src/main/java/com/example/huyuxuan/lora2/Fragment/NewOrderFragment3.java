@@ -182,6 +182,10 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
                     if(type.compareTo("1")==0){
                         //登記寄件成功，回到主畫面
                         Toast.makeText(getContext(),"登記寄件成功",Toast.LENGTH_SHORT).show();
+                        String money = sharedPreferences.getString("Money","100");
+                        int mny = Integer.valueOf(money);
+                        money = String.valueOf(mny-30);
+                        sharedPreferences.edit().putString("Money",money).apply();
 
                         HomeFragment homeFragment = new HomeFragment();
                         homeFragment.setTargetFragment(NewOrderFragment3.this, 0);
