@@ -577,6 +577,7 @@ public:
         //���X�_�IStronghold�����IStronghold��Stronghold���|
         vector<int> traceStrongholdVec = findStrongholdPath(s,d,adj);
 
+        cout << "Stronghold:";
         for(vector<int>::iterator it = traceStrongholdVec.begin(); it != traceStrongholdVec.end();it++){
             cout << *it << " ";
         }
@@ -628,11 +629,6 @@ public:
             return traceVec;
         }
         do{
-            for(vector<int>::iterator it = traceVec.begin(); it != traceVec.end();it++){
-                cout << *it << " ";
-            }
-            cout << endl;
-
             traceVec.push_back(parent[d]);
             d = parent[d];
         }while(parent[d]);

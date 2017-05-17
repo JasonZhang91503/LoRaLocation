@@ -456,8 +456,6 @@ int goToLocation(double lon,double lat){
 	
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 
-	cout << "GOOD" << endl;
-
 	ee.x = lon;
 	ee.y = lat;
 
@@ -468,9 +466,6 @@ int goToLocation(double lon,double lat){
 			return GPS_NOT_IN_CARMAP;
 	}
 
-
-	cout << "GOOD2" << endl;
-
 	do {
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
@@ -480,7 +475,6 @@ int goToLocation(double lon,double lat){
 			ss.y = 24.943603;
 		}
 		else{
-			cout << "GOOD3" << endl;
 			getGPSLocation(ss.x,ss.y);
 			
 		}
@@ -500,12 +494,7 @@ int goToLocation(double lon,double lat){
 		}
 
 
-		cout << "GOOD4" << endl;
-
-
 		if(firstFind){
-			cout << "cgms : startGPS :" << ss.x << "," << ss.y << endl;
-        	cout << "cgms : endGPS :" << ee.x << "," << ee.y << endl;
 
 			cgms->findPath(traceVec,ss,ee,adj);
 
@@ -532,7 +521,6 @@ int goToLocation(double lon,double lat){
 			firstFind = false;
 		}
 
-cout << "GOOD5" << endl;
 		Coor traCoor;
 		traCoor.x = (*traIt)->GetCor_x();
 		traCoor.y = (*traIt)->GetCor_y();
@@ -541,7 +529,6 @@ cout << "GOOD5" << endl;
 
 		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, traGPS.y);
 
-cout << "GOOD6" << endl;
 		if(NOGPS == 2){
 			isCarReach = true;
 		}

@@ -63,7 +63,7 @@ public:
         #endif
 
 		if(errorCode != 0){
-            printf("asyncRecv : no data received, receive again\n");
+            //printf("asyncRecv : no data received, receive again\n");
 			return errorCode;
 		}
 		
@@ -262,7 +262,7 @@ cout << "stopTimer : timerMutex unlock\n";
     bool isTimerAlive(){
         int rv = pthread_kill(timerThread,0);
         if(rv == ESRCH){
-            printf("timer thread not exist\n");
+            //printf("timer thread not exist\n");
             return false;
         }
             
