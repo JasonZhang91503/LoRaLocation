@@ -662,7 +662,7 @@ int endTransport(UserRequest* req){
 
 	//等packetKey
 	//!!!以後可能直接用Request直接有
-	req->packetKey = parsePassword();
+	//req->packetKey = parsePassword();
 	
 	printf("endTransport : Wait for password input\n");
 
@@ -813,35 +813,35 @@ int parseRequestData(UserRequest* req){
 
 	//有識別碼版
 	pacIdPtr = strtok( (PacManager->recv_buffer) + 4 ,d);	//index[4]後開始為資料
-	printf("split pacId :%s\n",pacIdPtr);
+	printf("Split => pacId :%s",pacIdPtr);
 	senderIdPtr = strtok(NULL,d);
-	printf("split senderId :%s\n",senderIdPtr);
+	printf("senderId :%s,",senderIdPtr);
 	receiverIdPtr = strtok(NULL,d);
-	printf("split receiverId :%s\n",receiverIdPtr);
+	printf("receiverId :%s,",receiverIdPtr);
 	packetKeyPtr = strtok(NULL,d);
-	printf("split packetKey :%s\n",packetKeyPtr);
+	printf("packetKey :%s,",packetKeyPtr);
 	timePtr = strtok(NULL,d);
-	printf("split time :%s\n",timePtr);
+	printf("time :%s,",timePtr);
 	sLonPtr = strtok(NULL,d);
-	printf("split sLon :%s\n",sLonPtr);
+	printf("sLon :%s,",sLonPtr);
 	sLatPtr = strtok(NULL,d);
-	printf("split sLat :%s\n",sLatPtr);
+	printf("sLat :%s,",sLatPtr);
 	dLonPtr = strtok(NULL,d);
-	printf("split dLon :%s\n",dLonPtr);
+	printf("dLon :%s,",dLonPtr);
 	dLatPtr = strtok(NULL,d);
-	printf("split dLat :%s\n",dLatPtr);
+	printf("dLat :%s\n",dLatPtr);
 	
 	
 	req->packetNum = atoi(pacIdPtr);
-	printf("packetNum :%d\n",req->packetNum);
+	printf("Paese => packetNum :%d,",req->packetNum);
 	req->senderID = atoi(senderIdPtr);
-	printf("senderID :%d\n",req->senderID);
+	printf("senderID :%d,",req->senderID);
 	req->receiverID = atoi(receiverIdPtr);
-	printf("receiverID :%d\n",req->receiverID);
+	printf("receiverID :%d,",req->receiverID);
 	req->packetKey.assign(packetKeyPtr);
-	printf("packetKey :%s\n",req->packetKey.c_str());
+	printf("packetKey :%s,",req->packetKey.c_str());
 	req->sendTime.assign(timePtr);
-	printf("sendTime :%s\n",req->sendTime.c_str());
+	printf("sendTime :%s,",req->sendTime.c_str());
 
 /*
 	if(NOGPS == 2){
@@ -868,13 +868,13 @@ int parseRequestData(UserRequest* req){
 	*/
 
 	req->src_lon = atof(sLonPtr);
-	printf("sLon :%f\n",req->src_lon);
+	printf("sLon :%f,",req->src_lon);
 	req->src_lat = atof(sLatPtr);
-	printf("sLat :%f\n",req->src_lat);
+	printf("sLat :%f,",req->src_lat);
 	req->dest_lon = atof(dLonPtr);
-	printf("dLon :%f\n",req->dest_lon);
+	printf("dLon :%f,",req->dest_lon);
 	req->dest_lat = atof(dLatPtr);
-	printf("dLat :%f\n",req->dest_lat);
+	printf("dLat :%f,",req->dest_lat);
 
 	req->state = 0;
 	printf("state :%f\n",req->state);
