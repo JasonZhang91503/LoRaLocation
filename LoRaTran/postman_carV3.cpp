@@ -196,22 +196,9 @@ void* asyncRecv(void *arg){
 					PacManager->setTimer();
 				}
 			}
-			/*
-			else{
-				if(PacManager->hasPacket()){
-					cout << "PacketNum : " << PacManager->packetNum() << endl;
-				}
-				
-			}
-			PacManager->sendState(0);
-			*/
 		}while(PacManager->recvData());
 
-		//unistd::sleep(1);
-		//PacManager->sendBackACK();
-
 		cout << "asyncRecv : recvive data > " <<  PacManager->recv_buffer+4 << endl;
-//continue;
 		/*
 		*	規則：Packet 代表 Socket 所傳送的封包，用 Index[] 表示封包中資料的位置
 		*	Index[0] : 類別碼, 1=gateway,2=車子

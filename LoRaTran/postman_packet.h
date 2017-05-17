@@ -249,11 +249,11 @@ public:
     bool stopTimer(){
 
 cout << "stopTimer : timerMutex lock\n";
-        pthread_mutex_lock(&timerMutex);
+        //pthread_mutex_lock(&timerMutex);
         if(isTimerAlive()){
             pthread_cond_signal(&timerCond); 
         }
-        pthread_mutex_unlock(&timerMutex);
+        //pthread_mutex_unlock(&timerMutex);
 
 cout << "stopTimer : timerMutex unlock\n";
         
@@ -288,7 +288,7 @@ private:
         sendPacNum = 1;
         errorCode = 0;
         receiveTime = peroid; //1000、700、
-        timeout = 5;
+        timeout = 10;
         carID = CarID;
         clearBuffer();
     }
