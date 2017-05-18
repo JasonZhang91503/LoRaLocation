@@ -537,8 +537,12 @@ int goToLocation(double lon,double lat){
 		#ifndef NO_CAR_MODE
 		//isCarReach = true;
 		#endif
-
-
+		
+//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
+		char buff[256];
+		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
+		printf(buff);
+		fileInput(buff);
 
 		if (isCarReach) {
 			count++;
@@ -547,12 +551,6 @@ int goToLocation(double lon,double lat){
 				//break;
 			}
 		}
-		
-//		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
-		char buff[256];
-		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
-		printf(buff);
-		fileInput(buff);
 
 
 		#ifndef NO_CAR_MODE
