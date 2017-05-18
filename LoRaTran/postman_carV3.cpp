@@ -463,11 +463,11 @@ int goToLocation(double lon,double lat){
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			printf("goToLocation : cgms detect destnation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 
-			cgms->fixOutNode(mapNode);
+			//cgms->fixOutNode(mapNode);
 
-			ee = cgms->coordinateToGps(mapNode);
+			//ee = cgms->coordinateToGps(mapNode);
 
-			//return GPS_NOT_IN_CARMAP;
+			return GPS_NOT_IN_CARMAP;
 	}
 
 	do {

@@ -7,9 +7,9 @@ using namespace std;
 //#define NO_CAR_MODE
 Coor init,xMax,yMax;
 
-#define MAP_WIDTH 1400
-#define MAP_HEIGHT 410
-#define ROAD_WIDTH 50
+#define MAP_WIDTH 140
+#define MAP_HEIGHT 41
+#define ROAD_WIDTH 5
 
 
 float** adj;
@@ -80,8 +80,8 @@ int main(){
     
     ss1.x =  121.371;
     ss1.y =  24.9436;
-    ee1.x = 121.371751;
-    ee1.y =24.944498;   
+    ee1.x = 121.371;
+    ee1.y = 24.9439;   
 /*
     ss1.x = init.x;
     ss1.y = init.y;
