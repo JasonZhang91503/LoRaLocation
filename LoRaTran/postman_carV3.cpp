@@ -467,8 +467,9 @@ int goToLocation(double lon,double lat){
 			cgms->fixOutNode(mapNode);
 
 			ee = cgms->coordinateToGps(mapNode);
+			mapNode = cgms->gpsToCoordinate(ee);
 
-			printf("fixto : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 
 			//return GPS_NOT_IN_CARMAP;
 	}
