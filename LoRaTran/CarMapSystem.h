@@ -782,17 +782,19 @@ public:
                 up++;
             }while(carMapNode[(int)node.x][(int)node.y + up].GetStronghold() == -1);
 
-            if(left < right){ node.x - left; }
-            else{ node.x + right; }
+            int xFix = 0,yFix = 0;
+
+            if(left < right){xFix -= left;}
+            else{xFix += right;}
             
-            if(down < up){ node.y - down; }
-            else{ node.y + up; }
+            if(down < up){ yFix -= down; }
+            else{ yFix += up;}
+
+            if(abs(xFix) < abs(yFix)){ node.x += xFix; }
+            else{ node.y += yFix; }
 
         }
-
-
     }
-
 
 protected:
 private:

@@ -461,8 +461,8 @@ int goToLocation(double lon,double lat){
 	
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			printf("goToLocation : cgms detect destnation not in map region\n\
-				goToLocation :lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			printf("goToLocation : cgms detect destnation not in map region\n");
+			printf("goToLocation :lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 
 			cgms->fixOutNode(mapNode);
 
@@ -632,7 +632,7 @@ int beginTransport(UserRequest* req){
 	getchar();
 	
 	printf("beginTransport : Sender placed file\n");
-	printf("beginTransport : goto longitude =  %lf, latitude = %lf\n",req->src_lon, req->src_lat);
+	printf("beginTransport : goto longitude =  %lf, latitude = %lf\n",req->dest_lon, req->dest_lat);
 	
 	req->state = 2;
 

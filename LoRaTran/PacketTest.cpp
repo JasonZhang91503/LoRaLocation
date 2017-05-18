@@ -113,16 +113,35 @@ int main(){
 
 
     Coor ee;
-    ee.x = 121.370717;
-	ee.y = 24.943891;
+    ee.x =  121.371951;
+	ee.y = 24.944224;
     Coor	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			printf("goToLocation : cgms detect destmation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
-			return 0;
+			//return 0;
 	}
     else{
         printf("goToLocation :  lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
     }
+
+    int x,y;
+    //cin >> x >> y;
+ 
+    mapNode = cgms->gpsToCoordinate(ee);
+	if(!cgms->isInsideMap(ee.x,ee.y)){
+			printf("goToLocation : cgms detect destnation not in map region\n");
+			printf("goToLocation :lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+
+			cgms->fixOutNode(mapNode);
+
+			ee = cgms->coordinateToGps(mapNode);
+			mapNode = cgms->gpsToCoordinate(ee);
+
+			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+
+			//return GPS_NOT_IN_CARMAP;
+	}
     
+    cin.get();
     cin.get();
 }
