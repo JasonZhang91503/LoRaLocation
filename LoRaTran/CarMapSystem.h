@@ -743,6 +743,50 @@ public:
         return xRadin * 180 / PI;
     }
 
+    void fixOutNode(Coor &node){
+        if(node.x < 0){
+            node.x = 0;
+        }
+        else if( maxWidth <=node.x){
+            node.x = maxWidth-1;
+        }
+
+        if(node.y < 0){
+            node.y = 0;
+        }
+        else if(maxHeight <= node.y){
+            node.y = maxHeight-1;
+        }
+
+        if(carMapNode[(int)node.x][(int)node.y].GetStronghold() == -1){
+            int left = 0,right = 0,up = 0,down = 0;
+            do{
+                left++;
+            }while(carMapNode[(int)node.x - left][(int)node.y].GetStronghold() == -1);
+
+            do{
+                right++;
+            }while(carMapNode[(int)node.x + right][(int)node.y].GetStronghold() == -1);
+
+            do{
+                down++;
+            }while(carMapNode[(int)node.x][(int)node.y - down].GetStronghold() == -1);
+
+            do{
+                up++;
+            }while(carMapNode[(int)node.x][(int)node.y + up].GetStronghold() == -1);
+
+            if(left < right){ node.x - left; }
+            else{ node.x + right; }
+            
+            if(down < up){ node.y - down; }
+            else{ node.y + up; }
+
+        }
+
+
+    }
+
 
 protected:
 private:

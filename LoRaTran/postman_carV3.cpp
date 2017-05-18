@@ -56,10 +56,9 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define GPS_NOT_IN_CARMAP 9487006
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 1400
-#define MAP_HEIGHT 410
-#define ROAD_WIDTH 50
-
+#define MAP_WIDTH 140
+#define MAP_HEIGHT 41
+#define ROAD_WIDTH 5
 
 #ifndef NO_CAR_MODE
 //Include arduPi library
@@ -462,8 +461,13 @@ int goToLocation(double lon,double lat){
 	
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			printf("goToLocation : cgms detect destmation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
-			return GPS_NOT_IN_CARMAP;
+			printf("goToLocation : cgms detect destnation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+
+			cgms->fixOutNode(mapNode);
+
+			ee = cgms->coordinateToGps(mapNode);
+
+			//return GPS_NOT_IN_CARMAP;
 	}
 
 	do {
@@ -487,6 +491,7 @@ int goToLocation(double lon,double lat){
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
 			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
 			#endif
@@ -504,9 +509,6 @@ int goToLocation(double lon,double lat){
 			fileInput(bufferN);
 
             for(traIt = traceVec.begin(); traIt != traceVec.end();traIt++){
-                cout << "x:" << (*traIt)->GetCor_x()
-                        << ",y:"<< (*traIt)->GetCor_y()
-                        <<endl;
 				char buff1[256];
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				fileInput(buff1);
@@ -554,7 +556,7 @@ int goToLocation(double lon,double lat){
 
 
 		#ifndef NO_CAR_MODE
-		unistd::usleep(100);
+		//unistd::usleep(100);
 		#endif
 	} while ( traIt != traceVec.end());
 
