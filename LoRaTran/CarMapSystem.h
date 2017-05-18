@@ -145,7 +145,13 @@ class CarMapSystem
         }
 
         bool isInsideMap(int x,int y){
-            return  0 <= x && x < maxWidth && 0 <= y && y < maxHeight;
+            if(  !(0 <= x && x < maxWidth && 0 <= y && y < maxHeight)  ){
+                return false;
+            }
+            if( carMapNode[x][y].GetStronghold()==-1){
+                return false;
+            }
+            return true;
         }
 
 CarMapNode** carMapNode;

@@ -461,13 +461,16 @@ int goToLocation(double lon,double lat){
 	
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			printf("goToLocation : cgms detect destnation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			printf("goToLocation : cgms detect destnation not in map region\n\
+				goToLocation :lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 
 			cgms->fixOutNode(mapNode);
 
 			ee = cgms->coordinateToGps(mapNode);
 
-			return GPS_NOT_IN_CARMAP;
+			printf("fixto : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+
+			//return GPS_NOT_IN_CARMAP;
 	}
 
 	do {
