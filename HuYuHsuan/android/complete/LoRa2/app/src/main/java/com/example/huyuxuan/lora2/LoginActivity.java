@@ -24,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
     protected EditText editTextAccount;
     protected EditText editTextPassword;
     protected Button btnLogin;
-  //  protected Button btnSignUp;
 
     protected String account;
     protected String password;
@@ -42,11 +41,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Log.d("LoginActivity","onCreate");
 
         editTextAccount = (EditText)findViewById(R.id.editTextAccount);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
         btnLogin = (Button)findViewById(R.id.btnLogin);
-      //  btnSignUp = (Button)findViewById(R.id.btnToSign);
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
         editTextAccount.setHintTextColor(getResources().getColor(R.color.colorHint));
         editTextPassword.setHintTextColor(getResources().getColor(R.color.colorHint));
@@ -83,15 +82,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        /*
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //跳到註冊畫面
-            }
-        });
-        */
 
     }
 
@@ -167,5 +157,18 @@ public class LoginActivity extends AppCompatActivity {
         receiver = new ConnectServiceReceiver();
         registerReceiver(receiver, filter);
         Log.d("LoginActivity:","register receiver");
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.d("LoginActivity","onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause(){
+        Log.d("LoginActivity","onPause");
+        super.onPause();
+
     }
 }

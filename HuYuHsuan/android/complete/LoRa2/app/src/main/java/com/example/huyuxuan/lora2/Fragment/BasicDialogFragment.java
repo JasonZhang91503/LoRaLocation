@@ -6,6 +6,7 @@ package com.example.huyuxuan.lora2.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -19,9 +20,14 @@ import android.widget.ListView;
 import com.example.huyuxuan.lora2.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
+
 public class BasicDialogFragment extends DialogFragment {
     View v;
     ListView lv;
@@ -29,6 +35,10 @@ public class BasicDialogFragment extends DialogFragment {
             ,"14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"};
     String tmp;
     private String dialogMessage;
+    String formattedDate;
+    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+    Calendar c;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,8 +46,9 @@ public class BasicDialogFragment extends DialogFragment {
         v = inflater.inflate(R.layout.fragment_available_time, container, false);
         lv = (ListView) v.findViewById(R.id.available_listview);
         tmp = getResources().getString(R.string.message);
+        c = Calendar.getInstance();
+        formattedDate =dayDateFormat.format(c.getTime());
         Log.d("BasicDialogFragment","onCreateView");
-
 
 
         Bundle bundle = getArguments();
@@ -49,13 +60,16 @@ public class BasicDialogFragment extends DialogFragment {
         for(int i=0;i<dialogMessage.length();i++){
             Map<String, String> item = new HashMap<String, String>();
             item.put("time",list[i]);
-            if(dialogMessage.charAt(i)=='1'){
+
+            if(dialogMessage.charAt(i)=='1' &&  checkTime(list[i])){
                 item.put("text","可以預約");
             }else{
                 item.put("text","無法預約");
             }
             items.add(item);
         }
+
+
         MyTimeListAdapter myTimeListAdapter = new MyTimeListAdapter(getContext(),items);
         lv.setAdapter(myTimeListAdapter);
 
@@ -99,14 +113,25 @@ public class BasicDialogFragment extends DialogFragment {
         return fragment;
     }
 
-
-
-
     public BasicDialogFragment(){
         Log.d("BasicDialogFragment","constructor");
-
     }
 
 
+    public boolean checkTime(String time){
+        int hour = Integer.parseInt(formattedDate.substring(formattedDate.indexOf(' ')+1,formattedDate.indexOf(':')));
+        int minute =  Integer.parseInt(formattedDate.substring(formattedDate.indexOf(':')+1,formattedDate.lastIndexOf(':')));
+        //int second =  Integer.parseInt(formattedDate.substring(formattedDate.lastIndexOf(':')+1));
 
+        int time_hour = Integer.parseInt(time.substring(0,time.indexOf(':')));
+        int time_minute = Integer.parseInt(time.substring(time.indexOf(':')+1));
+        if(hour > time_hour || ((hour == time_hour) && (minute > time_minute))){
+            //time這個時段不能登記
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    }
 }

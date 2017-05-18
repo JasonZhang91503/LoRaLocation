@@ -66,7 +66,6 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
     static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    final String AVAILABLE_TIME_FRAGMENT = "available_fragment";
     public int MY_REQUEST_CODE=11;
 
 
@@ -152,24 +151,6 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                     Log.d("NewOrderFragment:", "checkSR->sendToService");
                 }
                 setReceiver();
-
-
-                /*這是假資料
-                Bundle bundle = new Bundle();
-                bundle.putStringArray("message", new String[]{"101110101011101010"});
-                */
-                /*
-                ft = getFragmentManager().beginTransaction();
-                DialogFragment mDialogFragment;
-                mDialogFragment = new BasicDialogFragment();
-                mDialogFragment.setArguments(bundle);
-                mDialogFragment.setTargetFragment(NewOrderFragment.this, 0);
-                mDialogFragment.setRetainInstance(true); // <-- this is important - otherwise the fragment manager will crash when readding the fragment
-                // mDialogFragment.show(ft,AVAILABLE_TIME_FRAGMENT);
-                ft.add(R.id.fragment_container,mDialogFragment);
-                ft.addToBackStack(null);
-                ft.commit();
-                */
 
             }
         });
