@@ -544,7 +544,7 @@ int goToLocation(double lon,double lat){
 			count++;
 			traIt++;
 			if(count == traceVec.size()){
-				break;
+				//break;
 			}
 		}
 		
