@@ -46,11 +46,7 @@ public class ConnectService extends Service {
     private SharedPreferences sharedPreferences;
     private boolean isReSend=false;
     Intent reSendIntent;
-   /*
-    public ConnectService(){
-        super("ConnectService");
-    }
-    */
+
 
     @Override
     public void onCreate(){
@@ -80,9 +76,14 @@ public class ConnectService extends Service {
             @Override
             protected String doInBackground(String... strings) {
                 Log.d("ConnectService","onBind doinBGcalled");
-                reSendIntent=intent;
-                sendToServer(intent);
-                rcvMessage=null;
+                String tmp = intent.getExtras().getString(getString(R.string.id));
+                if(!tmp.equals("15")){
+                    reSendIntent=intent;
+                    sendToServer(intent);
+                    rcvMessage=null;
+                }else{
+                   disconnect();
+                }
                 return null;
             }
         }.execute();
@@ -105,119 +106,134 @@ public class ConnectService extends Service {
             protected String doInBackground(String... strings) {
 
                 id = intent.getExtras().getString("id");
-                activityName = intent.getExtras().getString("activity");
-                if(activityName.compareTo("")!=0 ){
-                    Log.i("Service:","send to server from "+activityName);
-                }
-                else{
-                    isReSend=true;
-                }
-                Bundle bundle = new Bundle();
-                Log.i("Service", "id = " + id);
-                if(mSocket.isConnected()){
 
-                    switch (id) {
-                        case "2"://註冊
-                            String account = intent.getStringExtra("account");
-                            String password = intent.getStringExtra("password");
-                            String name = intent.getStringExtra("name");
-                            String email = intent.getStringExtra("email");
-                            msg = id +","+ account + "," + password + "," + name + "," + email + ",";
-                            break;
-                        case "3"://登入
-                            account = intent.getStringExtra("account");
-                            password = intent.getStringExtra("password");
-                            msg = id+","+ account + "," + password + ",";
-                            break;
-                        case "4"://登記寄件
-                            String time = intent.getStringExtra(getString(R.string.requireTime));
-                            String sender = intent.getStringExtra(getString(R.string.sender));
-                            String receiver = intent.getStringExtra(getString(R.string.receiver));
-                            String StartId = intent.getStringExtra(getString(R.string.startLocation));
-                            String destinationId = intent.getStringExtra(getString(R.string.desLocation));
-                            String note = intent.getStringExtra(getString(R.string.note));
-                            msg = id +","+sender+","+receiver+","+time+","+StartId+","+destinationId+","+note+",";
-                            break;
-                        case "5"://詢問車子有空時間
-                        case "7":
-                        case "8":
-                        case "9":
-                            Log.d("ConnectService","requireTime="+intent.getStringExtra(getString(R.string.requireTime)));
-                            time = intent.getStringExtra(getString(R.string.requireTime));
-                            msg = id+","+ time + ",";
-                            break;
-                        case "10":
-                            name = intent.getStringExtra(getString(R.string.name));
-                            msg = id +","+ name + ",";
-                            break;
-                        case "11"://要大樓資訊
-                            msg = id+",";
-                            break;
-                        case "12":
-                            password = intent.getStringExtra(getString(R.string.password));
-                            email = intent.getStringExtra(getString(R.string.email));
-                            msg = id+","+password+","+email+",";
-                            break;
+                if(!id.equals("15")){//不是要斷線，就傳給server
+                    activityName = intent.getExtras().getString("activity");
+                    if(activityName.compareTo("")!=0 ){
+                        Log.i("Service:","send to server from "+activityName);
                     }
+                    else{
+                        isReSend=true;
+                    }
+                    Bundle bundle = new Bundle();
+                    Log.i("Service", "id = " + id);
+                    if(mSocket.isConnected()){
 
-                    if (!mSocket.isOutputShutdown() && msg.length() > 0 && !mSocket.isInputShutdown()) {
-                        try {
-                            if (out != null) {//傳送給server，接收server回應
-                                rcvMessage="";
-                                out.write(msg);
-                                out.flush();
-                                Log.d("Service", "write " + msg + " to server");
-                                rcvMessage = in.readLine();
-                                rcvMessage.concat("\0");    //*****後面一定要加\0不然會是亂碼
-                                Log.d("Service", "receive " + rcvMessage + " from server");
-                                bundle = Analyze(rcvMessage);
-                                if(isReSend){
-                                    isReSend=false;
-                                    sendToServer(reSendIntent);
-                                    Log.d("ConnectService","isReSend");
+                        switch (id) {
+                            case "2"://註冊
+                                String account = intent.getStringExtra("account");
+                                String password = intent.getStringExtra("password");
+                                String name = intent.getStringExtra("name");
+                                String email = intent.getStringExtra("email");
+                                msg = id +","+ account + "," + password + "," + name + "," + email + ",";
+                                break;
+                            case "3"://登入
+                                account = intent.getStringExtra("account");
+                                password = intent.getStringExtra("password");
+                                msg = id+","+ account + "," + password + ",";
+                                break;
+                            case "4"://登記寄件
+                                String time = intent.getStringExtra(getString(R.string.requireTime));
+                                String sender = intent.getStringExtra(getString(R.string.sender));
+                                String receiver = intent.getStringExtra(getString(R.string.receiver));
+                                String StartId = intent.getStringExtra(getString(R.string.startLocation));
+                                String destinationId = intent.getStringExtra(getString(R.string.desLocation));
+                                String note = intent.getStringExtra(getString(R.string.note));
+                                msg = id +","+sender+","+receiver+","+time+","+StartId+","+destinationId+","+note+",";
+                                break;
+                            case "5"://詢問車子有空時間
+                            case "7":
+                            case "8":
+                            case "9":
+                                Log.d("ConnectService","requireTime="+intent.getStringExtra(getString(R.string.requireTime)));
+                                time = intent.getStringExtra(getString(R.string.requireTime));
+                                msg = id+","+ time + ",";
+                                break;
+                            case "10":
+                                name = intent.getStringExtra(getString(R.string.name));
+                                msg = id +","+ name + ",";
+                                break;
+                            case "11"://要大樓資訊
+                                msg = id+",";
+                                break;
+                            case "12":
+                                password = intent.getStringExtra(getString(R.string.password));
+                                email = intent.getStringExtra(getString(R.string.email));
+                                msg = id+","+password+","+email+",";
+                                break;
+                        }
+
+                        if (!mSocket.isOutputShutdown() && msg.length() > 0 && !mSocket.isInputShutdown()) {
+                            try {
+                                if (out != null) {//傳送給server，接收server回應
+                                    rcvMessage="";
+                                    out.write(msg);
+                                    out.flush();
+                                    Log.d("Service", "write " + msg + " to server");
+                                    rcvMessage = in.readLine();
+                                    rcvMessage.concat("\0");    //*****後面一定要加\0不然會是亂碼
+                                    Log.d("Service", "receive " + rcvMessage + " from server");
+                                    bundle = Analyze(rcvMessage);
+                                    if(isReSend){
+                                        isReSend=false;
+                                        sendToServer(reSendIntent);
+                                        Log.d("ConnectService","isReSend");
+                                    }
                                 }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                //嘗試重新連線
+                                int sta=connectToServer();
+                                if(sta==1){
+                                    sendToServer(reSendIntent);
+                                }
+                            }catch(Exception e1){
+                                Log.d("ConnectService","catch exception");
+                                e1.printStackTrace();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            //嘗試重新連線
-                            int sta=connectToServer();
-                            if(sta==1){
-                                sendToServer(reSendIntent);
-                            }
-                        }catch(Exception e1){
-                            Log.d("ConnectService","catch exception");
-                            e1.printStackTrace();
+                        }
+                        if(activityName.compareTo("")!=0 && bundle != null){
+                            Intent broadcastIntent = new Intent();
+                            broadcastIntent.setAction(ACTION_RECV_MSG);
+                            broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                            broadcastIntent.putExtra("result","true");
+                            broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
+                            broadcastIntent.putExtras(bundle);
+                            sendBroadcast(broadcastIntent);
+                            Log.i("Service:","sendbroadcast to  "+activityName);
                         }
                     }
-                    if(activityName.compareTo("")!=0 && bundle != null){
+                    else{
+                        //沒有連上Server
                         Intent broadcastIntent = new Intent();
                         broadcastIntent.setAction(ACTION_RECV_MSG);
                         broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-                        broadcastIntent.putExtra("result","true");
+                        broadcastIntent.putExtra("result","false");
                         broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
                         broadcastIntent.putExtras(bundle);
                         sendBroadcast(broadcastIntent);
                         Log.i("Service:","sendbroadcast to  "+activityName);
+                        //嘗試重新連線
+                        int sta=connectToServer();
+                        if(sta==1){
+                            sendToServer(reSendIntent);
+                        }
                     }
+                    rcvMessage="";
                 }
                 else{
-                    //沒有連上Server
+                    //純斷線的broadcast
+                    Bundle tmp = new Bundle();
+                    tmp.putString(getString(R.string.id),"15");
                     Intent broadcastIntent = new Intent();
                     broadcastIntent.setAction(ACTION_RECV_MSG);
                     broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-                    broadcastIntent.putExtra("result","false");
+                    broadcastIntent.putExtra("result","true");
                     broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
-                    broadcastIntent.putExtras(bundle);
+                    broadcastIntent.putExtras(tmp);
                     sendBroadcast(broadcastIntent);
                     Log.i("Service:","sendbroadcast to  "+activityName);
-                    //嘗試重新連線
-                    int sta=connectToServer();
-                    if(sta==1){
-                        sendToServer(reSendIntent);
-                    }
-
                 }
-                rcvMessage="";
 
                 return  null;
             }
@@ -390,18 +406,19 @@ public class ConnectService extends Service {
 
     public void disconnect(){
         try {
-            if(mSocket!=null){
+            if(mSocket!=null && mSocket.isConnected()){
+                Log.d("ConnectService","Socket close");
                 mSocket.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
+            disconnect();
         }
     }
 
     @Override
     public void onDestroy() {
         Log.d("ConnectService","onDestroy");
-        //disconnect();
         super.onDestroy();
     }
 

@@ -303,18 +303,18 @@ public class RecvHistoryFragment extends Fragment {
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("result").equals("true")){
-                if(intent.getStringExtra("activity").equals("RecvHistoryFragment")){
+            if(intent.getStringExtra("activity").equals("RecvHistoryFragment")){
+                if(intent.getStringExtra("result").equals("true")){
                     Log.d("RecvHistoryFragment:","receiver on receive");
-                    Bundle bundle = intent.getExtras();
+                     Bundle bundle = intent.getExtras();
                     dataset = (ArrayList<Order>)bundle.getSerializable("arrayList");
                     setView();
 
                 }
-            }
-            else{
-                //連線有問題
-                Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                else{
+                    //連線有問題
+                    Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -369,7 +369,9 @@ public class RecvHistoryFragment extends Fragment {
             }
         }
         tmp=true;
+       // adapter=null;
         super.onStop();
+        Log.d("RecvHistoryFragment:","after super.onStop");
     }
 
 

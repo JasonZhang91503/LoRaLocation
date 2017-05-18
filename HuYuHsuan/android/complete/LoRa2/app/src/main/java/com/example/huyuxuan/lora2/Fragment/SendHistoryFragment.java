@@ -73,16 +73,15 @@ public class SendHistoryFragment extends Fragment {
         }
     }
     public void setView(){
-        int tmp = viewPager.getCurrentItem();
         if(adapter == null){
             adapter=new PagerAdapter(getActivity().getSupportFragmentManager(),dataset,type);//傳入資料表和看是查看寄件紀錄還是收件紀錄
             viewPager.setAdapter(adapter);
-            Log.d("RcvHistoryFragment","adapter == null");
+            Log.d("SendHistoryFragment","adapter == null");
         }else{
             adapter = (PagerAdapter) viewPager.getAdapter();
             adapter.update(dataset);
             viewPager.setAdapter(adapter);
-            Log.d("RcvHistoryFragment","adapter != null");
+            Log.d("SendHistoryFragment","adapter != null");
         }
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
@@ -111,7 +110,7 @@ public class SendHistoryFragment extends Fragment {
                 datePickerDialog.show();
             }
         });
-        back=(ImageButton)view.findViewById(R.id.back);
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +124,7 @@ public class SendHistoryFragment extends Fragment {
 
             }
         });
-        front=(ImageButton)view.findViewById(R.id.front);
+
         front.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,6 +163,8 @@ public class SendHistoryFragment extends Fragment {
         tabLayout=(TabLayout) view.findViewById(R.id.tabLayout);
         viewPager=(ViewPager)view.findViewById(R.id.pager);
         date=(TextView)view.findViewById(R.id.txtDate);
+        back=(ImageButton)view.findViewById(R.id.back);
+        front=(ImageButton)view.findViewById(R.id.front);
 
         setTime();
         tmp=false;
@@ -315,20 +316,18 @@ public class SendHistoryFragment extends Fragment {
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("result").equals("true")){
-               if(intent.getStringExtra("activity").equals("SendHistoryFragment")){
+            if(intent.getStringExtra("activity").equals("SendHistoryFragment")){
+                if(intent.getStringExtra("result").equals("true")){
                    Log.d("SendHistoryFragment:","receiver on receive");
-
                    Bundle bundle = intent.getExtras();
                    dataset = (ArrayList<Order>)bundle.getSerializable("arrayList");
-
                    setView();
 
                 }
-            }
-            else{
-                //連線有問題
-                Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                else{
+                    //連線有問題
+                    Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -376,6 +375,7 @@ public class SendHistoryFragment extends Fragment {
         }
 
         tmp=true;
+       // adapter=null;
         super.onStop();
     }
 

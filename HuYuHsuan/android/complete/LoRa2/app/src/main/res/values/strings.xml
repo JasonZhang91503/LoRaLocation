@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LoRa2</string>
+    <string name="app_name">LoRa</string>
     <string name="ip">52.175.248.193</string>
     <string name="port">5555</string>
 

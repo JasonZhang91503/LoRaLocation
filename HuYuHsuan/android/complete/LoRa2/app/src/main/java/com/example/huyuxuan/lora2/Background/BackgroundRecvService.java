@@ -103,6 +103,7 @@ public class BackgroundRecvService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d("BGService","onDestroy");
+        //sharedPreferences.edit().putInt("BGServiceCount",0).apply();
         releaseWakeLock();
     }
 
@@ -142,7 +143,7 @@ public class BackgroundRecvService extends Service {
                 mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.delivery_icon)
-                                .setContentTitle("My notification")
+                                .setContentTitle(getString(R.string.app_name))
                                 .setContentText("車子到了下來寄信")
                                 .setAutoCancel(true);
                 createSimleNotification();
@@ -156,7 +157,7 @@ public class BackgroundRecvService extends Service {
                 mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.delivery_icon)
-                                .setContentTitle("My notification")
+                                .setContentTitle(getString(R.string.app_name))
                                 .setContentText("車子到了下來收信")
                                 .setAutoCancel(true);
                 createSimleNotification();
@@ -259,6 +260,13 @@ public class BackgroundRecvService extends Service {
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isConnect(){
+        if(mSocket.isConnected())
+            return true;
+        else
+            return false;
     }
 
 }

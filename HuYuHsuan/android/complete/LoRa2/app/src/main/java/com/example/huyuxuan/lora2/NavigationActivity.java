@@ -92,11 +92,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             if(!isBind){
                 getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
                 isBind=true;
-                Log.d("NavigationActivity:", "login->bind");
+                Log.d("NavigationActivity:", "bind");
             }
             else{
                 mBoundService.sendToServer(intent);
-                Log.d("NavigationActivity:", "login->sendToService");
+                Log.d("NavigationActivity:", "sendToService");
             }
             setReceiver();
         }else{
@@ -132,11 +132,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         sharedPreferences.edit().putString("BGLogin","true").apply();
         sharedPreferences.edit().putString("hasStop","true").apply();
         Log.d("NavigationActivity","onStop");
-        if(mBoundService!=null){
-            MyBoundedService.isConnect=false;
-            mBoundService.disconnect();
-        }
-
         super.onStop();
     }
 
@@ -203,6 +198,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
         switch (itemId){
             case R.id.nav_home:
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                myFragment.onDestroy();
                 HomeFragment firstFragment = new HomeFragment();
                 myFragment = firstFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -211,6 +208,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
             case R.id.nav_register:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                myFragment.onDestroy();
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -218,7 +216,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,newOrderFragment).commit();
                 break;
             case R.id.nav_send_history:
+
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                myFragment.onDestroy();
                 SendHistoryFragment sendHistoryFragment = new SendHistoryFragment();
                 myFragment = sendHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -227,6 +227,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
             case R.id.nav_recv_history:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                myFragment.onDestroy();
                 RecvHistoryFragment recvHistoryFragment = new RecvHistoryFragment();
                 myFragment = recvHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -234,7 +235,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,recvHistoryFragment).commit();
                 break;
             case R.id.nav_profile:
-                //getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                myFragment.onDestroy();
                 AccountFragment accountFragment = new AccountFragment();
                 myFragment = accountFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -286,10 +288,25 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
 
         //service的socket斷線
-        if(mBoundService!=null){
-            mBoundService.disconnect();
-            alarm.cancelAlarm(NavigationActivity.this);
+        Intent intent = new Intent(NavigationActivity.this,ConnectService.class);
+        intent.putExtra(getString(R.string.activity),"NavigationActivity");
+        intent.putExtra(getString(R.string.id),"15");//要登出
+        Log.d("NavigationActivity","告訴service斷線");
+
+        if(!isBind){
+            getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
+            isBind=true;
+            Log.d("NavigationActivity:", "bind");
         }
+        else{
+            mBoundService.sendToServer(intent);
+            Log.d("NavigationActivity:", "sendToService");
+        }
+        setReceiver();
+
+
+        alarm.cancelAlarm(NavigationActivity.this);
+
     }
 
 
@@ -317,24 +334,36 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("result").equals("true")){
-                if(intent.getStringExtra("activity").equals("NavigationActivity")){
+            if(intent.getStringExtra("activity").equals("NavigationActivity")){
+                if(intent.getStringExtra("result").equals("true")){
                     getApplicationContext().unbindService(mConnection);
                     unregisterReceiver(receiver);
                     Bundle bundle = intent.getExtras();
-                    String type = bundle.getString(getString(R.string.type));
-                    if(type.compareTo("1")==0){
-                        //偷偷登入成功，可以載入HomeFragment要資料了
-                        loadHome(tmp);
-                    }else{
-                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                        Log.e("NavigationActivity",errorMsg);
+                    String id=bundle.getString(getString(R.string.id));
+                    switch(id){
+                        case "3":
+                            String type = bundle.getString(getString(R.string.type));
+                            if(type.compareTo("1")==0){
+                                //偷偷登入成功，可以載入HomeFragment要資料了
+                                loadHome(tmp);
+                            }else{
+                                String errorMsg=bundle.getString(getString(R.string.errorMsg));
+                                Log.e("NavigationActivity",errorMsg);
+                            }
+                            break;
+                        case "15":
+                            Log.d("NavigationActivity","登出斷線成功");
+                            break;
+                        default:
+                            Log.d("NavigationActivity","onReceive到其他id");
+                            break;
                     }
+
                 }
-            }
-           else{
-                //連線有問題
-                Toast.makeText(NavigationActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                else{
+                    //連線有問題
+                    Toast.makeText(NavigationActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

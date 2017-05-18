@@ -146,7 +146,16 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     public void setFragments(){
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.remove(hist_all).remove(hist_complete).remove(hist_incomplete).commit();
+        if(hist_all!=null){
+            fragmentTransaction.remove(hist_all);
+        }
+        if(hist_complete!=null){
+            fragmentTransaction.remove(hist_complete);
+        }
+        if(hist_incomplete!=null) {
+            fragmentTransaction.remove(hist_incomplete);
+        }
+        fragmentTransaction.commit();
         mFragmentManager.executePendingTransactions();
         notifyDataSetChanged();
     }

@@ -113,6 +113,7 @@ public class HomeFragment extends Fragment {
         }
 
         String sd = Environment.getExternalStorageDirectory().toString();
+
         Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
         if(bitmap != null){
             mHeadImage.setImageBitmap(bitmap);
