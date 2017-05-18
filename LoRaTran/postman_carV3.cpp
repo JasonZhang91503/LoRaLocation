@@ -463,9 +463,9 @@ int goToLocation(double lon,double lat){
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			printf("goToLocation : cgms detect destnation not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 
-			//cgms->fixOutNode(mapNode);
+			cgms->fixOutNode(mapNode);
 
-			//ee = cgms->coordinateToGps(mapNode);
+			ee = cgms->coordinateToGps(mapNode);
 
 			return GPS_NOT_IN_CARMAP;
 	}
@@ -642,8 +642,13 @@ int beginTransport(UserRequest* req){
 int moveToReceiver(UserRequest* req){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
-	goToLocation(req->dest_lon,req->dest_lat);
-	
+	int e = goToLocation(req->dest_lon,req->dest_lat);
+	if(e != CAR_OK){
+		printf("moveToSender : goToLocation error\n");
+		return e;
+	}
+
+
 	printf("moveToReceiver : reach destnation!\n");
 
 	req->state = 3;
