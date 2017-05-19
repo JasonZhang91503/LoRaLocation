@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.huyuxuan.lora2.MainActivity;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
 import java.io.BufferedReader;
@@ -59,6 +60,7 @@ public class BackgroundRecvService extends Service {
         acquireWakeLock(1);
         Log.d("BGService","onCreate");
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        MyBoundedService.myBGService = BackgroundRecvService.this;
 
         new AsyncTask<String,String,String>() {
             @Override
@@ -255,6 +257,7 @@ public class BackgroundRecvService extends Service {
             if (mSocket.isConnected()) {
                 Log.i("Service", "Socket Connected");
             } else {
+
                 mSocket.connect(sc_add, 2000);
             }
         }catch (IOException e) {
@@ -262,11 +265,15 @@ public class BackgroundRecvService extends Service {
         }
     }
 
-    public boolean isConnect(){
-        if(mSocket.isConnected())
-            return true;
-        else
-            return false;
+    public void disconnect(){
+        try {
+            if(mSocket.isConnected()){
+                Log.d("BGService","socket close");
+                mSocket.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 }

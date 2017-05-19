@@ -27,6 +27,8 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     private BgServiceRecver mServiceBroadcastReceiver;
     private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
     private SharedPreferences sharedPreferences;
+    BackgroundRecvService curService;
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -36,12 +38,10 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         Log.d("MyAlatmReceiver","serviceCounter="+serviceCounter);
 
         if(serviceCounter == 0){
-            Intent service = new Intent(context, BackgroundRecvService.class);
+            Intent service = new Intent(context,BackgroundRecvService.class);
             startWakefulService(context, service);
             serviceCounter++;
             sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
-        }else{
-
         }
 
     }
@@ -103,4 +103,5 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
 
         }
     }
+
 }

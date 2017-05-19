@@ -426,6 +426,12 @@ public class HomeFragment extends Fragment {
         }else if(requestCode==REQUEST_READ_EXTERNAL_CODE){
             if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_LONG).show();
+            }else{
+                String sd = Environment.getExternalStorageDirectory().toString();
+                Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+                if(bitmap != null){
+                    mHeadImage.setImageBitmap(bitmap);
+                }
             }
         }
 

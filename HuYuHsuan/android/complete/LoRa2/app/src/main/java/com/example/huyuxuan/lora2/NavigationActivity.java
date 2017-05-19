@@ -145,6 +145,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             unregisterReceiver(receiver);
             getApplicationContext().unbindService(mConnection);
         }
+        if(MyBoundedService.myBGService != null){
+            MyBoundedService.myBGService.disconnect();
+        }
 
         super.onDestroy();
     }
@@ -159,7 +162,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onResume() {
         Log.d("NavigationActivity","onResume");
         sharedPreferences.edit().putString("hasStop","false").apply();
-        alarm.setAlarm(this);
+        //alarm.setAlarm(this);
         super.onResume();
     }
 
