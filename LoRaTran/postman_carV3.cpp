@@ -93,6 +93,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include"postman_request.h"
 #include"postman_packet.h"
 #include"postman_consoleMap.h"
+#include"confTest.h"
 //#include"postman_GPS.h"
 
 #ifndef NO_CAR_MODE
@@ -344,6 +345,10 @@ int main(int argc, const char * argv[]){
 	CarMapSystemLog = carLog;
 	postman_packetLog = carLog;
 
+	int rrc;
+	cout << "ReadRequestConf?(1 Yes, 0No):";
+	cin >> rrc;
+
 	cin.get();
 
 	UserRequest *req;
@@ -435,8 +440,15 @@ int main(int argc, const char * argv[]){
 	//開始送貨循環
 	while(1){
 		cout << "Begin transport\n";
-		
+
+		if(rrc){
+			req = new UserRequest;
+			readRequestConfig(req);
+			ReqManger.add(req);
+		}
+
 		req = waitRequest(reqObserver);
+
 
 		//state -1->0 = idle - >接收到經緯度,開始到sender地點
 		e = recvSenderRequest(req);
