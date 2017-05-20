@@ -598,7 +598,7 @@ int goToLocation(double lon,double lat){
 			cout << "○";
 
 			#ifndef NO_CAR_MODE
-			unistd::usleep(100);
+			unistd::usleep(100000);
 			#endif
 
 			count++;
