@@ -707,7 +707,7 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	mapGoTo(16,0);
+	mapGoTo(16,1);
 	printf("moveToReceiver : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
