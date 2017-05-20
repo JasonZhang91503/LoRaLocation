@@ -54,7 +54,7 @@ void mapPrint()
     }
 
     for(int j = 0; j < 11;j++){
-        mapgotoxy(1 + road +1 + j , 2 + road*2 + 1 + 28);
+        mapgotoxy(1 + road +1 + j , 2 + road*2 + 1 + 26);
         for(int i = 0; i < 13; i++ ){
              if(j != 0 && j != 10){
                 if(i!=0 && i!= 12){
