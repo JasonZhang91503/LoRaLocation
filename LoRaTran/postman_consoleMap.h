@@ -40,9 +40,9 @@ void mapPrint()
 
     for(int j = 0; j < 11;j++){
        mapgotoxy(1 + road +1 + j , 2 + road*2 + 1);
-        for(int i = 0; i < 13; i++ ){
+        for(int i = 0; i < 12; i++ ){
              if(j != 0 && j != 10){
-                if(i!=0 && i!= 12){
+                if(i!=0 && i!= 11){
                     cout << "  ";
                 }
                 else{ cout << "- ";}
@@ -55,9 +55,9 @@ void mapPrint()
 
     for(int j = 0; j < 11;j++){
         mapgotoxy(1 + road +1 + j , 2 + road*2 + 1 + 28);
-        for(int i = 0; i < 12; i++ ){
+        for(int i = 0; i < 13; i++ ){
              if(j != 0 && j != 10){
-                if(i!=0 && i!= 11){
+                if(i!=0 && i!= 12){
                     cout << "  ";
                 }
                 else{ cout << "- ";}
