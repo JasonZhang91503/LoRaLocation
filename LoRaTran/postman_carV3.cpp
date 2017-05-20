@@ -192,7 +192,7 @@ void* asyncRecv(void *arg){
 		do{
 			if(!PacManager->isTimerAlive()){
 				if(PacManager->hasPacket()){
-					cout << "asyncRecv : Send packet which in queue, meaning that packet will be re-sended\n";
+					if(carLog){cout << "asyncRecv : Send packet which in queue, meaning that packet will be re-sended\n";}
 					PacManager->sendQueuePacket();
 					PacManager->setTimer();
 				}
@@ -554,8 +554,15 @@ int goToLocation(double lon,double lat){
 				char buff1[256];
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				fileInput(buff1);
+
+				mapgoto((*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+
+				cout << "●";
             }
 
+			traIt--;
+			mapgoto((*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+			cout << "★";
 
 			if(traceVec.size()==0){
 				return CAR_NOT_FOUND_ROAD;
