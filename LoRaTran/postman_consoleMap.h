@@ -72,5 +72,5 @@ void mapPrint()
 }
 
 void mapGoTo(int x,int y){
-    mapgotoxy( (int)(2 + x/Hscale),3 + (int)(y/Wscale)*2);
+    mapgotoxy( 15 - (int)(2 + x/Hscale) + 1,3 + (int)(y/Wscale)*2);
 }
