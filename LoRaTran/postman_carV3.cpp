@@ -115,7 +115,7 @@ Coor mapNode;
 //GPS_Data gps_data;
 Coor init,xMax,yMax;
 int pw_size = 4;
-double dest_range = 0.008;
+double dest_range = 0.001;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
@@ -324,7 +324,6 @@ void* asyncRecv(void *arg){
 }
 
 
-
 int main(int argc, const char * argv[]){
 	int error;	//
 
@@ -344,6 +343,8 @@ int main(int argc, const char * argv[]){
 
 	CarMapSystemLog = carLog;
 	postman_packetLog = carLog;
+
+	cin.get();
 
 	UserRequest *req;
 
@@ -578,7 +579,13 @@ int goToLocation(double lon,double lat){
 		Coor traGPS = cgms->coordinateToGps(traCoor);
 
 
-		isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, traGPS.y);
+		if((*traIt)->getDir() == 1 || (*traIt)->getDir() == 2){
+			isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, ss.x, traGPS.y);
+		}
+		else{
+			isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, ss.y);
+		}
+		
 
 		if(NOGPS == 2){
 			isCarReach = true;
@@ -590,7 +597,9 @@ int goToLocation(double lon,double lat){
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
 		char buff[256];
 		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
-		if(carLog){printf(buff);}
+		//if(carLog){printf(buff);}
+		mapgotoxy(16,0);
+		printf(buff);
 		fileInput(buff);
 
 		if (isCarReach) {
@@ -603,6 +612,10 @@ int goToLocation(double lon,double lat){
 				//break;
 			}
 		}
+
+		//#ifndef NO_CAR_MODE
+		//unistd::usleep(500000);
+		//#endif
 
 
 		#ifndef NO_CAR_MODE
@@ -656,7 +669,7 @@ int moveToSender(UserRequest* req){
 		return e;
 	}
 
-	mapgotoxy(16,0);
+	mapgotoxy(17,0);
 	printf("moveToSender : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
@@ -703,7 +716,7 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	mapgotoxy(16,1);
+	mapgotoxy(17,1);
 	printf("moveToReceiver : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
