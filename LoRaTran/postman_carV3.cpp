@@ -555,13 +555,13 @@ int goToLocation(double lon,double lat){
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				fileInput(buff1);
 
-				mapGoTo((*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+				mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
 
 				cout << "●";
             }
 
 			traIt--;
-			mapGoTo((*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
 			cout << "★";
 
 			if(traceVec.size()==0){
