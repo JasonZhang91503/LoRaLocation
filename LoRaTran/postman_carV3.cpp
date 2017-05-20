@@ -56,7 +56,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define GPS_NOT_IN_CARMAP 9487006
 #define CAR_OK 9487487
 
-#define MAP_WIDTH 140
+#define MAP_WIDTH 135
 #define MAP_HEIGHT 41
 #define ROAD_WIDTH 5
 
@@ -92,6 +92,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 //class library
 #include"postman_request.h"
 #include"postman_packet.h"
+#include"postman_consoleMap.h"
 //#include"postman_GPS.h"
 
 #ifndef NO_CAR_MODE
@@ -388,6 +389,34 @@ int main(int argc, const char * argv[]){
 	initCGMS();
 	
 
+
+//--------------------------------
+	double directionInfo, distanceInfo;	//方位與距離之回傳
+	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
+	double sLon, sLat;	//起始地點
+	double dLon, dLat;
+	bool isCarReach;	//車子是否到達
+	int StateCode;
+	Coor ss,ee;
+	bool firstFind = true;
+	vec_CMnode traceVec;
+	vec_CMnode::iterator traIt;
+	vec_CMnode::iterator printIt;
+	int count = 0;
+
+	sLon = 121.370393;
+	sLat = 24.944141;
+	dLon = 121.370391;
+	dLat = 24.944141;
+
+	isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance,sLon,sLat,dLon,dLat);
+
+	char buff[256];
+		sprintf(buff,"go toward %lf degree for %lf meter.\n",directionInfo,distanceInfo*1000);
+		printf(buff);
+
+//---------------------------------
+
 	pthread_mutex_init(&timerMutex, NULL);
 	pthread_cond_init(&timerCond, NULL);
 
@@ -473,6 +502,8 @@ int goToLocation(double lon,double lat){
 
 			//return GPS_NOT_IN_CARMAP;
 	}
+
+	mapPrint();
 
 	do {
 		//取得車子本身GPS座標

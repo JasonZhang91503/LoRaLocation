@@ -38,6 +38,10 @@ class CarMapNode
         void SetStronghold(int s){ stronghold = s; }
         int GetStronghold(){ return stronghold; }
 
+
+        void setDir(int d){ dir = d; }
+        int getDir(){ return dir; } 
+
     protected:
 
     private:
@@ -52,6 +56,7 @@ class CarMapNode
         double lat = 0;
 
         int stronghold = -1;
+        int dir = 0;
 };
 
 #endif // CARMAPNODE_H

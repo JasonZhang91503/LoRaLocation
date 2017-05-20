@@ -116,24 +116,30 @@ class CarMapSystem
 
             vec_CMnode emptyVec;
             if(hasPath){
-                return tracePath(e_x,e_y);
+                return tracePath(e_x,e_y,0);
             }
             return emptyVec;
         }
-        vec_CMnode tracePath(int e_x,int e_y){
+        vec_CMnode tracePath(int e_x,int e_y,int dir){
             vec_CMnode traceVec;
 
+
+            carMapNode[e_x][e_y].setDir(dir);
             traceVec.push_back(&carMapNode[e_x][e_y]);
 
-            int x = e_x;
-            int y = e_y;
+            int cx = e_x;
+            int cy = e_y;
+            int nx;
+            int ny;
 
-            CarMapNode* nextNode = carMapNode[x][y].GetfatherNode();
+            CarMapNode* nextNode = carMapNode[cx][cy].GetfatherNode();
 
             while(nextNode){
-                x = nextNode->GetCor_x();
-                y = nextNode->GetCor_y();
-                traceVec.push_back(&carMapNode[x][y]);
+                nx = nextNode->GetCor_x();
+                ny = nextNode->GetCor_y();
+                
+                carMapNode[nx][ny].setDir(dir);
+                traceVec.push_back(&carMapNode[nx][ny]);
 
                 nextNode = nextNode->GetfatherNode();
             }
@@ -553,6 +559,12 @@ public:
 
     //�̭��]A*�t���k�h�M
     void findPath(vec_CMnode &traceVec,Coor startGPS, Coor endGPS,float** adj){
+        for(int i = 0; i < maxWidth;i++){
+            for(int j = 0; j < maxHeight;j++){
+                carMapNode[i][j].setDir(0);
+            }
+        }
+
 
         cout << "cgms : startGPS :" << startGPS.x << "," << startGPS.y << endl;
         cout << "cgms : endGPS :" << endGPS.x << "," << endGPS.y << endl;
@@ -595,7 +607,10 @@ public:
         bool hasPath = run_A_star(startCoor.x,startCoor.y,it->x,it->y);
 
         if(hasPath){
-            traceVec = tracePath(it->x,it->y);
+            int dir = getDir(startCoor.x,startCoor.y,it->x,it->y);
+
+
+            traceVec = tracePath(it->x,it->y,dir);
         }
 
         for(int i = 0; i < traceStrongholdVec.size() - 1; i++){
@@ -607,7 +622,11 @@ public:
             hasPath = run_A_star(itS->x,itS->y,itE->x,itE->y);
             if(hasPath){
                 vec_CMnode tempVec;
-                tempVec = tracePath(itE->x,itE->y);
+
+                int dir = getDir(itS->x,itS->y,itE->x,itE->y);
+
+                
+                tempVec = tracePath(itE->x,itE->y,dir);
 
 
                 traceVec.insert(traceVec.end(),tempVec.begin(),tempVec.end());
@@ -618,6 +637,28 @@ public:
         //�γ\�i�H�����ɯ������I�T�����m
 
         return;
+    }
+
+    int getDir(double sx,double sy, double ex,double ey){
+        int xDiff = ex - sx;
+        int yDiff = ey - sy;
+        int dir = 0;
+
+        if(abs(xDiff) > abs(yDiff)){
+            if(xDiff < 0){
+                dir = 3;    //left
+            }else{
+                dir = 4;    //right
+            }
+        }
+        else{
+            if(yDiff < 0){
+                dir = 2;    //down
+            }else{
+                dir = 1;    //up
+            }
+        }
+        return dir;
     }
 
     vector<int> findStrongholdPath(int s,int d,float** adj){

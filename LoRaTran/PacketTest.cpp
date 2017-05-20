@@ -69,6 +69,8 @@ int main(){
     yMax.x = 121.370426;
     yMax.y = 24.944117;
 
+    vec_CMnode traceVec;
+
     CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
     cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
     cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
@@ -141,6 +143,28 @@ int main(){
 
 			//return GPS_NOT_IN_CARMAP;
 	}
+
+
+    Coor src,dest;
+
+    src.x = 121.371511;
+    src.y = 24.943946;
+
+    dest.x = 121.372150;
+    dest.y = 24.945091;
+
+    cgms->findPath(traceVec,src,dest,adj);
+
+
+    for(vec_CMnode::iterator it = traceVec.begin(); it != traceVec.end();it++){
+        cout << "x:" << (*it)->GetCor_x()
+                << ",y:"<< (*it)->GetCor_y()
+                << ",dir:"<< (*it)->getDir()
+                <<endl;
+    }
+
+    
+    
     
     cin.get();
     cin.get();
