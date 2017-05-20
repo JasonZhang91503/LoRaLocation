@@ -17,6 +17,8 @@
 
 #define BUFFSIZE 256
 
+int postman_packetLog = 0;
+
 enum PacketType{ Gateway = 1, car, ACK0, ACK1 };
 
 pthread_mutex_t timerMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -144,7 +146,7 @@ public:
         int carID = send_buffer[1];
         int packNum = send_buffer[2];
         int eventNum = send_buffer[3];
-        printf("PacManager : sendBackACK -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);
+        if(postman_packetLog){printf("PacManager : sendBackACK -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);}
         
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
@@ -187,7 +189,7 @@ public:
         int carID = pac->send_buffer[1];
         int packNum = pac->send_buffer[2];
         int eventNum = pac->send_buffer[3];
-        printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,pac->send_buffer+4);
+        if(postman_packetLog){printf("PacManager : sendQueuePacket -> role = %d, carID = %d, packNum = %d, eventNum = %d, payload = %s\n",role,carID,packNum,eventNum,pac->send_buffer+4);}
         #ifndef NO_CAR_MODE
         errorCode = sx1272.sendPacketTimeout(0, pac->send_buffer);
         #endif
@@ -232,7 +234,7 @@ public:
 
     void setTimer(){
         if(isTimerAlive()){
-            cout << "PacManager : reject setTimer , timer is alive\n";
+            if(postman_packetLog){cout << "PacManager : reject setTimer , timer is alive\n";}
             return;
         }
         pthread_create(&timerThread,NULL,asyncTimer,&timeout);
@@ -248,14 +250,14 @@ public:
 
     bool stopTimer(){
 
-cout << "stopTimer : timerMutex lock\n";
+    if(postman_packetLog){cout << "stopTimer : timerMutex lock\n";}
         //pthread_mutex_lock(&timerMutex);
         if(isTimerAlive()){
             pthread_cond_signal(&timerCond); 
         }
         //pthread_mutex_unlock(&timerMutex);
 
-cout << "stopTimer : timerMutex unlock\n";
+    if(postman_packetLog){cout << "stopTimer : timerMutex unlock\n";}
         
     }
 
@@ -314,18 +316,18 @@ void* asyncTimer(void* param){
     int* timeout = (int*)param;
 
 
-cout << "asyncTimer : timerMutex lock\n";
+    if(postman_packetLog){cout << "asyncTimer : timerMutex lock\n";}
     pthread_mutex_lock(&timerMutex);
     gettimeofday(&now, NULL);
     outtime.tv_sec = now.tv_sec + *timeout;
     int result = pthread_cond_timedwait(&timerCond, &timerMutex, &outtime);
     if(result == 0){
-        printf("asyncTimer : stopTimer!");
+        if(postman_packetLog){printf("asyncTimer : stopTimer!");}
         pm->dequeuePacket();
     }
     pthread_mutex_unlock(&timerMutex);
 
-cout << "asyncTimer : timerMutex unlock\n";
+    if(postman_packetLog){cout << "asyncTimer : timerMutex unlock\n";}
     
     pthread_exit((void*)result);
 }

@@ -121,6 +121,7 @@ int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 
 int carID = 0;
 int NOGPS = 0;
 int receivePeriod = 700;
+int carLog = 0;
 float** adj;
 
 
@@ -338,6 +339,12 @@ int main(int argc, const char * argv[]){
 	cin >> fileName;
 	fileOpen(fileName);
 
+	cout << "Has Log?(1 Yes, 0No):";
+	cin >> carLog;
+
+	CarMapSystemLog = carLog;
+	postman_packetLog = carLog;
+
 	UserRequest *req;
 
 	#ifndef NO_CAR_MODE
@@ -525,7 +532,7 @@ int goToLocation(double lon,double lat){
 
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
-			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
 			
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
@@ -540,7 +547,7 @@ int goToLocation(double lon,double lat){
 
 			char bufferN[256];
 			sprintf(bufferN,"Debug info\n");
-			cout << bufferN;
+			if(carLog){cout << bufferN;}
 			fileInput(bufferN);
 
             for(traIt = traceVec.begin(); traIt != traceVec.end();traIt++){
@@ -576,7 +583,7 @@ int goToLocation(double lon,double lat){
 //		cout << ",go toward "<< directionInfo << " degree for " << distanceInfo / 10 << " meter." << endl;
 		char buff[256];
 		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
-		printf(buff);
+		if(carLog){printf(buff);}
 		fileInput(buff);
 
 		if (isCarReach) {

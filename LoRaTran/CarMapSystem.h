@@ -18,7 +18,7 @@ using namespace std;
 
 #define ROOT_3 1.73205
 
-
+int CarMapSystemLog = 0;
 
 struct cmp
 {
@@ -566,8 +566,8 @@ public:
         }
 
 
-        cout << "cgms : startGPS :" << startGPS.x << "," << startGPS.y << endl;
-        cout << "cgms : endGPS :" << endGPS.x << "," << endGPS.y << endl;
+        if(CarMapSystemLog){cout << "cgms : startGPS :" << startGPS.x << "," << startGPS.y << endl;}
+        if(CarMapSystemLog){cout << "cgms : endGPS :" << endGPS.x << "," << endGPS.y << endl;}
 
         if(!isInsideMap(startGPS.x,startGPS.y) || !isInsideMap(endGPS.x,endGPS.y)){
             printf("cgms : gps not in map\n");
@@ -578,14 +578,14 @@ public:
         Coor startCoor = gpsToCoordinate(startGPS);
         Coor endCoor = gpsToCoordinate(endGPS);
         
-        cout << "cgms : startCoor :" << startCoor.x << "," << startCoor.y << endl;
-        cout << "cgms : endCoor :" << endCoor.x << "," << endCoor.y << endl;
+        if(CarMapSystemLog){cout << "cgms : startCoor :" << startCoor.x << "," << startCoor.y << endl;}
+        if(CarMapSystemLog){cout << "cgms : endCoor :" << endCoor.x << "," << endCoor.y << endl;}
 
         //���X��startNode�PendNode�̪���Stronghold
         int s = carMapNode[(int)startCoor.x][(int)startCoor.y].GetStronghold();
         int d = carMapNode[(int)endCoor.x][(int)endCoor.y].GetStronghold();
 
-        cout << "cgms : findPath : s = " << s <<",d = "<< d <<endl;
+        if(CarMapSystemLog){cout << "cgms : findPath : s = " << s <<",d = "<< d <<endl;}
 
         if(s <= 0 || 15 < s || d <= 0 || 15 < d){
             printf("cgms : strongHold not in exist\n");
@@ -595,9 +595,9 @@ public:
         //���X�_�IStronghold�����IStronghold��Stronghold���|
         vector<int> traceStrongholdVec = findStrongholdPath(s,d,adj);
 
-        cout << "Stronghold:";
+        if(CarMapSystemLog){cout << "Stronghold:";}
         for(vector<int>::iterator it = traceStrongholdVec.begin(); it != traceStrongholdVec.end();it++){
-            cout << *it << " ";
+            if(CarMapSystemLog){cout << *it << " ";}
         }
         cout << endl;
 
