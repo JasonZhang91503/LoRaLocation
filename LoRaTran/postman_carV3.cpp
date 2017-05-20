@@ -597,10 +597,6 @@ int goToLocation(double lon,double lat){
 			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
 			cout << "○";
 
-			#ifndef NO_CAR_MODE
-			unistd::usleep(100000);
-			#endif
-
 			count++;
 			traIt++;
 			if(count == traceVec.size()){
@@ -660,7 +656,7 @@ int moveToSender(UserRequest* req){
 		return e;
 	}
 
-	mapGoTo(16,0);
+	mapgotoxy(16,0);
 	printf("moveToSender : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
@@ -707,7 +703,7 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	mapGoTo(16,1);
+	mapgotoxy(16,1);
 	printf("moveToReceiver : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
