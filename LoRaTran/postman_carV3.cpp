@@ -609,6 +609,9 @@ int goToLocation(double lon,double lat){
 
 		if(NOGPS == 2){
 			isCarReach = true;
+			#ifndef NO_CAR_MODE
+			unistd::usleep(100000);
+			#endif
 		}
 		#ifndef NO_CAR_MODE
 		//isCarReach = true;
@@ -632,10 +635,6 @@ int goToLocation(double lon,double lat){
 				//break;
 			}
 		}
-
-		#ifndef NO_CAR_MODE
-		unistd::usleep(100000);
-		#endif
 
 
 		#ifndef NO_CAR_MODE
