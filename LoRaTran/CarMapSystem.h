@@ -8,6 +8,7 @@
 #include <algorithm>
 #include<stdlib.h>
 #include<math.h>
+#include"postman_consoleMap.h"
 using namespace std;
 
 #define PI 3.14159265
@@ -526,6 +527,7 @@ public:
 
     void printNodeStronghold(){
         char c;
+        mapclear();
         for(int j = GetmaxHeight() - 1; j >= 0 ;j--){
             for(int i = 0 ; i < GetmaxWidth();i++){
                 int s = carMapNode[i][j].GetStronghold();
@@ -546,6 +548,11 @@ public:
 
             }
             cout << endl;
+        }
+
+        for(list<Stronghold>::iterator s = shList.begin();s != shList.end();s++){
+            mapgotoxy(maxHeight - s->y - 1,s->x);
+            cout << carMapNode[s->x][s->y].GetStronghold();
         }
     }
 

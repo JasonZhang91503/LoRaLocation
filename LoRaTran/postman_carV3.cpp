@@ -402,7 +402,7 @@ int main(int argc, const char * argv[]){
 	//cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
     //cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
 	cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,(MAP_WIDTH - ROAD_WIDTH)/2,MAP_HEIGHT - ROAD_WIDTH);
-	cgms->setRectangleWall((MAP_WIDTH +  ROAD_WIDTH)/2, 0 + ROAD_WIDTH,MAP_WIDTH-1,MAP_HEIGHT - ROAD_WIDTH);
+	cgms->setRectangleWall((MAP_WIDTH +  ROAD_WIDTH)/2 + 1, 0 + ROAD_WIDTH,MAP_WIDTH-1,MAP_HEIGHT - ROAD_WIDTH);
 	initCGMS();
 	
 
@@ -863,7 +863,7 @@ void initCGMS(){
         24.943946,121.371511,  //4.公院
 		24.944436,121.371015,  //5.行政
         24.944188,121.371931,  //6.法商大道法院測
-        24.944460,121.371761,  //7.法商大道
+        24.944480,121.371801,  //7.法商大道
         24.944757,121.371559,  //8.法商大道商院測
         24.944498,121.372605,   //9.法院
         24.945091,121.372150  //10.商院
@@ -880,15 +880,21 @@ void initCGMS(){
 		gps.y = gpsData[i*2];
 		coor = cgms->gpsToCoordinate(gps);
 
+		Stronghold s;
+		s.value = i+1;
+		s.x = coor.x;
+		s.y = coor.y;
+		cgms->addStronghold(s);
+
+/*
+
+
 		if(!cgms->isInsideMap(gps.x,gps.y)){
 			cgms->fixOutNode(coor);
 
-			Stronghold s;
-			s.value = i+1;
-			s.x = coor.x;
-			s.y = coor.y;
-			cgms->addStronghold(s);
+			
 		}
+		*/
 	}
 	
 
@@ -907,6 +913,25 @@ void initCGMS(){
             adj[i][j] = MAX_FLOAT;
         }
     }
+
+	adj[1][4] = 75;adj[4][1] = 75;
+	adj[4][6] = 50;adj[6][4] = 50;
+	adj[6][9] = 75;adj[9][6] = 75;
+
+	adj[1][2] = 35;adj[2][1] = 35;
+	adj[2][3] = 35;adj[3][2] = 35;
+	
+	adj[6][7] = 35;adj[7][6] = 35;
+	adj[7][8] = 35;adj[8][7] = 35;
+
+
+	adj[3][5] = 75;adj[5][3] = 75;
+	adj[5][8] = 50;adj[8][5] = 50;
+	adj[8][10] = 75;adj[10][8] = 75;
+	
+	
+
+	/*
     for(int i = 1; i <= 3 ;i+=2){
         for(int j = 0; j <= 9; j+=3){
             adj[i+j][i+j+3] = yScale;
@@ -919,6 +944,8 @@ void initCGMS(){
             adj[i+j+1][i+j] = xScale;
         }
     }
+	*/
+	
 }
 
 

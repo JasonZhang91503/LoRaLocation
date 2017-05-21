@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <iostream>
 
+#ifndef POSTMAN_CONSOLEMAP
+#define POSTMAN_CONSOLEMAP
+
 using namespace std;
 
 #define mapclear() printf("\033[H\033[J")
@@ -74,3 +77,5 @@ void mapPrint()
 void mapGoTo(int x,int y){
     mapgotoxy( 15 - (int)(2 + x/Hscale) + 1,3 + (int)(y/Wscale)*2);
 }
+
+#endif
