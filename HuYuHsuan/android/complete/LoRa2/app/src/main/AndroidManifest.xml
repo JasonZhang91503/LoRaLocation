@@ -30,7 +30,7 @@
         <activity android:name=".LoginActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".NavigationActivity"
-            android:label="NavigationActivity"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
@@ -51,6 +51,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".Background.MyAlarmReceiver" />
+
 
 
     </application>

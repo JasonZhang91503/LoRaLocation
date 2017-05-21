@@ -138,7 +138,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onDestroy() {
         Log.d("NavigationActivity","onDestroy");
-        sharedPreferences.edit().putString("BGLogin","true").apply();
+        sharedPreferences.edit().putString("BGLogin","true")
+                .putInt("BGServiceCount",0)
+                .apply();
         Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
         if(mBoundService!=null){
             mBoundService.disconnect();

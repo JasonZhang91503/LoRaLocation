@@ -235,7 +235,8 @@ public class BackgroundRecvService extends Service {
                 mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK , "");
             }
             else{
-                mWakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP , "");
+               // mWakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP , "");
+                mWakeLock=pm.newWakeLock(PowerManager.FULL_WAKE_LOCK,"");
             }
             if (null != mWakeLock) {
                 mWakeLock.acquire();

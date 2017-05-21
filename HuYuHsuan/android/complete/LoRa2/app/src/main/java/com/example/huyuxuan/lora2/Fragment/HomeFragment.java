@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 List<String> list = new ArrayList<>();
                 list.add("拍照");
-                list.add("相册");
+                list.add("相簿");
                 showDialog(new SelectDialogListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
