@@ -417,11 +417,6 @@ int main(int argc, const char * argv[]){
 	vec_CMnode::iterator printIt;
 	int count = 0;
 
-	sLon = 121.370393;
-    sLat = 24.944141;
-	dLon = 121.370426;
-    dLat = 24.944117;
-
 	isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance,sLon,sLat,dLon,dLat);
 
 	char buff[256];
@@ -549,10 +544,17 @@ int goToLocation(double lon,double lat){
 			mapgotoxy(16,1);
 			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			
+			cgms->fixOutNode(mapNode);
+
+			ss = cgms->coordinateToGps(mapNode);
+			mapNode = cgms->gpsToCoordinate(ss);
+
+			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
 			#endif
-			continue;
+			//continue;
 		}
 
 
@@ -627,9 +629,9 @@ int goToLocation(double lon,double lat){
 			}
 		}
 
-		//#ifndef NO_CAR_MODE
-		//unistd::usleep(500000);
-		//#endif
+		#ifndef NO_CAR_MODE
+		unistd::usleep(3000000);
+		#endif
 
 
 		#ifndef NO_CAR_MODE
