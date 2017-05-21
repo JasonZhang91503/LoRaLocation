@@ -630,7 +630,7 @@ int goToLocation(double lon,double lat){
 		}
 
 		#ifndef NO_CAR_MODE
-		unistd::usleep(3000000);
+		unistd::usleep(100000);
 		#endif
 
 
