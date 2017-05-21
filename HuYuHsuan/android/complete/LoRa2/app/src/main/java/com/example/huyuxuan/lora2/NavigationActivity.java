@@ -46,11 +46,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ConnectServiceReceiver receiver;
     public HomeFragment firstFragment;
 
-
-    private Calendar c;
-    String formattedDate;
-    static java.text.SimpleDateFormat dayDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
     MyAlarmReceiver alarm = new MyAlarmReceiver();
     private SharedPreferences sharedPreferences;
     Bundle tmp;
@@ -70,8 +65,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        c = Calendar.getInstance();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -131,6 +124,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onStop() {
         sharedPreferences.edit().putString("BGLogin","true").apply();
         sharedPreferences.edit().putString("hasStop","true").apply();
+        if(sharedPreferences.getInt("BGServiceCount",0)==1){
+            sharedPreferences.edit().putInt("BGServiceCount",0).apply();
+        }
         Log.d("NavigationActivity","onStop");
         super.onStop();
     }
@@ -138,7 +134,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onDestroy() {
         Log.d("NavigationActivity","onDestroy");
-        sharedPreferences.edit().putString("BGLogin","true").apply();
+        sharedPreferences.edit().putString("BGLogin","true")
+                .putInt("BGServiceCount",0)
+                .apply();
         Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
         if(mBoundService!=null){
             mBoundService.disconnect();
@@ -162,7 +160,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onResume() {
         Log.d("NavigationActivity","onResume");
         sharedPreferences.edit().putString("hasStop","false").apply();
-        //alarm.setAlarm(this);
         super.onResume();
     }
 
@@ -185,9 +182,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 Log.d("NavigationActivity","onBack backstackcount==0");
                 super.onBackPressed();
 
-                //   this.finish();
             } else {
-                //super.onBackPressed();
                 Log.d("NavigationActivity","onBack backstackcount!=0");
                 fm.popBackStack();
             }

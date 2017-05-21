@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 List<String> list = new ArrayList<>();
                 list.add("拍照");
-                list.add("相册");
+                list.add("相簿");
                 showDialog(new SelectDialogListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -363,8 +363,12 @@ public class HomeFragment extends Fragment {
         Bundle bundle = picData.getExtras();
         if (bundle != null){
             Bitmap mBitmap = bundle.getParcelable("data");
-            mHeadImage.setImageBitmap(mBitmap);
             saveBitmap(Environment.getExternalStorageDirectory() + "/mypic.png",mBitmap);
+
+            String sd = Environment.getExternalStorageDirectory().toString();
+            Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+            mHeadImage.setImageBitmap(bitmap);
+
         }
     }
     private void saveBitmap(String fileName,Bitmap bitmap){

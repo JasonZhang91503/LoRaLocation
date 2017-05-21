@@ -24,15 +24,15 @@ DROP TABLE IF EXISTS `transport`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transport` (
   `_id` int(16) NOT NULL AUTO_INCREMENT,
-  `requireTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `arriveTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `requireTime` timestamp NOT NULL DEFAULT '2017-05-21 00:00:00',
+  `arriveTime` timestamp NOT NULL DEFAULT '2017-05-21 00:00:00',
   `sender` int(16) NOT NULL,
   `receiver` int(16) NOT NULL,
   `start_id` int(16) NOT NULL,
   `des_id` int(16) NOT NULL,
   `car_id` int(16) NOT NULL,
   `state` int(2) NOT NULL DEFAULT '0',
-  `key` varchar(4) NOT NULL,
+  `packetKey` varchar(4) NOT NULL,
   `remark` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `sender` (`sender`),
