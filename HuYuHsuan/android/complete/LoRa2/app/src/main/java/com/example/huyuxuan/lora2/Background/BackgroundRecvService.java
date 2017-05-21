@@ -1,5 +1,6 @@
 package com.example.huyuxuan.lora2.Background;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -13,6 +14,7 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.example.huyuxuan.lora2.MainActivity;
 import com.example.huyuxuan.lora2.MyBoundedService;
@@ -99,6 +101,7 @@ public class BackgroundRecvService extends Service {
                 return null;
             }
         }.execute();
+
     }
 
     @Override
@@ -106,7 +109,9 @@ public class BackgroundRecvService extends Service {
         super.onDestroy();
         Log.d("BGService","onDestroy");
         //sharedPreferences.edit().putInt("BGServiceCount",0).apply();
-        releaseWakeLock();
+        if(mWakeLock!=null){
+            releaseWakeLock();
+        }
     }
 
     @Override
@@ -117,8 +122,8 @@ public class BackgroundRecvService extends Service {
             @Override
             protected String doInBackground(String... strings) {
 
-                ensureConnected();
                 try {
+                    ensureConnected();
                     if(in != null){
                         rcvMessage = in.readLine();
                         rcvMessage.concat("\0");
@@ -225,6 +230,8 @@ public class BackgroundRecvService extends Service {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(notifyId, mBuilder.build());
+        releaseWakeLock();
+
     }
 
     private void acquireWakeLock(int type) {
@@ -235,8 +242,7 @@ public class BackgroundRecvService extends Service {
                 mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK , "");
             }
             else{
-               // mWakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP , "");
-                mWakeLock=pm.newWakeLock(PowerManager.FULL_WAKE_LOCK,"");
+                mWakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK , "");
             }
             if (null != mWakeLock) {
                 mWakeLock.acquire();
@@ -245,7 +251,7 @@ public class BackgroundRecvService extends Service {
         }
     }
 
-    private void releaseWakeLock(){
+    public void releaseWakeLock(){
         Log.i("BgService","正在釋放電源鎖");
         if (null != mWakeLock) {
             mWakeLock.release();
@@ -258,9 +264,16 @@ public class BackgroundRecvService extends Service {
         try {
             if (mSocket.isConnected()) {
                 Log.i("Service", "Socket Connected");
-            } else {
-
+            }else if(mSocket.isClosed()){
+                mSocket = new Socket();
                 mSocket.connect(sc_add, 2000);
+                in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+                out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+            }
+            else{
+                mSocket.connect(sc_add, 2000);
+                in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+                out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
             }
         }catch (IOException e) {
             e.printStackTrace();

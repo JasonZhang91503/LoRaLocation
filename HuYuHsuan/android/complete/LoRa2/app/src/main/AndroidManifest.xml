@@ -32,7 +32,8 @@
         <activity android:name=".NavigationActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
         </activity>
         <activity android:name=".SignUpActivity"
             android:screenOrientation="portrait"/>

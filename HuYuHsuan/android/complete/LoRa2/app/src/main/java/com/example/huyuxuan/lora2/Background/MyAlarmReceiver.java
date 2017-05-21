@@ -13,6 +13,8 @@ import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import com.example.huyuxuan.lora2.MyBoundedService;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -94,10 +96,14 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
             Log.d("BgServiceReceiver:","state-> "+ state);
             // 如果傳回成功
             if(state.equals("true")){
-                //開啟notification
                 sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
-                //serviceCounter=0;
-                //sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
+                serviceCounter=0;
+                sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
+                context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
+                if(MyBoundedService.myBGService.mWakeLock!=null){
+                    MyBoundedService.myBGService.releaseWakeLock();
+                }
+
             }
 
         }

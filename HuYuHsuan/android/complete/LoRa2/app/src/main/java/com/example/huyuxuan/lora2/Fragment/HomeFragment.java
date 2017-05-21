@@ -363,8 +363,12 @@ public class HomeFragment extends Fragment {
         Bundle bundle = picData.getExtras();
         if (bundle != null){
             Bitmap mBitmap = bundle.getParcelable("data");
-            mHeadImage.setImageBitmap(mBitmap);
             saveBitmap(Environment.getExternalStorageDirectory() + "/mypic.png",mBitmap);
+
+            String sd = Environment.getExternalStorageDirectory().toString();
+            Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+            mHeadImage.setImageBitmap(bitmap);
+
         }
     }
     private void saveBitmap(String fileName,Bitmap bitmap){
