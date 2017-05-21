@@ -384,12 +384,12 @@ int main(int argc, const char * argv[]){
 	註:只有state 0 是 gateway主動打過來的
 		剩下的state都是車子本身修改自身state並且傳送出去給gateway和server知道
 	*/
-    init.x = 121.370854;
-    init.y = 24.943516;
-    xMax.x = 121.373225;
-    xMax.y = 24.944878;
-    yMax.x = 121.370426;
-    yMax.y = 24.944117;
+    init.x = 121.370842;
+    init.y = 24.943536;
+    xMax.x = 121.373122;
+    xMax.y = 24.944833;
+    yMax.x = 121.370393;
+    yMax.y = 24.944141;
 	
 	RequestObserver *reqObserver = new RequestObserver(1);
 	ReqManger.addReqestListener(reqObserver);
@@ -418,9 +418,9 @@ int main(int argc, const char * argv[]){
 	int count = 0;
 
 	sLon = 121.370393;
-	sLat = 24.944141;
-	dLon = 121.370391;
-	dLat = 24.944141;
+    sLat = 24.944141;
+	dLon = 121.370426;
+    dLat = 24.944117;
 
 	isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance,sLon,sLat,dLon,dLat);
 
@@ -510,9 +510,9 @@ int goToLocation(double lon,double lat){
 	
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			printf("goToLocation : cgms detect destnation not in map region\n");
-			printf("goToLocation :lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
-
+			mapgotoxy(16,1);
+			printf("goToLocation :cgms -> dest out ! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			
 			cgms->fixOutNode(mapNode);
 
 			ee = cgms->coordinateToGps(mapNode);
@@ -545,7 +545,9 @@ int goToLocation(double lon,double lat){
 
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
-			if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
+			//if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
+			mapgotoxy(16,1);
+			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000);
@@ -633,7 +635,7 @@ int goToLocation(double lon,double lat){
 		#ifndef NO_CAR_MODE
 		//unistd::usleep(100);
 		#endif
-	} while ( traIt != traceVec.end());
+	} while ( traIt != traceVec.end() || firstFind == true );
 
 
 	return CAR_OK;
@@ -806,11 +808,13 @@ int getGPSLocation(double &sLon,double &sLat){
                         //printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
 						break;
                } else {
+				   	mapgotoxy(16,1);
                     printf("no GPS data available\n");
                 }
             }
         }
 		else{
+			mapgotoxy(16,1);
 			printf("wait for 2 seconds to receive data again\n");
 		}
 

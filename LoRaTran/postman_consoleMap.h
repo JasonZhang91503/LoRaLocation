@@ -7,7 +7,7 @@ using namespace std;
 #define mapgotoxy(x,y) printf("\033[%d;%dH", (x), (y))
 
 double Wscale = (double)135/28;
-double  Hscale = (double)41/13;
+double  Hscale = (double)40/13;
 
 void mapGoTo(int x,int y);
 
