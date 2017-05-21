@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
                 //跳到個人資料介面
                 AccountFragment accountFragment = new AccountFragment();
                 accountFragment.setTargetFragment(HomeFragment.this,0);
-                getFragmentManager().beginTransaction()
+                getActivity().getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,accountFragment).commit();
             }
@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment {
                 //跳到登記寄件
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 newOrderFragment.setTargetFragment(HomeFragment.this, 0);
-                getFragmentManager().beginTransaction()
+                getActivity().getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,newOrderFragment).commit();
 

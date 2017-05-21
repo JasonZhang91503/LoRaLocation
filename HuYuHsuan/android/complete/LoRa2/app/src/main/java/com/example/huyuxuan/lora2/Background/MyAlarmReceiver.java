@@ -27,7 +27,6 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
     private BgServiceRecver mServiceBroadcastReceiver;
     private static final String ACTION_RECV_SER_BROD = "com.example.huyuxuan.lora.RECV_SERVER_BROADCAST";
     private SharedPreferences sharedPreferences;
-    BackgroundRecvService curService;
 
 
     @Override

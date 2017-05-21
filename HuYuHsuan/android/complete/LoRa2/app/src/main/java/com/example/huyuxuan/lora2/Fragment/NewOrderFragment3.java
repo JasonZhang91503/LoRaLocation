@@ -50,6 +50,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    boolean tmp=false;
 
     public NewOrderFragment3() {
         // Required empty public constructor
@@ -174,7 +175,6 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment3")){
                 getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 if(id.equals("4")){//是登記寄件結果
@@ -220,5 +220,16 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         receiver = new ConnectServiceReceiver();
         getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("NewOrderFragment3","register receiver");
+    }
+
+    @Override
+    public void onStop(){
+        Log.d("NewOrderFragment3:", "onStop");
+        if(isBind){
+            getActivity().getApplicationContext().unbindService(mConnection);
+            isBind=false;
+        }
+
+        super.onStop();
     }
 }

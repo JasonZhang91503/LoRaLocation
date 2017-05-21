@@ -177,7 +177,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
             NewOrderFragment2 fragment2 = NewOrderFragment2.newInstance(location, timeText);
             FragmentManager fm = getActivity().getSupportFragmentManager();
             FragmentTransaction trans = fm.beginTransaction();
-            trans.addToBackStack("null");
+            trans.addToBackStack(null);
             trans.replace(R.id.fragment_container, fragment2, fragment2.getTag());
             trans.commit();
         }
@@ -292,6 +292,12 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         }
 
         super.onStop();
+    }
+
+    @Override
+    public void onResume(){
+        Log.d("NewOrderFragment","onResume");
+        super.onResume();
     }
 
 }

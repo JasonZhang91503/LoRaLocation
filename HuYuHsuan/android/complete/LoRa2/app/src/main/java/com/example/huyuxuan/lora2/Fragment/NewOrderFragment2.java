@@ -135,7 +135,6 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
             Toast.makeText(getContext(),"請填寫姓名",Toast.LENGTH_SHORT).show();
         }else {
             setPacket();
-            getActivity().getApplicationContext().unbindService(mConnection);
             NewOrderFragment3 fragment3 = NewOrderFragment3.newInstance(mParam1, packet);
             FragmentManager fm = getActivity().getSupportFragmentManager();
             FragmentTransaction trans = fm.beginTransaction();
@@ -158,7 +157,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
             Log.d("NewOrderFragment2","onServiceDisconnected");
-            //mBoundService = null;
+            mBoundService = null;
             isBind=false;
         }
 
@@ -171,8 +170,9 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment2")){
-                getActivity().getApplicationContext().unregisterReceiver(receiver);
-                //getActivity().getApplicationContext().unbindService(mConnection);
+                if(isAdded()){
+                    getActivity().getApplicationContext().unregisterReceiver(receiver);
+                }
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
@@ -196,5 +196,21 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         receiver = new ConnectServiceReceiver();
         getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("NewOrderFragment2","register receiver");
+    }
+
+    @Override
+    public void onStop(){
+        Log.d("NewOrderFragment2:", "onStop");
+        if(isBind){
+            getActivity().getApplicationContext().unbindService(mConnection);
+            isBind=false;
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onResume(){
+        Log.d("NewOrderFragment2","onResume");
+        super.onResume();
     }
 }

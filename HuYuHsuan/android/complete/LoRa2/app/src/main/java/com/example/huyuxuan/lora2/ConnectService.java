@@ -351,12 +351,10 @@ public class ConnectService extends Service {
                     String curStr = mesArray[i]; //抓每筆資料
                     String sender;
                     if(i==0){
-                       // map.put(getString(R.string.packetType),curStr.substring(3,4));//是寄件或收件資料
-                      sender=curStr.substring(4,curStr.indexOf('~'));
+                        sender=curStr.substring(3,curStr.indexOf('~'));
                     }
                     else{
-                        //map.put(getString(R.string.packetType),curStr.substring(0,1));
-                        sender=curStr.substring(1,curStr.indexOf('~'));
+                        sender=curStr.substring(0,curStr.indexOf('~'));
                     }
 
                     Order tmp = new Order(curStr.substring(curStr.indexOf('/')+1,curStr.indexOf('!'))

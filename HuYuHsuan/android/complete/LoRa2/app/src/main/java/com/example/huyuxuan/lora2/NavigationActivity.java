@@ -182,9 +182,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             FragmentManager fm = this.getFragmentManager();
 
             if (fm.getBackStackEntryCount() == 0) {
+                Log.d("NavigationActivity","onBack backstackcount==0");
                 super.onBackPressed();
+
                 //   this.finish();
             } else {
+                //super.onBackPressed();
+                Log.d("NavigationActivity","onBack backstackcount!=0");
                 fm.popBackStack();
             }
         }
@@ -202,7 +206,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         switch (itemId){
             case R.id.nav_home:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                myFragment.onDestroy();
+                if(myFragment!=null){
+                    myFragment.onDestroy();
+                }
                 HomeFragment firstFragment = new HomeFragment();
                 myFragment = firstFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -211,7 +217,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
             case R.id.nav_register:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                myFragment.onDestroy();
+                if(myFragment!=null){
+                    myFragment.onDestroy();
+                }
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -219,9 +227,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         .replace(R.id.fragment_container,newOrderFragment).commit();
                 break;
             case R.id.nav_send_history:
-
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                myFragment.onDestroy();
+                if(myFragment!=null){
+                    myFragment.onDestroy();
+                }
                 SendHistoryFragment sendHistoryFragment = new SendHistoryFragment();
                 myFragment = sendHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -230,7 +239,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
             case R.id.nav_recv_history:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                myFragment.onDestroy();
+                if(myFragment!=null){
+                    myFragment.onDestroy();
+                }
                 RecvHistoryFragment recvHistoryFragment = new RecvHistoryFragment();
                 myFragment = recvHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
@@ -239,7 +250,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
             case R.id.nav_profile:
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                myFragment.onDestroy();
+                if(myFragment!=null){
+                    myFragment.onDestroy();
+                }
                 AccountFragment accountFragment = new AccountFragment();
                 myFragment = accountFragment;
                 getSupportFragmentManager().beginTransaction()

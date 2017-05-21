@@ -141,7 +141,8 @@ public class BackgroundRecvService extends Service {
     private void analyze(String msg){
         char type = msg.charAt(0);
         if(type=='2'){
-            if(msg.equals("2,1")){
+            String tmp = msg.substring(0,3);
+            if(tmp.equals("2,1")){
                 mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.delivery_icon)
@@ -155,7 +156,7 @@ public class BackgroundRecvService extends Service {
                 broadcastIntent.putExtra("result", flag.toString());
                 broadcastIntent.putExtra("state","true");
                 sendBroadcast(broadcastIntent);
-            }else if(msg.equals("2,0")){
+            }else if(tmp.equals("2,0")){
                 mBuilder =
                         new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.delivery_icon)
@@ -270,6 +271,7 @@ public class BackgroundRecvService extends Service {
             if(mSocket.isConnected()){
                 Log.d("BGService","socket close");
                 mSocket.close();
+                sharedPreferences.edit().putInt("BGServiceCount",0).apply();
             }
         }catch (IOException e){
             e.printStackTrace();
