@@ -2428,3 +2428,583 @@ Node : 2,38
 
 2,38,40,41,go toward 0.000000 degree for 0.058189 kilometer.
 
+Debug info
+
+Node : 4,1
+
+Node : 3,2
+
+Node : 2,2
+
+Node : 2,2
+
+Node : 2,3
+
+Node : 2,4
+
+Node : 2,5
+
+Node : 2,6
+
+Node : 2,7
+
+Node : 2,8
+
+Node : 2,9
+
+Node : 2,10
+
+Node : 2,11
+
+Node : 2,12
+
+Node : 2,13
+
+Node : 2,14
+
+Node : 2,15
+
+Node : 2,16
+
+Node : 2,17
+
+Node : 2,18
+
+Node : 2,19
+
+Node : 2,19
+
+Node : 2,20
+
+Node : 2,21
+
+Node : 2,22
+
+Node : 2,23
+
+Node : 2,24
+
+Node : 2,25
+
+Node : 2,26
+
+Node : 2,27
+
+Node : 2,28
+
+Node : 2,29
+
+Node : 2,30
+
+Node : 2,31
+
+Node : 2,32
+
+Node : 2,33
+
+Node : 2,34
+
+Node : 2,35
+
+Node : 2,36
+
+Node : 2,36
+
+Node : 3,36
+
+Node : 4,36
+
+Node : 5,36
+
+Node : 6,36
+
+Node : 7,36
+
+Node : 8,36
+
+Node : 9,36
+
+Node : 10,36
+
+Node : 11,36
+
+Node : 12,36
+
+Node : 13,36
+
+Node : 14,36
+
+Node : 15,36
+
+Node : 16,36
+
+Node : 17,36
+
+Node : 18,36
+
+Node : 19,36
+
+Node : 20,36
+
+Node : 21,36
+
+Node : 22,36
+
+Node : 23,36
+
+Node : 24,36
+
+Node : 25,36
+
+Node : 26,36
+
+Node : 27,36
+
+Node : 28,36
+
+Node : 29,36
+
+Node : 30,36
+
+Node : 31,36
+
+Node : 32,36
+
+Node : 33,36
+
+Node : 34,36
+
+4,1,0,72,go toward 270.000000 degree for 0.000475 kilometer.
+
+3,2,1,72,go toward 270.000000 degree for 0.003108 kilometer.
+
+2,2,2,72,go toward 180.000000 degree for 0.001701 kilometer.
+
+2,2,3,72,go toward 180.000000 degree for 0.001701 kilometer.
+
+2,3,4,72,go toward 0.000000 degree for 0.000134 kilometer.
+
+2,4,5,72,go toward 0.000000 degree for 0.001913 kilometer.
+
+2,5,6,72,go toward 0.000000 degree for 0.003722 kilometer.
+
+2,6,7,72,go toward 0.000000 degree for 0.005529 kilometer.
+
+2,7,8,72,go toward 0.000000 degree for 0.007336 kilometer.
+
+2,8,9,72,go toward 0.000000 degree for 0.009143 kilometer.
+
+2,9,10,72,go toward 0.000000 degree for 0.010950 kilometer.
+
+2,10,11,72,go toward 0.000000 degree for 0.012757 kilometer.
+
+2,11,12,72,go toward 0.000000 degree for 0.014564 kilometer.
+
+2,12,13,72,go toward 0.000000 degree for 0.016371 kilometer.
+
+2,13,14,72,go toward 0.000000 degree for 0.018178 kilometer.
+
+2,14,15,72,go toward 0.000000 degree for 0.019985 kilometer.
+
+2,15,16,72,go toward 0.000000 degree for 0.021792 kilometer.
+
+2,16,17,72,go toward 0.000000 degree for 0.023599 kilometer.
+
+2,17,18,72,go toward 0.000000 degree for 0.025406 kilometer.
+
+2,18,19,72,go toward 0.000000 degree for 0.027213 kilometer.
+
+2,19,20,72,go toward 0.000000 degree for 0.029020 kilometer.
+
+2,19,21,72,go toward 0.000000 degree for 0.029020 kilometer.
+
+2,20,22,72,go toward 0.000000 degree for 0.030827 kilometer.
+
+2,21,23,72,go toward 0.000000 degree for 0.032634 kilometer.
+
+2,22,24,72,go toward 0.000000 degree for 0.034441 kilometer.
+
+2,23,25,72,go toward 0.000000 degree for 0.036248 kilometer.
+
+2,24,26,72,go toward 0.000000 degree for 0.038055 kilometer.
+
+2,25,27,72,go toward 0.000000 degree for 0.039862 kilometer.
+
+2,26,28,72,go toward 0.000000 degree for 0.041669 kilometer.
+
+2,27,29,72,go toward 0.000000 degree for 0.043476 kilometer.
+
+2,28,30,72,go toward 0.000000 degree for 0.045283 kilometer.
+
+2,29,31,72,go toward 0.000000 degree for 0.047090 kilometer.
+
+2,30,32,72,go toward 0.000000 degree for 0.048897 kilometer.
+
+2,31,33,72,go toward 0.000000 degree for 0.050704 kilometer.
+
+2,32,34,72,go toward 0.000000 degree for 0.052511 kilometer.
+
+2,33,35,72,go toward 0.000000 degree for 0.054318 kilometer.
+
+2,34,36,72,go toward 0.000000 degree for 0.056125 kilometer.
+
+2,35,37,72,go toward 0.000000 degree for 0.057932 kilometer.
+
+2,36,38,72,go toward 270.000000 degree for 0.036500 kilometer.
+
+2,36,39,72,go toward 270.000000 degree for 0.036500 kilometer.
+
+3,36,40,72,go toward 270.000000 degree for 0.034797 kilometer.
+
+4,36,41,72,go toward 270.000000 degree for 0.033094 kilometer.
+
+5,36,42,72,go toward 270.000000 degree for 0.031392 kilometer.
+
+6,36,43,72,go toward 270.000000 degree for 0.029689 kilometer.
+
+7,36,44,72,go toward 270.000000 degree for 0.027986 kilometer.
+
+8,36,45,72,go toward 270.000000 degree for 0.026283 kilometer.
+
+9,36,46,72,go toward 270.000000 degree for 0.024581 kilometer.
+
+10,36,47,72,go toward 270.000000 degree for 0.022878 kilometer.
+
+11,36,48,72,go toward 270.000000 degree for 0.021176 kilometer.
+
+12,36,49,72,go toward 270.000000 degree for 0.019473 kilometer.
+
+13,36,50,72,go toward 270.000000 degree for 0.017770 kilometer.
+
+14,36,51,72,go toward 270.000000 degree for 0.016067 kilometer.
+
+15,36,52,72,go toward 270.000000 degree for 0.014365 kilometer.
+
+16,36,53,72,go toward 270.000000 degree for 0.012662 kilometer.
+
+17,36,54,72,go toward 270.000000 degree for 0.010959 kilometer.
+
+18,36,55,72,go toward 270.000000 degree for 0.009257 kilometer.
+
+19,36,56,72,go toward 270.000000 degree for 0.007554 kilometer.
+
+20,36,57,72,go toward 270.000000 degree for 0.005851 kilometer.
+
+21,36,58,72,go toward 270.000000 degree for 0.004149 kilometer.
+
+22,36,59,72,go toward 270.000000 degree for 0.002446 kilometer.
+
+23,36,60,72,go toward 270.000000 degree for 0.000741 kilometer.
+
+24,36,61,72,go toward 90.000000 degree for 0.000959 kilometer.
+
+25,36,62,72,go toward 90.000000 degree for 0.002663 kilometer.
+
+26,36,63,72,go toward 90.000000 degree for 0.004366 kilometer.
+
+27,36,64,72,go toward 90.000000 degree for 0.006068 kilometer.
+
+28,36,65,72,go toward 90.000000 degree for 0.007771 kilometer.
+
+29,36,66,72,go toward 90.000000 degree for 0.009474 kilometer.
+
+30,36,67,72,go toward 90.000000 degree for 0.011176 kilometer.
+
+31,36,68,72,go toward 90.000000 degree for 0.012879 kilometer.
+
+32,36,69,72,go toward 90.000000 degree for 0.014581 kilometer.
+
+33,36,70,72,go toward 90.000000 degree for 0.016284 kilometer.
+
+34,36,71,72,go toward 90.000000 degree for 0.017987 kilometer.
+
+Debug info
+
+Node : 4,1
+
+Node : 3,2
+
+Node : 2,2
+
+Node : 2,2
+
+Node : 2,3
+
+Node : 2,4
+
+Node : 2,5
+
+Node : 2,6
+
+Node : 2,7
+
+Node : 2,8
+
+Node : 2,9
+
+Node : 2,10
+
+Node : 2,11
+
+Node : 2,12
+
+Node : 2,13
+
+Node : 2,14
+
+Node : 2,15
+
+Node : 2,16
+
+Node : 2,17
+
+Node : 2,18
+
+Node : 2,19
+
+Node : 2,19
+
+Node : 2,20
+
+Node : 2,21
+
+Node : 2,22
+
+Node : 2,23
+
+Node : 2,24
+
+Node : 2,25
+
+Node : 2,26
+
+Node : 2,27
+
+Node : 2,28
+
+Node : 2,29
+
+Node : 2,30
+
+Node : 2,31
+
+Node : 2,32
+
+Node : 2,33
+
+Node : 2,34
+
+Node : 2,35
+
+Node : 2,36
+
+Node : 2,36
+
+Node : 3,36
+
+Node : 4,36
+
+Node : 5,36
+
+Node : 6,36
+
+Node : 7,36
+
+Node : 8,36
+
+Node : 9,36
+
+Node : 10,36
+
+Node : 11,36
+
+Node : 12,36
+
+Node : 13,36
+
+Node : 14,36
+
+Node : 15,36
+
+Node : 16,36
+
+Node : 17,36
+
+Node : 18,36
+
+Node : 19,36
+
+Node : 20,36
+
+Node : 21,36
+
+Node : 22,36
+
+Node : 23,36
+
+Node : 24,36
+
+Node : 25,36
+
+Node : 26,36
+
+Node : 27,36
+
+Node : 28,36
+
+Node : 29,36
+
+Node : 30,36
+
+Node : 31,36
+
+Node : 32,36
+
+Node : 33,36
+
+Node : 34,36
+
+4,1,0,72,go toward 270.000000 degree for 0.000475 kilometer.
+
+3,2,1,72,go toward 270.000000 degree for 0.003108 kilometer.
+
+2,2,2,72,go toward 180.000000 degree for 0.001701 kilometer.
+
+2,2,3,72,go toward 180.000000 degree for 0.001701 kilometer.
+
+2,3,4,72,go toward 0.000000 degree for 0.000134 kilometer.
+
+2,4,5,72,go toward 0.000000 degree for 0.001913 kilometer.
+
+2,5,6,72,go toward 0.000000 degree for 0.003722 kilometer.
+
+2,6,7,72,go toward 0.000000 degree for 0.005529 kilometer.
+
+2,7,8,72,go toward 0.000000 degree for 0.007336 kilometer.
+
+2,8,9,72,go toward 0.000000 degree for 0.009143 kilometer.
+
+2,9,10,72,go toward 0.000000 degree for 0.010950 kilometer.
+
+2,10,11,72,go toward 0.000000 degree for 0.012757 kilometer.
+
+2,11,12,72,go toward 0.000000 degree for 0.014564 kilometer.
+
+2,12,13,72,go toward 0.000000 degree for 0.016371 kilometer.
+
+2,13,14,72,go toward 0.000000 degree for 0.018178 kilometer.
+
+2,14,15,72,go toward 0.000000 degree for 0.019985 kilometer.
+
+2,15,16,72,go toward 0.000000 degree for 0.021792 kilometer.
+
+2,16,17,72,go toward 0.000000 degree for 0.023599 kilometer.
+
+2,17,18,72,go toward 0.000000 degree for 0.025406 kilometer.
+
+2,18,19,72,go toward 0.000000 degree for 0.027213 kilometer.
+
+2,19,20,72,go toward 0.000000 degree for 0.029020 kilometer.
+
+2,19,21,72,go toward 0.000000 degree for 0.029020 kilometer.
+
+2,20,22,72,go toward 0.000000 degree for 0.030827 kilometer.
+
+2,21,23,72,go toward 0.000000 degree for 0.032634 kilometer.
+
+2,22,24,72,go toward 0.000000 degree for 0.034441 kilometer.
+
+2,23,25,72,go toward 0.000000 degree for 0.036248 kilometer.
+
+2,24,26,72,go toward 0.000000 degree for 0.038055 kilometer.
+
+2,25,27,72,go toward 0.000000 degree for 0.039862 kilometer.
+
+2,26,28,72,go toward 0.000000 degree for 0.041669 kilometer.
+
+2,27,29,72,go toward 0.000000 degree for 0.043476 kilometer.
+
+2,28,30,72,go toward 0.000000 degree for 0.045283 kilometer.
+
+2,29,31,72,go toward 0.000000 degree for 0.047090 kilometer.
+
+2,30,32,72,go toward 0.000000 degree for 0.048897 kilometer.
+
+2,31,33,72,go toward 0.000000 degree for 0.050704 kilometer.
+
+2,32,34,72,go toward 0.000000 degree for 0.052511 kilometer.
+
+2,33,35,72,go toward 0.000000 degree for 0.054318 kilometer.
+
+2,34,36,72,go toward 0.000000 degree for 0.056125 kilometer.
+
+2,35,37,72,go toward 0.000000 degree for 0.057932 kilometer.
+
+2,36,38,72,go toward 270.000000 degree for 0.036500 kilometer.
+
+2,36,39,72,go toward 270.000000 degree for 0.036500 kilometer.
+
+3,36,40,72,go toward 270.000000 degree for 0.034797 kilometer.
+
+4,36,41,72,go toward 270.000000 degree for 0.033094 kilometer.
+
+5,36,42,72,go toward 270.000000 degree for 0.031392 kilometer.
+
+6,36,43,72,go toward 270.000000 degree for 0.029689 kilometer.
+
+7,36,44,72,go toward 270.000000 degree for 0.027986 kilometer.
+
+8,36,45,72,go toward 270.000000 degree for 0.026283 kilometer.
+
+9,36,46,72,go toward 270.000000 degree for 0.024581 kilometer.
+
+10,36,47,72,go toward 270.000000 degree for 0.022878 kilometer.
+
+11,36,48,72,go toward 270.000000 degree for 0.021176 kilometer.
+
+12,36,49,72,go toward 270.000000 degree for 0.019473 kilometer.
+
+13,36,50,72,go toward 270.000000 degree for 0.017770 kilometer.
+
+14,36,51,72,go toward 270.000000 degree for 0.016067 kilometer.
+
+15,36,52,72,go toward 270.000000 degree for 0.014365 kilometer.
+
+16,36,53,72,go toward 270.000000 degree for 0.012662 kilometer.
+
+17,36,54,72,go toward 270.000000 degree for 0.010959 kilometer.
+
+18,36,55,72,go toward 270.000000 degree for 0.009257 kilometer.
+
+19,36,56,72,go toward 270.000000 degree for 0.007554 kilometer.
+
+20,36,57,72,go toward 270.000000 degree for 0.005851 kilometer.
+
+21,36,58,72,go toward 270.000000 degree for 0.004149 kilometer.
+
+22,36,59,72,go toward 270.000000 degree for 0.002446 kilometer.
+
+23,36,60,72,go toward 270.000000 degree for 0.000741 kilometer.
+
+24,36,61,72,go toward 90.000000 degree for 0.000959 kilometer.
+
+25,36,62,72,go toward 90.000000 degree for 0.002663 kilometer.
+
+26,36,63,72,go toward 90.000000 degree for 0.004366 kilometer.
+
+27,36,64,72,go toward 90.000000 degree for 0.006068 kilometer.
+
+28,36,65,72,go toward 90.000000 degree for 0.007771 kilometer.
+
+29,36,66,72,go toward 90.000000 degree for 0.009474 kilometer.
+
+30,36,67,72,go toward 90.000000 degree for 0.011176 kilometer.
+
+31,36,68,72,go toward 90.000000 degree for 0.012879 kilometer.
+
+32,36,69,72,go toward 90.000000 degree for 0.014581 kilometer.
+
+33,36,70,72,go toward 90.000000 degree for 0.016284 kilometer.
+
+34,36,71,72,go toward 90.000000 degree for 0.017987 kilometer.
+

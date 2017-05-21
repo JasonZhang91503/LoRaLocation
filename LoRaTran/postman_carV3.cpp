@@ -57,8 +57,10 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #define CAR_OK 9487487
 
 #define MAP_WIDTH 135
-#define MAP_HEIGHT 41
+#define MAP_HEIGHT 40
 #define ROAD_WIDTH 5
+
+#define SH_SIZE 20
 
 #ifndef NO_CAR_MODE
 //Include arduPi library
@@ -397,8 +399,10 @@ int main(int argc, const char * argv[]){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
-	cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
-    cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
+	//cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH/2 - ROAD_WIDTH ,MAP_HEIGHT - ROAD_WIDTH);
+    //cgms->setRectangleWall(MAP_WIDTH/2 + ROAD_WIDTH, 0 + ROAD_WIDTH,MAP_WIDTH - ROAD_WIDTH,MAP_HEIGHT - ROAD_WIDTH);
+	cgms->setRectangleWall( 0 + ROAD_WIDTH, 0 + ROAD_WIDTH,(MAP_WIDTH - ROAD_WIDTH)/2,MAP_HEIGHT - ROAD_WIDTH);
+	cgms->setRectangleWall((MAP_WIDTH +  ROAD_WIDTH)/2, 0 + ROAD_WIDTH,MAP_WIDTH-1,MAP_HEIGHT - ROAD_WIDTH);
 	initCGMS();
 	
 
@@ -840,7 +844,8 @@ void initCGMS(){
     int value = 0;
     int xScale = (MAP_WIDTH - ROAD_WIDTH)/4;
     int yScale = (MAP_HEIGHT - ROAD_WIDTH)/2;
-    for(int i = 0 ; i < 5;i++){
+    /*
+	for(int i = 0 ; i < 5;i++){
         for(int j = 0; j < 3; j++){
             value++;
             sArr[i][j].value = value;
@@ -849,9 +854,46 @@ void initCGMS(){
             cgms->addStronghold(sArr[i][j]);
         }
     }
+	*/
+
+	double gpsData[SH_SIZE]={
+        24.943584,121.370883,  //1.圖書公院轉角
+        24.943888,121.370672,  //2.圖書館
+		24.944148,121.370493,  //3.圖書行政轉角
+        24.943946,121.371511,  //4.公院
+		24.944436,121.371015,  //5.行政
+        24.944188,121.371931,  //6.法商大道法院測
+        24.944460,121.371761,  //7.法商大道
+        24.944757,121.371559,  //8.法商大道商院測
+        24.944498,121.372605,   //9.法院
+        24.945091,121.372150  //10.商院
+        //24.945390,121.372683,  //10.正門商院轉角
+       // 24.945161,121.372851,  //11.正門
+        //24.944835,121.373112,  //12.正門法院
+        
+    };
+
+
+	for(int i = 0; i < SH_SIZE/2;i++){
+		Coor gps,coor;
+		gps.x = gpsData[i*2 + 1];
+		gps.y = gpsData[i*2];
+		coor = cgms->gpsToCoordinate(gps);
+
+		if(!cgms->isInsideMap(gps.x,gps.y)){
+			cgms->fixOutNode(coor);
+
+			Stronghold s;
+			s.value = i+1;
+			s.x = coor.x;
+			s.y = coor.y;
+			cgms->addStronghold(s);
+		}
+	}
+	
 
     cgms->fillNodeStronghold();
-    //cgms->printNodeStronghold();
+    cgms->printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 
