@@ -45,7 +45,7 @@ CREATE TABLE `transport` (
   CONSTRAINT `transport_ibfk_3` FOREIGN KEY (`des_id`) REFERENCES `location` (`_id`),
   CONSTRAINT `transport_ibfk_4` FOREIGN KEY (`car_id`) REFERENCES `cars` (`_id`),
   CONSTRAINT `transport_ibfk_5` FOREIGN KEY (`start_id`) REFERENCES `location` (`_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

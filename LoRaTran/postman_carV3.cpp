@@ -118,7 +118,7 @@ Coor mapNode;
 //GPS_Data gps_data;
 Coor init,xMax,yMax;
 int pw_size = 4;
-double dest_range = 0.001;
+double dest_range = 0.002;
 int LoRa_address = 1;
 int carStatus = 0;	//carStatus代表車子本身狀態，0 = 停止, 1 = 暫停 , 2 = 行進中
 int carID = 0;
@@ -905,7 +905,7 @@ void initCGMS(){
 	
 
     cgms->fillNodeStronghold();
-    cgms->printNodeStronghold();
+    //cgms->printNodeStronghold();
 
     int n = cgms->getStrongholdNum();
 
