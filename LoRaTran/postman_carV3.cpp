@@ -520,7 +520,8 @@ int goToLocation(double lon,double lat){
 	ee.y = lat;
 
 	
-	
+	mapPrint();
+
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			mapgotoxy(17,1);
 			printf("goToLocation :cgms -> dest out ! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
@@ -704,8 +705,6 @@ int moveToSender(UserRequest* req){
 	printf("moveToSender : Begin go to sender location\n");
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
-	
-	mapPrint();
 
 	int e = goToLocation(req->src_lon,req->src_lat);
 	if(e != CAR_OK){
@@ -761,6 +760,8 @@ int moveToReceiver(UserRequest* req){
 		printf("moveToSender : goToLocation error\n");
 		return e;
 	}
+
+	mapClear();
 
 	mapgotoxy(17,1);
 	printf("moveToReceiver : reach destnation!\n");
