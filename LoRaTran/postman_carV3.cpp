@@ -761,7 +761,7 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	mapClear();
+	mapclear();
 
 	mapgotoxy(17,1);
 	printf("moveToReceiver : reach destnation!\n");
