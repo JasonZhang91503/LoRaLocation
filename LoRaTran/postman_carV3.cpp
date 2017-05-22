@@ -167,6 +167,11 @@ int GPSsetup(){
 	printf("GPSsetup : success!\n");
     gps_stream(&myGPS_Data, WATCH_ENABLE | WATCH_JSON, NULL);
 	
+
+	double testLon,testLat;
+
+	getGPSLocation(testLon,testLat);
+
 	return 0;
 }
 #endif
@@ -509,7 +514,7 @@ int goToLocation(double lon,double lat){
 	
 	mapNode = cgms->gpsToCoordinate(ee);
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			mapgotoxy(16,1);
+			mapgotoxy(17,1);
 			printf("goToLocation :cgms -> dest out ! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 			
 			cgms->fixOutNode(mapNode);
@@ -521,8 +526,6 @@ int goToLocation(double lon,double lat){
 
 			//return GPS_NOT_IN_CARMAP;
 	}
-
-	mapPrint();
 
 	do {
 		//取得車子本身GPS座標
@@ -545,8 +548,8 @@ int goToLocation(double lon,double lat){
 		mapNode = cgms->gpsToCoordinate(ss);
 		if(!cgms->isInsideMap(ss.x,ss.y)){
 			//if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
-			mapgotoxy(16,1);
-			printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
+			mapgotoxy(17,1);
+			printf("goToLocation : cgms ->  gps out! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			
 			cgms->fixOutNode(mapNode);
 
@@ -682,11 +685,15 @@ int moveToSender(UserRequest* req){
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
+	mapPrint();
+
 	int e = goToLocation(req->src_lon,req->src_lat);
 	if(e != CAR_OK){
 		printf("moveToSender : goToLocation error\n");
 		return e;
 	}
+
+	mapPrint();
 
 	mapgotoxy(17,0);
 	printf("moveToSender : reach destnation!\n");
