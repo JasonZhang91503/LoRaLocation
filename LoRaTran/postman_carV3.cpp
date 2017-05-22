@@ -546,12 +546,10 @@ int goToLocation(double lon,double lat){
 			if(LocCount == 1){
 				ss.x = 121.371511;
 				ss.y = 24.943946;
-				LocCount =2;
 			}
 			else if (LocCount ==2){
 				ss.x = 121.372605;
 				ss.y = 24.944498;
-				LocCount =1;
 			}
 			//法院
 		}
@@ -755,6 +753,8 @@ int beginTransport(UserRequest* req){
 int moveToReceiver(UserRequest* req){
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 	
+	LocCount =2;
+
 	int e = goToLocation(req->dest_lon,req->dest_lat);
 	if(e != CAR_OK){
 		printf("moveToSender : goToLocation error\n");
@@ -763,6 +763,7 @@ int moveToReceiver(UserRequest* req){
 
 	mapclear();
 
+	
 	mapgotoxy(17,1);
 	printf("moveToReceiver : reach destnation!\n");
 	#ifndef NO_CAR_MODE
