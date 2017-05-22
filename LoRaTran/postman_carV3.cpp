@@ -171,7 +171,10 @@ int GPSsetup(){
 
 	double testLon,testLat;
 
-	getGPSLocation(testLon,testLat);
+	if(NOGPS != 2){
+		getGPSLocation(testLon,testLat);
+	}
+	
 
 	return 0;
 }
