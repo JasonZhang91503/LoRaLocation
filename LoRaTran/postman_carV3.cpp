@@ -126,6 +126,7 @@ int NOGPS = 0;
 int receivePeriod = 700;
 int carLog = 0;
 float** adj;
+int LocCount;
 
 
 
@@ -380,6 +381,7 @@ int main(int argc, const char * argv[]){
 
 	//car程式開始執行
 	
+	
 
 	/*
 	功能
@@ -391,6 +393,9 @@ int main(int argc, const char * argv[]){
 	註:只有state 0 是 gateway主動打過來的
 		剩下的state都是車子本身修改自身state並且傳送出去給gateway和server知道
 	*/
+
+	LocCount = 1;
+
     init.x = 121.370842;
     init.y = 24.943536;
     xMax.x = 121.373122;
@@ -512,11 +517,13 @@ int goToLocation(double lon,double lat){
 	ee.y = lat;
 
 	
-	mapNode = cgms->gpsToCoordinate(ee);
+	
 	if(!cgms->isInsideMap(ee.x,ee.y)){
 			mapgotoxy(17,1);
 			printf("goToLocation :cgms -> dest out ! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 			
+
+			mapNode = cgms->gpsToCoordinate(ee);
 			cgms->fixOutNode(mapNode);
 
 			ee = cgms->coordinateToGps(mapNode);
@@ -531,9 +538,18 @@ int goToLocation(double lon,double lat){
 		//取得車子本身GPS座標
 		#ifndef NO_CAR_MODE
 		if(NOGPS == 2){
-			//leftdown
-			ss.x = 121.370905;
-			ss.y = 24.943603;
+			//公院
+			if(LocCount == 1){
+				ss.x = 121.371511;
+				ss.y = 24.943946;
+				LocCount =2;
+			}
+			else if (LocCount ==2){
+				ss.x = 121.372605;
+				ss.y = 24.944498;
+				LocCount =1;
+			}
+			//法院
 		}
 		else{
 			getGPSLocation(ss.x,ss.y);
@@ -545,21 +561,22 @@ int goToLocation(double lon,double lat){
 		ss.y = 24.943603;
 		#endif
 
-		mapNode = cgms->gpsToCoordinate(ss);
+		
 		if(!cgms->isInsideMap(ss.x,ss.y)){
 			//if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
 			mapgotoxy(17,1);
 			printf("goToLocation : cgms ->  gps out! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			
+			mapNode = cgms->gpsToCoordinate(ss);
 			cgms->fixOutNode(mapNode);
 
 			ss = cgms->coordinateToGps(mapNode);
 			mapNode = cgms->gpsToCoordinate(ss);
 
-			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
+			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 
 			#ifndef NO_CAR_MODE
-			unistd::usleep(1000);
+			unistd::usleep(1000000);
 			#endif
 			//continue;
 		}
@@ -613,7 +630,7 @@ int goToLocation(double lon,double lat){
 		if(NOGPS == 2){
 			isCarReach = true;
 			#ifndef NO_CAR_MODE
-			unistd::usleep(100000);
+			unistd::usleep(1000000);
 			#endif
 		}
 		#ifndef NO_CAR_MODE

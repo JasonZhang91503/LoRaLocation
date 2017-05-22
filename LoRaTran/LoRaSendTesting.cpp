@@ -104,7 +104,7 @@ void setHeaderFromRecv(){
 void sendRequest(){
     char buffer[256];
     inputHeader();
-    sprintf(message1+4, "1,1,2,1234,timeIsMoney,121.370889,24.943592,121.370522,24.944187,");
+    sprintf(message1+4, "1,1,2,9487,timeIsMoney,121.370889,24.943592,121.370522,24.944187,");
 //    message1[0] = 1;
     e = sx1272.sendPacketTimeout(0, message1);
     printf("Packet sent, state %d\n",e);
