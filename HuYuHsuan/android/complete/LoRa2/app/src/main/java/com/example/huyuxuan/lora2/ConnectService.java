@@ -86,7 +86,7 @@ public class ConnectService extends Service {
                 }
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         return binder;
@@ -200,7 +200,7 @@ public class ConnectService extends Service {
                             broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
                             broadcastIntent.putExtras(bundle);
                             sendBroadcast(broadcastIntent);
-                            Log.i("Service:","sendbroadcast to  "+activityName);
+                            Log.i("Service:","sendbroadcast to  "+activityName +"with result true");
                         }
                     }
                     else{
@@ -212,11 +212,13 @@ public class ConnectService extends Service {
                         broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
                         broadcastIntent.putExtras(bundle);
                         sendBroadcast(broadcastIntent);
-                        Log.i("Service:","sendbroadcast to  "+activityName);
+                        Log.i("Service:","sendbroadcast to  "+activityName +"with result false");
                         //嘗試重新連線
                         int sta=connectToServer();
+                        Log.d("Service","connect to Server");
                         if(sta==1){
                             sendToServer(reSendIntent);
+                            Log.d("Service","connect success,resend intent");
                         }
                     }
                     rcvMessage="";
@@ -412,6 +414,12 @@ public class ConnectService extends Service {
             e.printStackTrace();
             disconnect();
         }
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.e("ConnectService","onUnbind");
+        return super.onUnbind(intent);
     }
 
     @Override

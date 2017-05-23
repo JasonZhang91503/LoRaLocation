@@ -1,5 +1,6 @@
 package com.example.huyuxuan.lora2.Fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -9,16 +10,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,10 +33,21 @@ import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.MyBoundedService;
+import com.example.huyuxuan.lora2.NavigationActivity;
 import com.example.huyuxuan.lora2.R;
 import com.example.huyuxuan.lora2.RoundImageView;
+import com.example.huyuxuan.lora2.SelectDialog;
+import com.example.huyuxuan.lora2.UIUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
  * Created by huyuxuan on 2017/5/15.
@@ -55,6 +72,15 @@ public class AccountFragment extends Fragment {
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+
+    private final int PHOTO_PICKED_FROM_CAMERA = 1; // 用来标识头像来自系统拍照
+    private final int PHOTO_PICKED_FROM_FILE = 2; // 用来标识从相册获取头像
+    private final int CROP_FROM_CAMERA = 3;
+    private Uri imgUri; // 由于android手机的图片基本都会很大，所以建议用Uri，而不用Bitmap
+    final private int MY_REQUEST_CODE = 123;
+    final private int REQUEST_WRITE_EXTERNAL_CODE = 213;
+    final private int REQUEST_READ_EXTERNAL_CODE = 230;
+
     public AccountFragment() {
         // Required empty public constructor
     }
@@ -87,12 +113,53 @@ public class AccountFragment extends Fragment {
         pwd.setText(sharedPreferences.getString(getString(R.string.password),""));
         mail.setText(sharedPreferences.getString(getString(R.string.email),""));
         mMoneyView.setText(mMoney);
+        MyBoundedService.curFragment = this;
 
         String sd = Environment.getExternalStorageDirectory().toString();
         Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
         if(bitmap != null){
             photoView.setImageBitmap(bitmap);
         }
+
+        photoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> list = new ArrayList<>();
+                list.add("拍照");
+                list.add("相簿");
+                showDialog(new SelectDialog.SelectDialogListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        switch (position){
+                            case 0:
+                                //用系統相機拍照
+
+                                if (checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.CAMERA)
+                                        != PackageManager.PERMISSION_GRANTED) {
+
+                                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                            MY_REQUEST_CODE);
+                                }else{
+                                    openCamera();
+                                }
+
+                                Log.d("AccountFragment","PHOTO-PICK-FROM-CAMERA");
+                                break;
+                            case 1:
+                                //開啟相簿相片集，須由startActivityForResult且帶入requestCode進行呼叫，原因
+                                //為點選相片後返回程式呼叫onActivityResult
+                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, PHOTO_PICKED_FROM_FILE);
+                                Log.d("AccountFragment","PHOTO-PICK-FROM-FILE");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                },list);
+            }
+        });
 
 
         editMail.setOnClickListener(new View.OnClickListener() {
@@ -225,15 +292,17 @@ public class AccountFragment extends Fragment {
                                 .putString(getString(R.string.password),password)
                                 .putString(getString(R.string.email),email)
                                 .apply();
+                        Toast.makeText(getActivity().getApplicationContext(),"更改成功",Toast.LENGTH_LONG).show();
                     }else if(type.compareTo("0")==0){
+                        pwd.setText(sharedPreferences.getString(getString(R.string.password),""));
+                        mail.setText(sharedPreferences.getString(getString(R.string.email),""));
                         //更改資料失敗
-                        Toast.makeText(getActivity().getApplicationContext(),"更改資料失敗",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(),"更改失敗",Toast.LENGTH_LONG).show();
 
                     }else{
-                        Log.d("AccountFragment","type error");
+                        Log.e("AccountFragment","type error");
                     }
                 }else{
-
                     Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
                 }
             }
@@ -259,7 +328,7 @@ public class AccountFragment extends Fragment {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
-            Log.d("HomeFragment","onServiceDisconnected");
+            Log.d("AccountFragment","onServiceDisconnected");
             mBoundService = null;
             isBind=false;
         }
@@ -274,4 +343,163 @@ public class AccountFragment extends Fragment {
         getActivity().getApplicationContext().registerReceiver(receiver, filter);
         Log.d("AccountFragment:","register receiver");
     }
+
+    //拍照完畢或選取圖片後呼叫此函式
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,Intent data)
+    {
+        Log.d("AccountFragment","onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("AccountFragment","resultCode="+resultCode+"requestCode="+requestCode);
+        if (resultCode != RESULT_OK){
+            Log.d("onActivityResult","resultCode not ok");
+            return;
+        }
+        //藉由requestCode判斷是否為開啟相機或開啟相簿而呼叫的，且data不為null
+        switch (requestCode) {
+            case PHOTO_PICKED_FROM_CAMERA:
+                doCrop();
+                break;
+            case PHOTO_PICKED_FROM_FILE:
+                imgUri = data.getData();
+                doCrop();
+                break;
+            case CROP_FROM_CAMERA:
+                if (data != null){
+                    setCropImg(data);
+                }else{
+                    Log.d("onActivityResult","data = null");
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    //裁剪圖片
+    private void doCrop(){
+        Log.d("AccountFragment","doCrop");
+        final Intent intent = new Intent("com.android.camera.action.CROP");
+        //可以选择图片类型，如果是*表明所有类型的图片
+        intent.setDataAndType(imgUri, "image/*");
+        // 下面这个crop = true是设置在开启的Intent中设置显示的VIEW可裁剪
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例，这里设置的是正方形（长宽比为1:1）
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+        //裁剪时是否保留图片的比例，这里的比例是1:1
+        intent.putExtra("scale", true);
+        //是否是圆形裁剪区域，设置了也不一定有效
+        //intent.putExtra("circleCrop", true);
+        //设置输出的格式
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        //是否将数据保留在Bitmap中返回
+        intent.putExtra("return-data", true);
+
+        startActivityForResult(intent,CROP_FROM_CAMERA);
+
+
+    }
+    private void setCropImg(Intent picData){
+        Log.d("AccountFragment","setCropImg");
+        Bundle bundle = picData.getExtras();
+        if (bundle != null){
+            Bitmap mBitmap = bundle.getParcelable("data");
+            saveBitmap(Environment.getExternalStorageDirectory() + "/mypic.png",mBitmap);
+
+            String sd = Environment.getExternalStorageDirectory().toString();
+            Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+            photoView.setImageBitmap(bitmap);
+
+        }
+    }
+    private void saveBitmap(String fileName,Bitmap bitmap){
+        Log.d("AccountFragment","saveBitmap");
+        if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_CODE);
+        }
+        File file = new File(fileName);
+        FileOutputStream fout = null;
+        try {
+            file.createNewFile();
+            fout = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG,100,fout);
+            fout.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fout!=null){
+                    fout.close();
+                }
+                UIUtil.showToast(getActivity(),"保存成功！");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Now user should be able to use camera
+                openCamera();
+            }
+            else {
+                // Your app will not have this permission. Turn off all functions
+                // that require this permission or it will force close like your
+                // original question
+                Toast.makeText(getActivity(),"請開啟相機權限", Toast.LENGTH_LONG).show();
+            }
+        }else if(requestCode==REQUEST_WRITE_EXTERNAL_CODE){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Now user should be able to use camera
+
+
+            }
+            else {
+                // Your app will not have this permission. Turn off all functions
+                // that require this permission or it will force close like your
+                // original question
+                Toast.makeText(getActivity(),"無法寫入外部SD", Toast.LENGTH_LONG).show();
+            }
+        }else if(requestCode==REQUEST_READ_EXTERNAL_CODE){
+            if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_LONG).show();
+            }else{
+                String sd = Environment.getExternalStorageDirectory().toString();
+                Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+                if(bitmap != null){
+                    photoView.setImageBitmap(bitmap);
+                }
+            }
+        }
+
+    }
+
+    public void openCamera(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        imgUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"/mypic.png"));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imgUri);
+        startActivityForResult(intent,PHOTO_PICKED_FROM_CAMERA);
+        Log.d("AccountFragment","openCamera");
+    }
+
+    private SelectDialog showDialog(SelectDialog.SelectDialogListener listener, List<String> list){
+        Log.d("AccountFragment","showDialog");
+        SelectDialog dialog = new SelectDialog(getActivity(),
+                R.style.transparentFrameWindowStyle,listener,list);
+        dialog.show();
+        return dialog;
+    }
+
 }

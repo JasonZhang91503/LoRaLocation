@@ -68,7 +68,7 @@ public class SendHistoryFragment extends Fragment {
         Log.d("histmain On resume","ok");
         if(tmp){
             sendToService();
-            setView();
+            //setView();
             tmp=false;
         }
     }

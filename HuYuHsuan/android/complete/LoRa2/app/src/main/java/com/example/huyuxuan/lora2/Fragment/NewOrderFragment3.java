@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
 import java.util.Calendar;
@@ -90,6 +91,7 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         destination=(TextView)view.findViewById(R.id.Destination);
         name=(TextView)view.findViewById(R.id.txtName);
         note=(TextView)view.findViewById(R.id.txtNote);
+        MyBoundedService.curFragment = this;
 
         setText();
         btn_confirm=(Button)view.findViewById(R.id.btn_confim);

@@ -96,6 +96,7 @@ public class BackgroundRecvService extends Service {
                         }
                     }
                 } catch (IOException e) {
+                    sharedPreferences.edit().putInt("BGServiceCount",0).apply();
                     e.printStackTrace();
                 }
                 return null;
@@ -258,6 +259,7 @@ public class BackgroundRecvService extends Service {
             mWakeLock = null;
             Log.e("BgService","電源鎖釋放成功");
         }
+        sharedPreferences.edit().putInt("BGServiceCount",0).apply();
     }
 
     private void ensureConnected(){
@@ -270,11 +272,15 @@ public class BackgroundRecvService extends Service {
                 in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                 out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
             }
+            /*
             else{
+
                 mSocket.connect(sc_add, 2000);
                 in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                 out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+
             }
+            */
         }catch (IOException e) {
             e.printStackTrace();
         }

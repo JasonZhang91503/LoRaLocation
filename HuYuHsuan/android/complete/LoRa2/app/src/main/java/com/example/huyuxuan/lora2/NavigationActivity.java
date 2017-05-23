@@ -31,8 +31,6 @@ import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
 import com.example.huyuxuan.lora2.Fragment.RecvHistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistoryFragment;
 
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by huyuxuan on 2017/4/27.
@@ -45,6 +43,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private static boolean isBind;
     private ConnectServiceReceiver receiver;
     public HomeFragment firstFragment;
+    public NewOrderFragment newOrderFragment;
+    public SendHistoryFragment sendHistoryFragment;
+    public RecvHistoryFragment recvHistoryFragment;
+    public AccountFragment accountFragment;
 
     MyAlarmReceiver alarm = new MyAlarmReceiver();
     private SharedPreferences sharedPreferences;
@@ -96,6 +98,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             //不用偷偷登入即可載入HomeFragment
             loadHome(savedInstanceState);
         }
+
     }
 
     public void loadHome(Bundle tmp2){
@@ -116,6 +119,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 firstFragment = new HomeFragment();
             }
             myFragment = firstFragment;
+            MyBoundedService.curFragment = myFragment;
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
         }
     }
@@ -180,8 +184,25 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
             if (fm.getBackStackEntryCount() == 0) {
                 Log.d("NavigationActivity","onBack backstackcount==0");
-                super.onBackPressed();
-
+                Fragment cur = MyBoundedService.curFragment;
+                if(cur==firstFragment || cur==recvHistoryFragment || cur == sendHistoryFragment || cur == accountFragment
+                        || cur == newOrderFragment){
+                    //這些畫面返回時要跳回主畫面
+                    Log.d("NavigationActivity","cur == ... Go to Home");
+                    getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                    if(myFragment!=null){
+                        myFragment.onDestroy();
+                    }
+                    HomeFragment firstFragment = new HomeFragment();
+                    myFragment = firstFragment;
+                    MyBoundedService.curFragment = myFragment;
+                    getSupportFragmentManager().beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container,firstFragment).commit();
+                }
+                else{
+                    super.onBackPressed();
+                }
             } else {
                 Log.d("NavigationActivity","onBack backstackcount!=0");
                 fm.popBackStack();
@@ -206,6 +227,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
                 HomeFragment firstFragment = new HomeFragment();
                 myFragment = firstFragment;
+                MyBoundedService.curFragment = myFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,firstFragment).commit();
@@ -215,8 +237,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if(myFragment!=null){
                     myFragment.onDestroy();
                 }
-                NewOrderFragment newOrderFragment = new NewOrderFragment();
+                newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
+                MyBoundedService.curFragment = myFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,newOrderFragment).commit();
@@ -226,8 +249,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if(myFragment!=null){
                     myFragment.onDestroy();
                 }
-                SendHistoryFragment sendHistoryFragment = new SendHistoryFragment();
+                sendHistoryFragment = new SendHistoryFragment();
                 myFragment = sendHistoryFragment;
+                MyBoundedService.curFragment = myFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,sendHistoryFragment).commit();
@@ -237,8 +261,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if(myFragment!=null){
                     myFragment.onDestroy();
                 }
-                RecvHistoryFragment recvHistoryFragment = new RecvHistoryFragment();
+                recvHistoryFragment = new RecvHistoryFragment();
                 myFragment = recvHistoryFragment;
+                MyBoundedService.curFragment = myFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,recvHistoryFragment).commit();
@@ -248,8 +273,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if(myFragment!=null){
                     myFragment.onDestroy();
                 }
-                AccountFragment accountFragment = new AccountFragment();
+                accountFragment = new AccountFragment();
                 myFragment = accountFragment;
+                MyBoundedService.curFragment = myFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,accountFragment).commit();

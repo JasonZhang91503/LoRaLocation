@@ -25,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -92,6 +93,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         Button btn_next=(Button)view.findViewById(R.id.btn_next);
         btn_next.setOnClickListener(this);
         isBind=false;
+        MyBoundedService.curFragment = this;
 
         //向server要使用者名單
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);

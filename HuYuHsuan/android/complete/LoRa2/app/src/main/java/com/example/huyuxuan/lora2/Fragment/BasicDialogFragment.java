@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class BasicDialogFragment extends DialogFragment {
         c = Calendar.getInstance();
         formattedDate =dayDateFormat.format(c.getTime());
         Log.d("BasicDialogFragment","onCreateView");
+        MyBoundedService.curFragment = this;
 
 
         Bundle bundle = getArguments();
@@ -78,7 +80,7 @@ public class BasicDialogFragment extends DialogFragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if(dialogMessage.charAt(position) == '1'){
+                if(dialogMessage.charAt(position) == '1' && checkTime(list[position])){
                     new AlertDialog.Builder(getContext())
                             .setTitle("選擇時段")
                             .setMessage("確定要預約"+list[position]+"嗎？")
@@ -121,7 +123,6 @@ public class BasicDialogFragment extends DialogFragment {
     public boolean checkTime(String time){
         int hour = Integer.parseInt(formattedDate.substring(formattedDate.indexOf(' ')+1,formattedDate.indexOf(':')));
         int minute =  Integer.parseInt(formattedDate.substring(formattedDate.indexOf(':')+1,formattedDate.lastIndexOf(':')));
-        //int second =  Integer.parseInt(formattedDate.substring(formattedDate.lastIndexOf(':')+1));
 
         int time_hour = Integer.parseInt(time.substring(0,time.indexOf(':')));
         int time_minute = Integer.parseInt(time.substring(time.indexOf(':')+1));

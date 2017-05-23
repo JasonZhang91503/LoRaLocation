@@ -33,6 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
 import java.util.ArrayList;
@@ -75,9 +76,13 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("NewOrderFragment","onCreateView");
         // Inflate the layout for this fragment
 
         View view=inflater.inflate(R.layout.fragment_new_order, container, false);
+
+        spnStart=(Spinner)view.findViewById(R.id.start);
+        spnDest=(Spinner)view.findViewById(R.id.destination);
         //得到日期資訊並且顯示於Text中
         LinearLayout time=(LinearLayout)view.findViewById(R.id.time);
         orderTime=(TextView)view.findViewById(R.id.orderTime);
@@ -97,38 +102,14 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
             Log.d("NewOrderFragment:", "checkSR->sendToService");
         }
         setReceiver();
+        Toast.makeText(getContext(),"請求資料中",Toast.LENGTH_SHORT).show();
 
 
         //設定下一步Btn的內容
         Button btn=(Button)view.findViewById(R.id.btn_next);
         btn.setOnClickListener(this);
-        spnStart=(Spinner)view.findViewById(R.id.start);
-        spnDest=(Spinner)view.findViewById(R.id.destination);
-        spnStart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                location[0] = buildingArray[position];
-                Log.d(TAG,buildingArray[position]);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spnDest.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                location[1] = buildingArray[position];
-                Log.e(TAG,buildingArray[position]);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         //替time Linearlayout 設定ClickListener
         time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,7 +193,12 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                 if(intent.getStringExtra("activity").equals("NewOrderFragment")){
                     if(isAdded()){
                         getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    }/*
+                    if(isBind){
+                        getActivity().getApplicationContext().unbindService(mConnection);
+                        isBind=false;
                     }
+                    */
                     Bundle bundle = intent.getExtras();
                     String id = bundle.getString(getString(R.string.id));
                     switch(id){
@@ -238,6 +224,32 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
                                     R.layout.support_simple_spinner_dropdown_item,buildingArray);
                             spnStart.setAdapter(buildingList);
                             spnDest.setAdapter(buildingList);
+
+                            spnStart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                                    location[0] = buildingArray[position];
+                                    Log.d(TAG,buildingArray[position]);
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+                            spnDest.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    location[1] = buildingArray[position];
+                                    Log.e(TAG,buildingArray[position]);
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
                             break;
                     }
 
@@ -275,6 +287,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         str_show_time=String.valueOf(year)+"年"+String.valueOf(month)+"月"+String.valueOf(day)+"日 "+str_time;
         orderTime.setText(str_show_time);
         is_setTime=true;
+        MyBoundedService.curFragment=this;
     }
 
     @Override

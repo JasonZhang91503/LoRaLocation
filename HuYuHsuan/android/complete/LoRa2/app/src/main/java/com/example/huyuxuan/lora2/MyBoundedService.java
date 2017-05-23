@@ -1,6 +1,7 @@
 package com.example.huyuxuan.lora2;
 
 import android.app.Application;
+import android.support.v4.app.Fragment;
 
 import com.example.huyuxuan.lora2.Background.BackgroundRecvService;
 
@@ -12,4 +13,5 @@ public class MyBoundedService extends Application {
     public static ConnectService myService;
     public static boolean isConnect;
     public static BackgroundRecvService myBGService;
+    public static Fragment curFragment;
 }
