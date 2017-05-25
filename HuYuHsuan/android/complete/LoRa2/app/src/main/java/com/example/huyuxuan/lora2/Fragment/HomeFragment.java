@@ -232,18 +232,28 @@ public class HomeFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("HomeFragment")){
-                getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
-                Bundle bundle = intent.getExtras();
-                if(bundle != null){
-                    orderlist = (ArrayList<Order>)bundle.getSerializable("arrayList");
-                    MyAdapter myAdapter=new MyAdapter(orderlist);
-                    LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
-                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                    recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setAdapter(myAdapter);
-                }else{
-                    Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
+                if(intent.getStringExtra("result").equals("true")) {
+                    try{
+                        getActivity().getApplicationContext().unregisterReceiver(receiver);
+                        getActivity().getApplicationContext().unbindService(mConnection);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    Bundle bundle = intent.getExtras();
+                    if (bundle != null) {
+                        orderlist = (ArrayList<Order>) bundle.getSerializable("arrayList");
+                        MyAdapter myAdapter = new MyAdapter(orderlist);
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setAdapter(myAdapter);
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), "bundle null", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else{
+                   // Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
                 }
             }
         }

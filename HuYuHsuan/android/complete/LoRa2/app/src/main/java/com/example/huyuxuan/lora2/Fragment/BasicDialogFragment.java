@@ -89,8 +89,8 @@ public class BasicDialogFragment extends DialogFragment {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent tmp = new Intent();
                                     tmp.putExtra("time",list[position]);
-                                    getTargetFragment().onActivityResult(getTargetRequestCode(),1,tmp);
                                     getActivity().onBackPressed();
+                                    getTargetFragment().onActivityResult(getTargetRequestCode(),1,tmp);
 
                                 }
                             })

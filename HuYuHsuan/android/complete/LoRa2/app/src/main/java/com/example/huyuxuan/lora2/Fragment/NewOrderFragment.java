@@ -102,7 +102,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
             Log.d("NewOrderFragment:", "checkSR->sendToService");
         }
         setReceiver();
-        Toast.makeText(getContext(),"請求資料中",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(),"請求資料中",Toast.LENGTH_SHORT).show();
 
 
         //設定下一步Btn的內容
@@ -255,7 +255,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
 
                 }
                 else{
-                    Toast.makeText(getActivity(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getActivity(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
                 }
             }
 

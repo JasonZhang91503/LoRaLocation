@@ -8,6 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
@@ -30,6 +33,8 @@ import com.example.huyuxuan.lora2.Fragment.HomeFragment;
 import com.example.huyuxuan.lora2.Fragment.NewOrderFragment;
 import com.example.huyuxuan.lora2.Fragment.RecvHistoryFragment;
 import com.example.huyuxuan.lora2.Fragment.SendHistoryFragment;
+
+import java.io.File;
 
 
 /**
@@ -142,14 +147,21 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putInt("BGServiceCount",0)
                 .apply();
         Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
-        if(mBoundService!=null){
-            mBoundService.disconnect();
-            unregisterReceiver(receiver);
-            getApplicationContext().unbindService(mConnection);
+        try{
+            if(mBoundService!=null){
+                mBoundService.disconnect();
+                unregisterReceiver(receiver);
+                getApplicationContext().unbindService(mConnection);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
+
+        /*
         if(MyBoundedService.myBGService != null){
             MyBoundedService.myBGService.disconnect();
         }
+        */
 
         super.onDestroy();
     }
@@ -323,6 +335,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString("BGLogin","false")
                 .apply();
 
+        String sd = Environment.getExternalStorageDirectory().toString();
+        File file = new File(sd+"/mypic.png");
+        boolean delete=file.delete();
+        Log.d("LogOut","file delete"+String.valueOf(delete));
+       // Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
+
+
 
         //service的socket斷線
         Intent intent = new Intent(NavigationActivity.this,ConnectService.class);
@@ -373,8 +392,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NavigationActivity")){
                 if(intent.getStringExtra("result").equals("true")){
-                    getApplicationContext().unbindService(mConnection);
-                    unregisterReceiver(receiver);
+                    try{
+                        getApplicationContext().unbindService(mConnection);
+                        unregisterReceiver(receiver);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
                     Bundle bundle = intent.getExtras();
                     String id=bundle.getString(getString(R.string.id));
                     switch(id){
@@ -399,7 +423,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
                 else{
                     //連線有問題
-                    Toast.makeText(NavigationActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(NavigationActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
                 }
             }
         }

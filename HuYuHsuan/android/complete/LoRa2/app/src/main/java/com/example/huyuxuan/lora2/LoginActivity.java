@@ -89,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("result").equals("true")){
-                if(intent.getStringExtra("activity").equals("LoginActivity")){
+            if(intent.getStringExtra("activity").equals("LoginActivity")){
+                if(intent.getStringExtra("result").equals("true")){
                     getApplicationContext().unbindService(mConnection);
                     unregisterReceiver(receiver);
                     Bundle bundle = intent.getExtras();
@@ -121,12 +121,11 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
                     }
                 }
+                else{
+                    //連線有問題
+                    //Toast.makeText(LoginActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                }
             }
-            else{
-                //連線有問題
-                Toast.makeText(LoginActivity.this,"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
-            }
-
         }
     }
 

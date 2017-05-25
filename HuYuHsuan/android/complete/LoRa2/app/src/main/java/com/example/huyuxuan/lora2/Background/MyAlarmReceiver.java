@@ -44,6 +44,12 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
             serviceCounter++;
             sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
         }
+        else{
+            if(MyBoundedService.myBGService==null){
+                Intent service = new Intent(context,BackgroundRecvService.class);
+                startWakefulService(context, service);
+            }
+        }
 
     }
 
@@ -86,8 +92,15 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
-        context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
-        MyBoundedService.myBGService.stopSelf();
+        try{
+            context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
+            MyBoundedService.myBGService.disconnect();
+            MyBoundedService.myBGService.stopSelf();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
         sharedPreferences.edit().putInt("BGServiceCount",0).apply();
 
     }
@@ -103,10 +116,17 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 sharedPreferences = context.getSharedPreferences("data" , MODE_PRIVATE);
                 serviceCounter=0;
                 sharedPreferences.edit().putInt("BGServiceCount",serviceCounter).apply();
-                //context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
+                try{
+                    context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+                /*
                 if(MyBoundedService.myBGService.mWakeLock!=null){
                     MyBoundedService.myBGService.releaseWakeLock();
                 }
+                */
 
             }
 

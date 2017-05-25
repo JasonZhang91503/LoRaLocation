@@ -1,6 +1,5 @@
 package com.example.huyuxuan.lora2.Background;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -14,7 +13,6 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.example.huyuxuan.lora2.MainActivity;
 import com.example.huyuxuan.lora2.MyBoundedService;
@@ -97,11 +95,12 @@ public class BackgroundRecvService extends Service {
                     }
                 } catch (IOException e) {
                     sharedPreferences.edit().putInt("BGServiceCount",0).apply();
+                    BackgroundRecvService.this.stopSelf();
                     e.printStackTrace();
                 }
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
@@ -117,7 +116,7 @@ public class BackgroundRecvService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId){
-
+        acquireWakeLock(1);
         Log.d("BGService","onStartCommand");
         new AsyncTask<String,String,String>() {
             @Override
@@ -131,9 +130,10 @@ public class BackgroundRecvService extends Service {
                         Log.d("BGRService", "receive " + rcvMessage + " from server");
                         if(rcvMessage!=null){
                             analyze(rcvMessage);
+
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -141,6 +141,7 @@ public class BackgroundRecvService extends Service {
 
         }.execute();
 
+        releaseWakeLock();
         return START_STICKY;
     }
 
@@ -263,24 +264,23 @@ public class BackgroundRecvService extends Service {
     }
 
     private void ensureConnected(){
+        Log.e("BgService","ensureConnected");
         try {
+            if(mSocket==null){
+                mSocket=new Socket();
+            }
             if (mSocket.isConnected()) {
-                Log.i("Service", "Socket Connected");
+                Log.i("BgService", "Socket Connected");
             }else if(mSocket.isClosed()){
-                mSocket = new Socket();
+                Log.i("BgService", "Socket closed reconnect");
+                //mSocket = new Socket();
                 mSocket.connect(sc_add, 2000);
                 in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
                 out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+            }else{
+                Log.e("EnsureConnected","not connected and not closed");
             }
-            /*
-            else{
 
-                mSocket.connect(sc_add, 2000);
-                in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
-                out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
-
-            }
-            */
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -290,6 +290,7 @@ public class BackgroundRecvService extends Service {
         try {
             if(mSocket.isConnected()){
                 Log.d("BGService","socket close");
+                releaseWakeLock();
                 mSocket.close();
                 sharedPreferences.edit().putInt("BGServiceCount",0).apply();
             }

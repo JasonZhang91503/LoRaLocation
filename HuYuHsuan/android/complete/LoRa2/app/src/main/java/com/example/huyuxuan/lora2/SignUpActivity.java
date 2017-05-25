@@ -25,7 +25,6 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText editTextPassword;
     protected EditText editTextName;
     protected EditText editTextEmail;
-  //  protected Button btnToLogin;
     protected Button btnSignUp;
 
     protected String account;
@@ -53,23 +52,15 @@ public class SignUpActivity extends AppCompatActivity {
         editTextName = (EditText)findViewById(R.id.etSignName);
         editTextEmail = (EditText)findViewById(R.id.etSignEmail);
         sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
-      //  btnToLogin = (Button)findViewById(R.id.btnSignToLogin);
         btnSignUp = (Button)findViewById(R.id.btnSignUp);
+        editTextPassword.setHintTextColor(getResources().getColor(R.color.colorHint));
+        editTextAccount.setHintTextColor(getResources().getColor(R.color.colorHint));
+        editTextName.setHintTextColor(getResources().getColor(R.color.colorHint));
+        editTextEmail.setHintTextColor(getResources().getColor(R.color.colorHint));
+
         isBind=false;
 
-        /*
-        btnToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //跳到登入畫面
-                Intent intent = new Intent();
-                intent.setClass(SignUpActivity.this,LoginActivity.class);
-                startActivity(intent);
-                SignUpActivity.this.finish();
-                Log.d("SignUpActivity","跳回登入畫面");
-            }
-        });
-        */
+
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override

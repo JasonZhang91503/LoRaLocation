@@ -353,8 +353,15 @@ public class SendHistoryFragment extends Fragment {
         //动态注册receiver
         IntentFilter filter = new IntentFilter(ACTION_RECV_MSG);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new ConnectServiceReceiver();
-        getActivity().registerReceiver(receiver, filter);
+        try{
+            receiver = new ConnectServiceReceiver();
+            getActivity().registerReceiver(receiver, filter);
+        }catch(Exception e){
+            e.printStackTrace();
+            getActivity().unregisterReceiver(receiver);
+
+        }
+
         Log.d("SendHistoryFragment:","register receiver");
     }
 

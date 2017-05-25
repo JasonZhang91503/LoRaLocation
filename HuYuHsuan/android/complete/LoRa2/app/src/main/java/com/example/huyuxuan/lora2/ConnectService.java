@@ -165,6 +165,7 @@ public class ConnectService extends Service {
 
                         if (!mSocket.isOutputShutdown() && msg.length() > 0 && !mSocket.isInputShutdown()) {
                             try {
+                                //ensureConnected();
                                 if (out != null) {//傳送給server，接收server回應
                                     rcvMessage="";
                                     out.write(msg);
@@ -180,16 +181,20 @@ public class ConnectService extends Service {
                                         Log.d("ConnectService","isReSend");
                                     }
                                 }
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 //嘗試重新連線
                                 int sta=connectToServer();
                                 if(sta==1){
-                                    sendToServer(reSendIntent);
+                                    Intent intent = new Intent();
+                                    intent.putExtra(getString(R.string.activity),"");
+                                    intent.putExtra(getString(R.string.id),"3");
+                                    intent.putExtra(getString(R.string.account),sharedPreferences.getString("account",""));
+                                    intent.putExtra(getString(R.string.password),sharedPreferences.getString("password",""));
+                                    Log.d("斷線後重連，偷偷登入","account="+sharedPreferences.getString("account","")+"password="+sharedPreferences.getString("password",""));
+                                    sendToServer(intent);
+                                    //sendToServer(reSendIntent);
                                 }
-                            }catch(Exception e1){
-                                Log.d("ConnectService","catch exception");
-                                e1.printStackTrace();
                             }
                         }
                         if(activityName.compareTo("")!=0 && bundle != null){
@@ -213,6 +218,7 @@ public class ConnectService extends Service {
                         broadcastIntent.putExtras(bundle);
                         sendBroadcast(broadcastIntent);
                         Log.i("Service:","sendbroadcast to  "+activityName +"with result false");
+
                         //嘗試重新連線
                         int sta=connectToServer();
                         Log.d("Service","connect to Server");
@@ -220,6 +226,7 @@ public class ConnectService extends Service {
                             sendToServer(reSendIntent);
                             Log.d("Service","connect success,resend intent");
                         }
+
                     }
                     rcvMessage="";
                 }
@@ -239,7 +246,7 @@ public class ConnectService extends Service {
 
                 return  null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public Bundle Analyze(String mes){
@@ -455,6 +462,28 @@ public class ConnectService extends Service {
         catch (Exception e1){
             Log.d("ConnectService", "do in bg catch ");
             return -1;
+        }
+    }
+
+    private void ensureConnected(){
+        Log.e("ConnectService","ensureConnected");
+        try {
+            /*
+            if(mSocket==null){
+                mSocket=new Socket();
+            }
+            */
+            if (mSocket.isConnected()) {
+                Log.i("ConnectService", "Socket Connected");
+            }else if(mSocket.isClosed()){
+                Log.i("ConnectService", "Socket closed reconnect");
+                connectToServer();
+            }else{
+                Log.e("ConnectService","ensure connected:not connected and not closed");
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
