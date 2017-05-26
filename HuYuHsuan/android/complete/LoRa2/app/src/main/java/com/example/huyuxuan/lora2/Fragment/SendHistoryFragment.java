@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.Order;
 import com.example.huyuxuan.lora2.R;
 
@@ -65,6 +66,8 @@ public class SendHistoryFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        MyBoundedService.fragmentID=5;
+        MyBoundedService.curFragment=this;
         Log.d("histmain On resume","ok");
         if(tmp){
             sendToService();
@@ -165,6 +168,8 @@ public class SendHistoryFragment extends Fragment {
         date=(TextView)view.findViewById(R.id.txtDate);
         back=(ImageButton)view.findViewById(R.id.back);
         front=(ImageButton)view.findViewById(R.id.front);
+        MyBoundedService.fragmentID=5;
+        MyBoundedService.curFragment=this;
 
         setTime();
         tmp=false;

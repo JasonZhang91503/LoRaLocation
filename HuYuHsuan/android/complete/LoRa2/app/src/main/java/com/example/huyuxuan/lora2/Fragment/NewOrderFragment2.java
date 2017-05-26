@@ -28,6 +28,9 @@ import com.example.huyuxuan.lora2.ConnectService;
 import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.R;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -54,6 +57,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
     static ConnectService mBoundService;
     private ConnectServiceReceiver receiver;
     private static final String ACTION_RECV_MSG = "com.example.huyuxuan.lora.intent.action.RECEIVE_MESSAGE";
+    ArrayList<HashMap<String,String>> nameArrayList;
 
     String[] packet=new String[3];
 
@@ -93,7 +97,8 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         Button btn_next=(Button)view.findViewById(R.id.btn_next);
         btn_next.setOnClickListener(this);
         isBind=false;
-        MyBoundedService.curFragment = this;
+        MyBoundedService.fragmentID=3;
+        MyBoundedService.curFragment=this;
 
         //向server要使用者名單
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
@@ -116,6 +121,7 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 receiverName = parent.getItemAtPosition(position).toString();
+                receiverName = receiverName.substring(receiverName.indexOf('(')+1,receiverName.indexOf(')'));
             }
 
             @Override
@@ -179,10 +185,25 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
                 String id = bundle.getString(getString(R.string.id));
                 switch(id){
                     case "10"://要使用者名單
-                        String nameArray[]=bundle.getStringArray(getString(R.string.nameArray));
-                        ArrayAdapter<String > nameList = new ArrayAdapter<>(getActivity(),
-                                R.layout.support_simple_spinner_dropdown_item,nameArray);
-                        spnName.setAdapter(nameList);
+
+                        if (bundle != null) {
+                            nameArrayList=(ArrayList<HashMap<String,String>>) bundle.getSerializable("nameList");
+                            String nameArray[]=new String[nameArrayList.size()];
+
+                            for(int i=0;i<nameArrayList.size();i++){
+                                HashMap<String,String> tmp = nameArrayList.get(i);
+                                for(String key:tmp.keySet()){
+                                    Log.d("NameArray","account="+key+"name="+tmp.get(key));
+                                    nameArray[i]=tmp.get(key)+"("+key+")";
+                                }
+                            }
+                            ArrayAdapter<String > nameList = new ArrayAdapter<>(getActivity(),
+                                    R.layout.support_simple_spinner_dropdown_item,nameArray);
+                            spnName.setAdapter(nameList);
+
+                        } else {
+                            Toast.makeText(getActivity().getApplicationContext(), "bundle null", Toast.LENGTH_LONG).show();
+                        }
                         break;
 
                 }
@@ -213,6 +234,8 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
     @Override
     public void onResume(){
         Log.d("NewOrderFragment2","onResume");
+        MyBoundedService.fragmentID=3;
+        MyBoundedService.curFragment=this;
         super.onResume();
     }
 }

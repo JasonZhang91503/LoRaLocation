@@ -87,6 +87,8 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         LinearLayout time=(LinearLayout)view.findViewById(R.id.time);
         orderTime=(TextView)view.findViewById(R.id.orderTime);
         orderTime.setText(str_show_time);
+        MyBoundedService.fragmentID=2;
+        MyBoundedService.curFragment=this;
 
         //要大樓資料
         Intent tmpIntent = new Intent(getContext(),ConnectService.class);
@@ -287,6 +289,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
         str_show_time=String.valueOf(year)+"年"+String.valueOf(month)+"月"+String.valueOf(day)+"日 "+str_time;
         orderTime.setText(str_show_time);
         is_setTime=true;
+        MyBoundedService.fragmentID=2;
         MyBoundedService.curFragment=this;
     }
 
@@ -310,6 +313,8 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onResume(){
         Log.d("NewOrderFragment","onResume");
+        MyBoundedService.fragmentID=2;
+        MyBoundedService.curFragment=this;
         super.onResume();
     }
 

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.huyuxuan.lora2.ConnectService;
+import com.example.huyuxuan.lora2.MyBoundedService;
 import com.example.huyuxuan.lora2.Order;
 import com.example.huyuxuan.lora2.R;
 
@@ -66,6 +67,8 @@ public class RecvHistoryFragment extends Fragment {
         date=(TextView)view.findViewById(R.id.txtDate);
         viewPager=(ViewPager)view.findViewById(R.id.recv_pager);
         back=(ImageButton)view.findViewById(R.id.back);
+        MyBoundedService.fragmentID=6;
+        MyBoundedService.curFragment=this;
 
         setTime();
         Calendar c = Calendar.getInstance();
@@ -348,6 +351,8 @@ public class RecvHistoryFragment extends Fragment {
     @Override
     public void onResume(){
         Log.d("RecvHistoryFragment:","onResume");
+        MyBoundedService.fragmentID=6;
+        MyBoundedService.curFragment=this;
         super.onResume();
         if(tmp){
             sendToService();

@@ -306,7 +306,7 @@ public class ConnectService extends Service {
                 Log.d("ana:","id="+id+"name="+name+"email="+email);
                 break;
             case "7":   //寄件資料
-                String numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                String numStr = mes.substring(commaIndex+1,mes.lastIndexOf(','));//抓資料數量
                 int num = Integer.valueOf(numStr);
                 ArrayList<Order> orderArrayList = new ArrayList<Order>();
                 String[] mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
@@ -314,7 +314,7 @@ public class ConnectService extends Service {
                     String curStr = mesArray[i]; //抓每筆資料
                     String receiver;
                     if(i==0){
-                        receiver=curStr.substring(3,curStr.indexOf('~'));
+                        receiver=curStr.substring(mes.lastIndexOf(',')+1,curStr.indexOf('~'));
                     }
                     else{
                         receiver=curStr.substring(0,curStr.indexOf('~'));
@@ -328,7 +328,7 @@ public class ConnectService extends Service {
                 dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "8":   //收件資料
-                numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                numStr = mes.substring(commaIndex+1,mes.lastIndexOf(','));//抓資料數量
                 num = Integer.valueOf(numStr);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 orderArrayList = new ArrayList<Order>();
@@ -337,7 +337,7 @@ public class ConnectService extends Service {
                     Log.d("ana","curStr="+curStr);
                     String sender;
                     if(i==0){
-                       sender=curStr.substring(3,curStr.indexOf('~'));
+                       sender=curStr.substring(mes.lastIndexOf(',')+1,curStr.indexOf('~'));
                     }
                     else{
                        sender=curStr.substring(0,curStr.indexOf('~'));
@@ -352,7 +352,7 @@ public class ConnectService extends Service {
                 dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "9":
-                numStr = mes.substring(commaIndex+1,3);//抓資料數量
+                numStr = mes.substring(commaIndex+1,mes.lastIndexOf(','));//抓資料數量
                 num = Integer.valueOf(numStr);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
                 orderArrayList = new ArrayList<Order>();
@@ -360,7 +360,7 @@ public class ConnectService extends Service {
                     String curStr = mesArray[i]; //抓每筆資料
                     String sender;
                     if(i==0){
-                        sender=curStr.substring(3,curStr.indexOf('~'));
+                        sender=curStr.substring(mes.lastIndexOf(',')+1,curStr.indexOf('~'));
                     }
                     else{
                         sender=curStr.substring(0,curStr.indexOf('~'));
@@ -376,10 +376,26 @@ public class ConnectService extends Service {
                 dataBundle.putSerializable("arrayList",orderArrayList);
                 break;
             case "10":
-                mes = mes.substring(mes.indexOf('^')+1);
+                numStr = mes.substring(commaIndex+1,mes.indexOf('^'));//抓資料數量
+                num=Integer.parseInt(numStr);
                 mesArray = mes.split("\\*");//把每筆用＊分開的資料分別抓出來存進array
-                dataBundle.putStringArray(getString(R.string.nameArray),mesArray);
-                Log.d("ana:","第一筆"+mesArray[0]);
+                ArrayList<HashMap<String,String>> receiverList = new ArrayList<HashMap<String,String>>();
+
+                for(int i=0;i<num;i++){
+                    HashMap<String,String> tmp = new HashMap<String,String>();
+                    String curStr = mesArray[i]; //抓每筆資料
+                    String account;
+                    if(i==0){
+                        account=curStr.substring(mes.indexOf('^')+1,curStr.indexOf('~'));
+                    }
+                    else{
+                        account=curStr.substring(0,curStr.indexOf('~'));
+                    }
+                    name=curStr.substring(curStr.indexOf('~')+1);
+                    tmp.put(account,name);
+                    receiverList.add(tmp);
+                }
+               dataBundle.putSerializable("nameList",receiverList);
                 break;
             case "11":
                 mes = mes.substring(mes.indexOf('^')+1);
