@@ -11,7 +11,19 @@ int main(){
         exit(1);
     }
 
-    unsigned char buff[100] = "FE FE EE FF";
+    unsigned char buff[11];
+    buff[0] = "F";
+    buff[1] = "E";
+    buff[2] = " ";
+    buff[3] = "F";
+    buff[4] = "E";
+    buff[5] = " ";
+    buff[6] = "E";
+    buff[7] = "E";
+    buff[8] = " ";
+    buff[9] = "F";
+    buff[10] = "F";
+
     //do{ 
         cout << "Input :";
         //cin.getline(buff,100);
