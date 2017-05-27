@@ -60,7 +60,7 @@ void loop(){
 	char send_str[100];
 	
 	cout<< "Input : ";
-	cin >> send_str;
+	cin.getline(send_str,100);
 	
 	Serial.println(send_str);
 	
