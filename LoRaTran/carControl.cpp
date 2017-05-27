@@ -62,7 +62,7 @@ void loop(){
 	cout<< "Input : ";
 	cin >> send_str;
 	
-	Serial.println();
+	Serial.println(send_str);
 	
 	/*
 	
