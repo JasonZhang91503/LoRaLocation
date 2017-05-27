@@ -52,18 +52,19 @@ void setup(){
 void loop(){
     // Basic
     // Clean the input buffer
-    while( Serial.available() > 0) Serial.read();    
-    delay(100);
+    while( Serial.available() > 0){
+        cout << Serial.read();
+    }
     // request Basic string
-    //sendATcommand("AT+CGPSINF=0", "AT+CGPSINF=0\r\n\r\n", 2000);
-    
+
+    /*
 	char send_str[100];
 	
 	cout<< "Input : ";
 	cin.getline(send_str,100);
 	
 	Serial.println(send_str);
-	
+	*/
 	/*
 	
     counter = 0;
