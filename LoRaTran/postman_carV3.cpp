@@ -70,12 +70,6 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include "Lora_Setup.h"
 #endif
 
-#ifndef NO_CAR_MODE
-//Include WebSocket library
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-#endif
-
 
 //Include Navigation library
 #include "Navigation.h"
@@ -112,6 +106,16 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #endif
 
 using namespace std;
+
+#ifndef NO_CAR_MODE
+//Include WebSocket library
+#include <websocketpp/config/asio_no_tls.hpp>
+#include <websocketpp/server.hpp>
+#endif
+using ::read;
+using ::write;
+using ::close;
+using ::pipe;
 
 int e;
 char recv_packet[100];	//車子接收資料的buffer
