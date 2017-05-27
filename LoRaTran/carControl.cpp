@@ -11,7 +11,8 @@ int main(){
         exit(1);
     }
 
-    unsigned char buff[11];
+    unsigned char buff[11],buff2[12] = {"FE FE EE FF"};
+
     buff[0] = 'F';
     buff[1] = 'E';
     buff[2] = ' ';
@@ -24,12 +25,21 @@ int main(){
     buff[9] = 'F';
     buff[10] = 'F';
 
-    //do{ 
-        cout << "Input :";
-        //cin.getline(buff,100);
+    int input;
+    cout << "Input :";
+    cin >> input;
 
+    switch(input){
+        case 1:
         RS232_SendBuf(TTYUSB0,buff,11);
-   // }while(buff != "q");
+        break;
+        case 2:
+        RS232_SendBuf(TTYUSB0,buff2,11);
+        break;
+    }
+
+    
     
 
+    
 }
