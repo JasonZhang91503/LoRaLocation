@@ -85,25 +85,19 @@ int main(){
         case 'l':
             RS232_SendBuf(TTYUSB0,speedLow,11);
             break;
-        case 'x':
-            RS232_SendBuf(TTYUSB0,goX,14);
-            break;
-        case 'y':
-            RS232_SendBuf(TTYUSB0,goY,14);
-            break;
         case 27:
             c = getchar();
             c = getchar();
-            if(c == '65'){ 
+            if(c == 65){ 
                 RS232_SendBuf(TTYUSB0,goY,14);
             }
-            else if(c == '66'){ 
+            else if(c == 66){ 
                 RS232_SendBuf(TTYUSB0,backY,14);
             }
-            else if(c == '68'){ 
+            else if(c == 68){ 
                 RS232_SendBuf(TTYUSB0,leftX,14);
             }
-            else if(c == '67'){ 
+            else if(c == 67){ 
                 RS232_SendBuf(TTYUSB0,rightX,14);
             }
 
