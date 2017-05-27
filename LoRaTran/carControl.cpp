@@ -55,6 +55,8 @@ int main(){
 
         c = getchar();
 
+        printf("INPUT : %d\n",(int)c);
+
         /*
         int input;
         cout << "Input :";
