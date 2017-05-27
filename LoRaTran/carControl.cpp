@@ -108,11 +108,12 @@ int main(){
             }
 
             stop = false;
-        }
         case " ":
             RS232_SendBuf(TTYUSB0,mX,14);
             RS232_SendBuf(TTYUSB0,mY,14);
             break;
+        }
+        
 
         
     }while(c != 'q');
