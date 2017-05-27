@@ -47,11 +47,13 @@ int main(){
     goY[15] = {"FE FE YY 00 FF"};
 
 
+    char c;
+
     do{
 
         while(!kbhit());
 
-        char c = getchar();
+        c = getchar();
 
         /*
         int input;
