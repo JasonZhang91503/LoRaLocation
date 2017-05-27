@@ -92,15 +92,19 @@ int main(){
             printf("b : %d\n",(int)c);
             if(c == 65){ 
                 RS232_SendBuf(TTYUSB0,goY,14);
+                printf("send");
             }
             else if(c == 66){ 
                 RS232_SendBuf(TTYUSB0,backY,14);
+                printf("send");
             }
             else if(c == 68){ 
                 RS232_SendBuf(TTYUSB0,leftX,14);
+                printf("send");
             }
             else if(c == 67){ 
                 RS232_SendBuf(TTYUSB0,rightX,14);
+                printf("send");
             }
 
             stop = false;
