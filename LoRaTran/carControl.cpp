@@ -126,7 +126,7 @@ int main(){
         }
         
 
-        usleep(1000 * MILI);
+        usleep(100 * MILI);
     }while(c != 'q');
 
 
