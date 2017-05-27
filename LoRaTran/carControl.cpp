@@ -8,6 +8,7 @@
 using namespace std;
 
 #define TTYUSB0 16
+#define MILI 1000
 
 int kbhit(void)  
 {  
@@ -58,10 +59,11 @@ int main(){
 
         while(!kbhit()){
             if(!stop){
-                //RS232_SendBuf(TTYUSB0,mX,14);
-                //RS232_SendBuf(TTYUSB0,mY,14);
+                RS232_SendBuf(TTYUSB0,mX,14);
+                RS232_SendBuf(TTYUSB0,mY,14);
                 stop = true;
             }
+            unistd::usleep(200 * MILI);
         }
 
         
@@ -115,9 +117,17 @@ int main(){
         case 'x':
             RS232_SendBuf(TTYUSB0,mY,14);
             break;
+        case ' ':
+            RS232_SendBuf(TTYUSB0,mX,14);
+            unistd::usleep(100 * MILI);
+            RS232_SendBuf(TTYUSB0,mY,14);
+            break;
         }
         
 
         
     }while(c != 'q');
+
+
+    unistd::usleep(200 * MILI);
 }
