@@ -16,7 +16,7 @@ int main(){
         cout << "Input :";
         //cin.getline(buff,100);
 
-        RS232_SendBuf(TTYUSB0,buff,12);
+        RS232_SendBuf(TTYUSB0,buff,100);
    // }while(buff != "q");
     
 
