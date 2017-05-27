@@ -43,19 +43,32 @@ int main(){
     power[12] = {"FE FE EE FF"},
     speedHigh[12] = {"FE FE HH FF"},
     speedLow[12] = {"FE FE LL FF"},
-    goX[15] = {"FE FE XX 00 FF"},
-    goY[15] = {"FE FE YY 00 FF"};
+    leftX[15] = {"FE FE XX 30 FF"},
+    rightX[15] = {"FE FE XX 70 FF"},
+    goY[15] = {"FE FE YY 70 FF"},
+    backY[15] = {"FE FE YY 30 FF"},
+    mX[15] = {"FE FE XX 50 FF"},
+    mY[15] = {"FE FE YY 50 FF"};
 
 
     char c;
+    bool stop = true;
 
     do{
 
-        while(!kbhit());
+        while(!kbhit()){
+            if(!stop){
+                RS232_SendBuf(TTYUSB0,mX,14);
+                RS232_SendBuf(TTYUSB0,mY,14);
+                stop = true;
+            }
+        }
+
+        
 
         c = getchar();
 
-        printf("INPUT : %d\n",(int)c);
+        //rintf("INPUT : %d\n",(int)c);
 
         /*
         int input;
@@ -78,6 +91,23 @@ int main(){
         case 'y':
             RS232_SendBuf(TTYUSB0,goY,14);
             break;
+        case 27:
+            c = getchar();
+            c = getchar();
+            if(c == '65'){ 
+                RS232_SendBuf(TTYUSB0,goY,14);
+            }
+            else if(c == '66'){ 
+                RS232_SendBuf(TTYUSB0,backY,14);
+            }
+            else if(c == '68'){ 
+                RS232_SendBuf(TTYUSB0,leftX,14);
+            }
+            else if(c == '67'){ 
+                RS232_SendBuf(TTYUSB0,rightX,14);
+            }
+
+            stop = false;
         }
 
         
