@@ -68,7 +68,7 @@ int main(){
 
         c = getchar();
 
-        //rintf("INPUT : %d\n",(int)c);
+        printf("INPUT : %d\n",(int)c);
 
         /*
         int input;
