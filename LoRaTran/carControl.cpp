@@ -64,7 +64,6 @@ int main(){
                 RS232_SendBuf(TTYUSB0,mY,14);
                 stop = true;
             }
-            usleep(200 * MILI);
         }
 
         
