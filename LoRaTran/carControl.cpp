@@ -10,7 +10,7 @@ using namespace std;
 #define TTYUSB0 16
 #define MILI 1000
 
-int kbhit(void)  
+int kbhit(void)
 {  
     struct termios oldt, newt;  
     int ch;  
@@ -63,7 +63,7 @@ int main(){
                 RS232_SendBuf(TTYUSB0,mY,14);
                 stop = true;
             }
-            unistd::usleep(200 * MILI);
+            usleep(200 * MILI);
         }
 
         
@@ -119,7 +119,7 @@ int main(){
             break;
         case ' ':
             RS232_SendBuf(TTYUSB0,mX,14);
-            unistd::usleep(100 * MILI);
+            usleep(100 * MILI);
             RS232_SendBuf(TTYUSB0,mY,14);
             break;
         }
@@ -129,5 +129,5 @@ int main(){
     }while(c != 'q');
 
 
-    unistd::usleep(200 * MILI);
+    usleep(200 * MILI);
 }
