@@ -87,7 +87,9 @@ int main(){
             break;
         case 27:
             c = getchar();
+            printf("a : %d\n",(int)c);
             c = getchar();
+            printf("b : %d\n",(int)c);
             if(c == 65){ 
                 RS232_SendBuf(TTYUSB0,goY,14);
             }
