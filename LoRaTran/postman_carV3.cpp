@@ -129,6 +129,11 @@ int carLog = 0;
 float** adj;
 int LocCount;
 
+int pipeFds[2];
+char argPipe1[10];
+char argPipe2[10];
+int pchild;
+
 RequestManager ReqManger;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
@@ -334,6 +339,29 @@ void* asyncRecv(void *arg){
 	}
 	
 }
+
+
+#ifndef NO_CAR_MODE
+void buildWebSocket(){
+	if(pipe(pipeFds)){
+		perror("Pipe build failed\n");
+		exit(1);
+	}
+	
+	sprintf(argPipe1,"%d",pipeFds[0]);
+	sprintf(argPipe2,"%d",pipeFds[1]);
+
+	pchild = fork();
+
+	if(pchild < 0){
+		perror("Fork error\n");
+		exit(1);
+	}
+	else if(pchild == 0){
+		execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,NULL);
+	}
+}
+#endif
 
 int main(int argc, const char * argv[]){
 	int error;	//
