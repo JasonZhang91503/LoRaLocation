@@ -1,4 +1,3 @@
-/*
 
 #ifndef NO_CAR_MODE
 //Include WebSocket library
@@ -18,4 +17,3 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg);
 void* asyncWebSocketServer(void* param);
 #endif
 
-*/

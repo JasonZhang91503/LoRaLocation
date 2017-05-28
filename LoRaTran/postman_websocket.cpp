@@ -1,4 +1,3 @@
-/*
 
 #ifndef NO_CAR_MODE
 //Include WebSocket library
@@ -25,4 +24,3 @@ void* asyncWebSocketServer(void* param){
 	print_server.run();
 }
 #endif
-*/
