@@ -1,19 +1,9 @@
-#ifndef NO_CAR_MODE
-//Include WebSocket library
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-#endif
-
 /*
 using ::read;
 using ::write;
 using ::close;
 using ::pipe;
 */
-
-#ifndef NO_CAR_MODE
-typedef websocketpp::server<websocketpp::config::asio> server;
-#endif
 
 
 #ifndef NO_CAR_MODE
