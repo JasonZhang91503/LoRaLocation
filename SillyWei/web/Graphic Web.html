@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #f9f9f9;
+}
+</style>
+</head>
+<body onload="start()">
+<script>
+
+var scale = 4;
+var buildingColor = "#e4e4df";
+var blackStreetColor = "#aaa";
+var canvasWidth = (135 + 65) * scale;
+var canvasHeight = (40 + 60) * scale;
+var regionLU = new position(62 * scale, 32 * scale);
+var regionLM = new position(62 * scale, 50 * scale);
+var regionLD = new position(62 * scale, 67 * scale);
+
+var myBuildings = [];
+var myBlackStreets = [];
+var myBuildingsName = [];
+
+function start() {
+    myMapArea.start();
+}
+
+var myMapArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = canvasWidth;
+        this.canvas.height = canvasHeight;
+        this.context = this.canvas.getContext("2d");
+        this.context.textBaseline="middle";
+        this.context.textAlign="center";
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 0));
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 35 * scale));
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 70 * scale));
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 0));
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 35 * scale));
+	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 70 * scale));
+	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 0));
+	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 35 * scale));
+	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 70 * scale));
+
+	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 30 * scale));
+	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 65 * scale));
+	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 0));
+	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 70 * scale));
+	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 125 * scale, 0));
+	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 125 * scale, 70 * scale));
+	myBlackStreets.push(new component(5 * scale, 100 * scale, blackStreetColor, 195 * scale, 0));
+
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 15 * scale, "text"));
+	myBuildingsName[0].text = "社會科學大樓";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 15 * scale, "text"));
+	myBuildingsName[1].text = "行政大樓";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 15 * scale, "text"));
+	myBuildingsName[2].text = "商學大樓";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 50 * scale, "text"));
+	myBuildingsName[3].text = "圖書館";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 50 * scale, "text"));
+	myBuildingsName[4].text = "北大草原";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 50 * scale, "text"));
+	myBuildingsName[5].text = "北大草原";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 85 * scale, "text"));
+	myBuildingsName[6].text = "電資大樓預定地";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 85 * scale, "text"));
+	myBuildingsName[7].text = "公共事物大樓";
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 85 * scale, "text"));
+	myBuildingsName[8].text = "法學大樓";
+
+        updateMapArea();
+    },
+    clear : function() {
+    	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y, type) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+    this.x = x;
+    this.y = y;
+    this.update = function() {
+        ctx = myMapArea.context;
+        if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+        }else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+}
+
+function position(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+function updateMapArea() {
+    for (i = 0; i < myBuildings.length; i += 1) {
+        myBuildings[i].update();
+    }
+    for (i = 0; i < myBlackStreets.length; i++) {
+        myBlackStreets[i].update();
+    }
+    for (i = 0; i < myBuildingsName.length; i++) {
+        myBuildingsName[i].update();
+    }
+}
+
+</script>
+
+</body>
+</html>
+
