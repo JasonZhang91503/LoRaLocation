@@ -1,5 +1,4 @@
-/*
-
+#define BOOST_HAS_UNISTD_H 
 #ifndef NO_CAR_MODE
 //Include WebSocket library
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -25,4 +24,3 @@ void* asyncWebSocketServer(void* param){
 	print_server.run();
 }
 #endif
-*/
