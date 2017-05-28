@@ -180,6 +180,25 @@ public class BackgroundRecvService extends Service {
             }else{
                 Log.e("BGService","接收到的訊息格式錯誤");
             }
+            if(!mSocket.isOutputShutdown()){
+                if(out!=null){
+                    try {
+                        out.write("2");
+                        out.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    try {
+                        out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+                        out.write("2");
+                        out.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }else if(type == '1'){
             if(msg.equals("1,1")){
                 Log.d("BGService","認證成功");

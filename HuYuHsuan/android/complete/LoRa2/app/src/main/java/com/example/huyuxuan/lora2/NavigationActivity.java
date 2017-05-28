@@ -51,7 +51,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public NewOrderFragment newOrderFragment;
     public SendHistoryFragment sendHistoryFragment;
     public RecvHistoryFragment recvHistoryFragment;
-    public AccountFragment accountFragment;
+    public AccountFragment accountFragment = new AccountFragment();
 
     MyAlarmReceiver alarm = new MyAlarmReceiver();
     private SharedPreferences sharedPreferences;
@@ -124,7 +124,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 firstFragment = new HomeFragment();
             }
             myFragment = firstFragment;
-            MyBoundedService.curFragment = myFragment;
+            MyBoundedService.fragmentID = 0;
+            MyBoundedService.curFragment=firstFragment;
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,firstFragment).commit();
         }
     }
@@ -196,20 +197,27 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
             if (fm.getBackStackEntryCount() == 0) {
                 Log.d("NavigationActivity","onBack backstackcount==0");
-                Fragment cur = MyBoundedService.curFragment;
-                if(cur==firstFragment || cur==recvHistoryFragment || cur == sendHistoryFragment || cur == accountFragment
-                        || cur == newOrderFragment){
+                int curFragmentId = MyBoundedService.fragmentID;
+                if(curFragmentId==0 || curFragmentId==6 || curFragmentId == 5 || curFragmentId == 1
+                        || curFragmentId == 2 ){
                     //這些畫面返回時要跳回主畫面
                     Log.d("NavigationActivity","cur == ... Go to Home");
-                    getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
+                    /*
                     if(myFragment!=null){
+                        getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
                         myFragment.onDestroy();
+                    }
+                    */
+                    Fragment curfragment=MyBoundedService.curFragment;
+                    if(curfragment!=null){
+                        getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                        curfragment.onDestroy();
                     }
                     HomeFragment firstFragment = new HomeFragment();
                     myFragment = firstFragment;
-                    MyBoundedService.curFragment = myFragment;
+                    MyBoundedService.fragmentID = 0;
+                    MyBoundedService.curFragment=firstFragment;
                     getSupportFragmentManager().beginTransaction()
-                            .addToBackStack(null)
                             .replace(R.id.fragment_container,firstFragment).commit();
                 }
                 else{
@@ -233,61 +241,77 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
         switch (itemId){
             case R.id.nav_home:
+                /*
                 getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
                 if(myFragment!=null){
                     myFragment.onDestroy();
                 }
+                */
+                Fragment curfragment=MyBoundedService.curFragment;
+                if(curfragment!=null){
+                    getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                    curfragment.onDestroy();
+                }
                 HomeFragment firstFragment = new HomeFragment();
                 myFragment = firstFragment;
-                MyBoundedService.curFragment = myFragment;
+                MyBoundedService.fragmentID = 0;
+                MyBoundedService.curFragment=firstFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,firstFragment).commit();
                 break;
             case R.id.nav_register:
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                if(myFragment!=null){
-                    myFragment.onDestroy();
+                curfragment=MyBoundedService.curFragment;
+                if(curfragment!=null){
+                    getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                    curfragment.onDestroy();
                 }
                 newOrderFragment = new NewOrderFragment();
                 myFragment = newOrderFragment;
-                MyBoundedService.curFragment = myFragment;
+                MyBoundedService.fragmentID = 2;
+                MyBoundedService.curFragment=newOrderFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,newOrderFragment).commit();
                 break;
             case R.id.nav_send_history:
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                if(myFragment!=null){
-                    myFragment.onDestroy();
+                curfragment=MyBoundedService.curFragment;
+                if(curfragment!=null){
+                    getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                    curfragment.onDestroy();
                 }
                 sendHistoryFragment = new SendHistoryFragment();
                 myFragment = sendHistoryFragment;
-                MyBoundedService.curFragment = myFragment;
+                MyBoundedService.fragmentID = 5;
+                MyBoundedService.curFragment=sendHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,sendHistoryFragment).commit();
                 break;
             case R.id.nav_recv_history:
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                if(myFragment!=null){
-                    myFragment.onDestroy();
+                curfragment=MyBoundedService.curFragment;
+                if(curfragment!=null){
+                    getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                    curfragment.onDestroy();
                 }
                 recvHistoryFragment = new RecvHistoryFragment();
                 myFragment = recvHistoryFragment;
-                MyBoundedService.curFragment = myFragment;
+                MyBoundedService.fragmentID = 6;
+                MyBoundedService.curFragment=recvHistoryFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,recvHistoryFragment).commit();
                 break;
             case R.id.nav_profile:
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                if(myFragment!=null){
-                    myFragment.onDestroy();
+                curfragment=MyBoundedService.curFragment;
+                if(curfragment!=null){
+                    getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
+                    curfragment.onDestroy();
                 }
                 accountFragment = new AccountFragment();
                 myFragment = accountFragment;
-                MyBoundedService.curFragment = myFragment;
+                MyBoundedService.fragmentID = 1;
+                MyBoundedService.curFragment=accountFragment;
                 getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,accountFragment).commit();
@@ -335,13 +359,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .putString("BGLogin","false")
                 .apply();
 
+        //刪除照片
         String sd = Environment.getExternalStorageDirectory().toString();
         File file = new File(sd+"/mypic.png");
         boolean delete=file.delete();
         Log.d("LogOut","file delete"+String.valueOf(delete));
-       // Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
-
-
 
         //service的socket斷線
         Intent intent = new Intent(NavigationActivity.this,ConnectService.class);

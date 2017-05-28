@@ -100,6 +100,8 @@ public class HomeFragment extends Fragment {
         tvName = (TextView)myview.findViewById(R.id.textViewName);
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
+        MyBoundedService.fragmentID=1;
+        MyBoundedService.curFragment=this;
 
 
         isBind = false;
@@ -125,8 +127,9 @@ public class HomeFragment extends Fragment {
                 //跳到個人資料介面
                 AccountFragment accountFragment = new AccountFragment();
                 accountFragment.setTargetFragment(HomeFragment.this,0);
+                MyBoundedService.fragmentID=1;
+                MyBoundedService.curFragment=accountFragment;
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .addToBackStack(null)
                         .replace(R.id.fragment_container,accountFragment).commit();
             }
         });
@@ -136,6 +139,8 @@ public class HomeFragment extends Fragment {
                 //跳到登記寄件
                 NewOrderFragment newOrderFragment = new NewOrderFragment();
                 newOrderFragment.setTargetFragment(HomeFragment.this, 0);
+                MyBoundedService.fragmentID=2;
+                MyBoundedService.curFragment=newOrderFragment;
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .addToBackStack(null)
                         .replace(R.id.fragment_container,newOrderFragment).commit();
@@ -151,6 +156,7 @@ public class HomeFragment extends Fragment {
                 showDialog(new SelectDialogListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        MyBoundedService.fragmentID=8;
                         switch (position){
                             case 0:
                                 //用系統相機拍照
@@ -296,6 +302,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        MyBoundedService.fragmentID=1;
+        MyBoundedService.curFragment=this;
         if(resum){
            // updateListView();
         }

@@ -50,7 +50,8 @@ public class BasicDialogFragment extends DialogFragment {
         c = Calendar.getInstance();
         formattedDate =dayDateFormat.format(c.getTime());
         Log.d("BasicDialogFragment","onCreateView");
-        MyBoundedService.curFragment = this;
+        MyBoundedService.fragmentID = 7;
+        MyBoundedService.curFragment=this;
 
 
         Bundle bundle = getArguments();

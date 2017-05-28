@@ -113,7 +113,8 @@ public class AccountFragment extends Fragment {
         pwd.setText(sharedPreferences.getString(getString(R.string.password),""));
         mail.setText(sharedPreferences.getString(getString(R.string.email),""));
         mMoneyView.setText(mMoney);
-        MyBoundedService.curFragment = this;
+        MyBoundedService.fragmentID = 1;
+        MyBoundedService.curFragment=this;
 
         String sd = Environment.getExternalStorageDirectory().toString();
         Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
@@ -130,6 +131,7 @@ public class AccountFragment extends Fragment {
                 showDialog(new SelectDialog.SelectDialogListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        MyBoundedService.fragmentID=8;
                         switch (position){
                             case 0:
                                 //用系統相機拍照
@@ -500,6 +502,13 @@ public class AccountFragment extends Fragment {
                 R.style.transparentFrameWindowStyle,listener,list);
         dialog.show();
         return dialog;
+    }
+
+    @Override
+    public void onResume(){
+        MyBoundedService.fragmentID = 1;
+        MyBoundedService.curFragment=this;
+        super.onResume();
     }
 
 }

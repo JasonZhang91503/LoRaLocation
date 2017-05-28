@@ -91,7 +91,8 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         destination=(TextView)view.findViewById(R.id.Destination);
         name=(TextView)view.findViewById(R.id.txtName);
         note=(TextView)view.findViewById(R.id.txtNote);
-        MyBoundedService.curFragment = this;
+        MyBoundedService.fragmentID=4;
+        MyBoundedService.curFragment=this;
 
         setText();
         btn_confirm=(Button)view.findViewById(R.id.btn_confim);
@@ -118,34 +119,42 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         myName = sharedPreferences.getString(getString(R.string.name),"");
         myAccount = sharedPreferences.getString(getString(R.string.account),"");
+        String money=sharedPreferences.getString("Money","100");
+        if(Integer.parseInt(money) >= 30){
+            //向server登記
+            Intent intent = new Intent(getActivity(),ConnectService.class);
+            intent.putExtra(getString(R.string.activity),"NewOrderFragment3");
+            intent.putExtra(getString(R.string.id),"4");
+            intent.putExtra(getString(R.string.requireTime),year+"-0"+month+"-"+day+" "+mParam2[0]+":00");
+            intent.putExtra(getString(R.string.sender),myAccount);
+            intent.putExtra(getString(R.string.receiver),mParam2[1]);
+            intent.putExtra(getString(R.string.startLocation),mParam1[0]);
+            intent.putExtra(getString(R.string.desLocation),mParam1[1]);
+            intent.putExtra(getString(R.string.note),mParam2[2]);
 
-        //向server登記
-        Intent intent = new Intent(getActivity(),ConnectService.class);
-        intent.putExtra(getString(R.string.activity),"NewOrderFragment3");
-        intent.putExtra(getString(R.string.id),"4");
-        intent.putExtra(getString(R.string.requireTime),year+"-0"+month+"-"+day+" "+mParam2[0]+":00");
-        intent.putExtra(getString(R.string.sender),myAccount);
-        intent.putExtra(getString(R.string.receiver),mParam2[1]);
-        intent.putExtra(getString(R.string.startLocation),mParam1[0]);
-        intent.putExtra(getString(R.string.desLocation),mParam1[1]);
-        intent.putExtra(getString(R.string.note),mParam2[2]);
-
-        if(!isBind){
-            getActivity().getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-            isBind=true;
-            Log.d("NewOrderFragment3:", "apply->bind");
-        }
-        else{
-            if(mBoundService == null){
-                Log.e("NewOrderFragment3","mBoundService is null");
+            if(!isBind){
+                getActivity().getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                isBind=true;
+                Log.d("NewOrderFragment3:", "apply->bind");
             }
             else{
-                Log.d("NewOrderFragment3:", "apply->sendToService");
-                mBoundService.sendToServer(intent);
-            }
+                if(mBoundService == null){
+                    Log.e("NewOrderFragment3","mBoundService is null");
+                }
+                else{
+                    Log.d("NewOrderFragment3:", "apply->sendToService");
+                    mBoundService.sendToServer(intent);
+                }
 
+            }
+            setReceiver();
         }
-        setReceiver();
+        else{
+            //餘額不足
+            Toast.makeText(getContext(),"餘額不足，請先儲值",Toast.LENGTH_SHORT).show();
+        }
+
+
 
     }
 
@@ -233,5 +242,12 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         }
 
         super.onStop();
+    }
+
+    @Override
+    public void onResume(){
+        MyBoundedService.fragmentID=4;
+        MyBoundedService.curFragment=this;
+        super.onResume();
     }
 }
