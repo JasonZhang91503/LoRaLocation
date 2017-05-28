@@ -97,6 +97,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include"postman_packet.h"
 #include"postman_consoleMap.h"
 #include"confTest.h"
+#include"postman_websocket.h"
 //#include"postman_GPS.h"
 
 #ifndef NO_CAR_MODE
@@ -106,16 +107,6 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #endif
 
 using namespace std;
-
-#ifndef NO_CAR_MODE
-//Include WebSocket library
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
-#endif
-using ::read;
-using ::write;
-using ::close;
-using ::pipe;
 
 int e;
 char recv_packet[100];	//車子接收資料的buffer
@@ -347,25 +338,6 @@ void* asyncRecv(void *arg){
 	}
 	
 }
-
-#ifndef NO_CAR_MODE
-void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
-{
-  	std::cout << msg->get_payload() << std::endl;
-}
-
-void* asyncWebSocketServer(void* param){
-	server print_server;
-  
-	print_server.set_message_handler(&on_message);
-
-	print_server.init_asio();
-	print_server.listen(9002);
-	print_server.start_accept();
-
-	print_server.run();
-}
-#endif
 
 int main(int argc, const char * argv[]){
 	int error;	//
