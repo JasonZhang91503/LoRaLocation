@@ -98,7 +98,6 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include"postman_consoleMap.h"
 #include"confTest.h"
 
-#define BOOST_HAS_UNISTD_H 
 #include"postman_websocket.h"
 //#include"postman_GPS.h"
 
