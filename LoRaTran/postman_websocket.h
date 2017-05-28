@@ -1,3 +1,5 @@
+/*
+
 #ifndef NO_CAR_MODE
 //Include WebSocket library
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -15,3 +17,5 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg);
 
 void* asyncWebSocketServer(void* param);
 #endif
+
+*/

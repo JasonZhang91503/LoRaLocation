@@ -1,9 +1,10 @@
 /*
-using ::read;
-using ::write;
-using ::close;
-using ::pipe;
-*/
+
+#ifndef NO_CAR_MODE
+//Include WebSocket library
+#include <websocketpp/config/asio_no_tls.hpp>
+#include <websocketpp/server.hpp>
+#endif
 
 
 #ifndef NO_CAR_MODE
@@ -24,3 +25,4 @@ void* asyncWebSocketServer(void* param){
 	print_server.run();
 }
 #endif
+*/

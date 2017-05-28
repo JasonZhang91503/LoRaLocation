@@ -97,6 +97,8 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include"postman_packet.h"
 #include"postman_consoleMap.h"
 #include"confTest.h"
+
+#define BOOST_HAS_UNISTD_H 
 #include"postman_websocket.h"
 //#include"postman_GPS.h"
 
@@ -448,7 +450,7 @@ int main(int argc, const char * argv[]){
 	//建造一條用作recv的thread
 	pthread_t recvThread,webSocketThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
-	pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
+	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
 	//開始送貨循環
 	while(1){
