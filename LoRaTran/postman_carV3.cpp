@@ -165,7 +165,7 @@ int GPSsetup(){
         printf("code: %d, reason: %s\n", rc, gps_errstr(rc));
         return EXIT_FAILURE;
     }
-	printf("GPSsetup : success!\n");
+	
     gps_stream(&myGPS_Data, WATCH_ENABLE | WATCH_JSON, NULL);
 	
 
@@ -175,6 +175,7 @@ int GPSsetup(){
 		getGPSLocation(testLon,testLat);
 	}
 	
+	printf("GPSsetup : success!\n");
 
 	return 0;
 }
@@ -445,8 +446,9 @@ int main(int argc, const char * argv[]){
 	pthread_cond_init(&timerCond, NULL);
 
 	//建造一條用作recv的thread
-	pthread_t recvThread;
+	pthread_t recvThread,webSocketThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
+	pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
 	//開始送貨循環
 	while(1){
