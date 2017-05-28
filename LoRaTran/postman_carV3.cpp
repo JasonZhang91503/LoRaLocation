@@ -130,10 +130,6 @@ int carLog = 0;
 float** adj;
 int LocCount;
 
-#ifndef NO_CAR_MODE
-typedef websocketpp::server<websocketpp::config::asio> server;
-#endif
-
 RequestManager ReqManger;
 
 bool isCarReachDestination(double &directionInfo, double &distanceInfo, double reachDistance, double sourceLon, double sourceLat, double destinationLon, double destinationLat);
