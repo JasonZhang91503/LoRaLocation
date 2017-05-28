@@ -11,6 +11,10 @@ using ::close;
 using ::pipe;
 */
 
+#ifndef NO_CAR_MODE
+typedef websocketpp::server<websocketpp::config::asio> server;
+#endif
+
 
 #ifndef NO_CAR_MODE
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
