@@ -203,8 +203,24 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
 
         //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
     }
+}
 
+Coor parseStrongHold(){
+	const char *d = " ,";
+	char* eventNumStr;
+    char* xStr;
+    char* yStr;
 
+	eventNumStr = strtok( readBuff ,d);
+	xStr = strtok(NULL,d);
+    yStr = strtok(NULL,d);
+
+	
+    Coor node = {atoi(xStr),atoi(yStr)};
+
+    cout << atoi(xStr) << "  " << atoi(yStr) << endl;
+
+	return node;
 }
 
 int main(int argc, const char * argv[]) {
