@@ -287,6 +287,7 @@ Coor parseStrongHold();
 #include <websocketpp/server.hpp>
 
 typedef websocketpp::server<websocketpp::config::asio> server;
+typedef server::message_ptr message_ptr;
 
 int pipeFds[2];
 char readBuff[256];
@@ -297,7 +298,7 @@ using websocketpp::connection_hdl;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
+void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
 
 
 class count_server {
@@ -404,6 +405,7 @@ private:
 void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
 {
     std::cout << msg->get_payload() << std::endl;
+    s->send(hdl, msg->get_payload(), msg->get_opcode());
     std::thread t(std::bind(&count_server::count,s));
 }
 
