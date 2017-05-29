@@ -44,10 +44,19 @@ int main(){
     power[12] = {"FE FE EE FF"},
     speedHigh[12] = {"FE FE HH FF"},
     speedLow[12] = {"FE FE LL FF"},
+
     leftX[15] = {"FE FE XX 30 FF"},
+    leftX2[15] = {"FE FE XX 45 FF"},
+
     rightX[15] = {"FE FE XX 70 FF"},
+    rightX2[15] = {"FE FE XX 55 FF"},
+
     goY[15] = {"FE FE YY 70 FF"},
+    goY2[15] = {"FE FE YY 55 FF"},
+
     backY[15] = {"FE FE YY 30 FF"},
+    backY2[15] = {"FE FE YY 45 FF"},
+
     mX[15] = {"FE FE XX 50 FF"},
     mY[15] = {"FE FE YY 50 FF"};
 
@@ -124,6 +133,20 @@ int main(){
             usleep(100 * MILI);
             RS232_SendBuf(TTYUSB0,mY,14);
             break;
+        case '8':
+            RS232_SendBuf(TTYUSB0,goY2,14);
+            break;
+        case '2':
+            RS232_SendBuf(TTYUSB0,backY2,14);
+            break;
+        case '4':
+            RS232_SendBuf(TTYUSB0,leftX2,14);
+            break;
+        case '6':
+            RS232_SendBuf(TTYUSB0,rightX2,14);
+            break;
+
+
         }
         
 
