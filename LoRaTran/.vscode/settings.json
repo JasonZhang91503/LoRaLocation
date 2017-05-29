@@ -49,6 +49,8 @@
         "cerrno": "cpp",
         "xlocmon": "cpp",
         "xloctime": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "ctime": "cpp",
+        "iomanip": "cpp"
     }
 }
