@@ -52,6 +52,8 @@
         "list": "cpp",
         "ctime": "cpp",
         "iomanip": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "mutex": "cpp",
+        "set": "cpp"
     }
 }

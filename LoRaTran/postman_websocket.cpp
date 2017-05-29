@@ -295,12 +295,10 @@ char sendBuff[256];
 
 using websocketpp::connection_hdl;
 using std::placeholders::_1;
+using std::placeholders::_2;
 
-void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
-{
-    std::cout << msg->get_payload() << std::endl;
-    std::thread t(std::bind(&count_server::count,&server));
-}
+void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
+
 
 class count_server {
 public:
@@ -388,7 +386,7 @@ public:
     }
     
     void run(uint16_t port) {
-        m_server.set_message_handler(&on_message);
+        m_server.set_message_handler(bind(&on_message,&m_server,::_1,::_2));
 
         m_server.listen(port);
         m_server.start_accept();
@@ -402,6 +400,12 @@ private:
     con_list m_connections;
     std::mutex m_mutex;
 };
+
+void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
+{
+    std::cout << msg->get_payload() << std::endl;
+    std::thread t(std::bind(&count_server::count,s));
+}
 
 Coor parseStrongHold(){
 	const char *d = " ,";
