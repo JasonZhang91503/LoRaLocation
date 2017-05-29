@@ -33,7 +33,6 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
     cout << "BuildConnection" << endl;
     print_server.send(hdl, msg->get_payload(), msg->get_opcode());
 
-
     while(1){
         read(pipeFds[0],readBuff,sizeof(readBuff));
         cout << "read from postman : "<< readBuff << endl;
@@ -68,7 +67,7 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
             break;
         }
 
-        //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
+        print_server.send(hdl, msg->get_payload(), msg->get_opcode());
     }
 
     
