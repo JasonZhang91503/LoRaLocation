@@ -116,9 +116,27 @@ int main(int argc, const char * argv[]) {
 
 #include <websocketpp/server.hpp>
 
-#include <iostream>
+#include<iostream>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+#include <string>
+using namespace std;
+
+struct Coor{
+    int x;
+    int y;
+};
+
+Coor parseStrongHold();
+
 
 typedef websocketpp::server<websocketpp::config::asio> server;
+
+int pipeFds[2];
+char readBuff[256];
+char sendBuff[256];
+
 
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -129,6 +147,7 @@ typedef server::message_ptr message_ptr;
 
 // Define a callback to handle incoming messages
 void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
+    /*
     std::cout << "on_message called with hdl: " << hdl.lock().get() 
               << " and message: " << msg->get_payload()
               << std::endl;
@@ -139,9 +158,61 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
         std::cout << "Echo failed because: " << e  
                   << "(" << e.message() << ")" << std::endl;
     }
+    */
+
+    vector<Coor> coorVec;
+    int state = 1;
+
+    std::cout << msg->get_payload() << std::endl;
+    cout << "BuildConnection" << endl;
+    s->send(hdl, msg->get_payload(), msg->get_opcode());
+
+    while(1){
+        read(pipeFds[0],readBuff,sizeof(readBuff));
+        cout << "read from postman : "<< readBuff << endl;
+
+        switch(readBuff[0]){
+        case '1':
+            if(state == 2){
+                coorVec.clear();
+                state = 1;
+            }
+            coorVec.push_back(parseStrongHold());
+            break;
+        case '2':
+            if(state == 1){
+                sendBuff[0] = 1;
+                sendBuff[1] = coorVec.size();
+                int count = 2;
+                for(int i = 0; i < coorVec.size(); i++){
+                    sendBuff[count] = coorVec[i].x;
+                    count++;
+                    sendBuff[count] = coorVec[i].y;
+                    count++;
+                }
+                sendBuff[count] = '\0';
+                state = 2;
+                s->send(hdl, sendBuff, websocketpp::frame::opcode::TEXT);
+            }
+            s->send(hdl, readBuff, websocketpp::frame::opcode::TEXT);
+            break;
+        case '3':
+            s->send(hdl, readBuff, websocketpp::frame::opcode::TEXT);
+            break;
+        }
+
+        //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
+    }
+
+
 }
 
-int main() {
+int main(int argc, const char * argv[]) {
+    pipeFds[0] = atoi(argv[1]);
+    pipeFds[1] = atoi(argv[2]);
+    close(pipeFds[1]);
+
+
 	// Create a server endpoint
     server echo_server;
 	
