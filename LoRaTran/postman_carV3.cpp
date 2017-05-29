@@ -370,6 +370,8 @@ void buildWebSocket(){
 	else if(pchild == 0){
 		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,NULL);
 	}
+	unistd::close(pipeFds[0]);
+
 }
 
 
@@ -646,6 +648,11 @@ int goToLocation(double lon,double lat){
 				mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
 
 				cout << "●";
+
+				if((*traIt)->GetstrongholdMark()){
+					sprintf(buff1,"1,%d,%d",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+					write(pipeFds[1],buff1,sizeof(buff1));
+				}
             }
 
 			traIt--;
@@ -1113,7 +1120,7 @@ int parseRequestData(UserRequest* req){
 	printf("dLat :%f,",req->dest_lat);
 
 	req->state = 0;
-	printf("state :%f\n",req->state);
+	printf("state :%d\n",req->state);
 
 	
 	#else

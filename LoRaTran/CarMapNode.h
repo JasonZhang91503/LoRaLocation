@@ -38,6 +38,9 @@ class CarMapNode
         void SetStronghold(int s){ stronghold = s; }
         int GetStronghold(){ return stronghold; }
 
+        void SetstrongholdMark(bool mark) { strongholdMark = mark; }
+        bool GetstrongholdMark() { return strongholdMark; }
+
 
         void setDir(int d){ dir = d; }
         int getDir(){ return dir; } 
@@ -56,6 +59,7 @@ class CarMapNode
         double lat = 0;
 
         int stronghold = -1;
+        bool strongholdMark = false;
         int dir = 0;
 };
 

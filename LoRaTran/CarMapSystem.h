@@ -569,6 +569,7 @@ public:
         for(int i = 0; i < maxWidth;i++){
             for(int j = 0; j < maxHeight;j++){
                 carMapNode[i][j].setDir(0);
+                carMapNode[i][j].SetstrongholdMark(false);
             }
         }
 
@@ -625,6 +626,10 @@ public:
             list<Stronghold>::iterator itE = shList.begin();
             advance(itS, traceStrongholdVec[i] - 1);
             advance(itE, traceStrongholdVec[i+1] - 1);
+
+            carMapNode[itS->x][itS->y].SetstrongholdMark(true);
+            carMapNode[itE->x][itE->y].SetstrongholdMark(true);
+
 
             hasPath = run_A_star(itS->x,itS->y,itE->x,itE->y);
             if(hasPath){
