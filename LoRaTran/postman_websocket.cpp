@@ -335,6 +335,10 @@ public:
                     state = 1;
                 }
                 coorVec.push_back(parseStrongHold());
+
+                for (auto it : m_connections) {
+                    m_server.send(it,"hello",websocketpp::frame::opcode::text);
+                }
                 break;
             case '2':
                 if(state == 1){
