@@ -3,6 +3,8 @@
 #include<unistd.h>
 #include<string.h>
 
+using namespace std;
+
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
@@ -50,7 +52,7 @@ Coor parseStrongHold(){
 	char* eventNumStr;
     char* xStr;
     char* yStr;
-ss
+
 	eventNumStr = strtok( readBuff ,d);
 	xStr = strtok(NULL,d);
     yStr = strtok(NULL,d);
