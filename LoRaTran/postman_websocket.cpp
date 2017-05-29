@@ -327,6 +327,7 @@ public:
             read(pipeFds[0],readBuff,sizeof(readBuff));
             cout << "read from postman : "<< readBuff << endl;
 
+            std::lock_guard<std::mutex> lock(m_mutex);
             switch(readBuff[0]){
             case '1':
                 if(state == 2){
@@ -348,20 +349,17 @@ public:
                     }
                     sendBuff[count] = '\0';
                     state = 2;
-                    std::lock_guard<std::mutex> lock(m_mutex);
                     for (auto it : m_connections) {
                         m_server.send(it,sendBuff,websocketpp::frame::opcode::text);
                         cout << "1 send" << endl;
                     }
                 }
-                std::lock_guard<std::mutex> lock(m_mutex);
                 for (auto it : m_connections) {
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "2 send" << endl;
                 }
                 break;
             case '3':
-                std::lock_guard<std::mutex> lock(m_mutex);
                 for (auto it : m_connections) {
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "3 send" << endl;
