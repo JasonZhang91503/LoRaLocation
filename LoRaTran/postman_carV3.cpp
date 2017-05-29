@@ -730,10 +730,6 @@ int goToLocation(double lon,double lat){
 		#endif
 	} while ( traIt != traceVec.end() || firstFind == true );
 
-	char buff[256];
-	sprintf(buff,"%c",3);
-	write(pipeFds[1],buff,sizeof(buff));
-
 	return CAR_OK;
 }
 
@@ -787,6 +783,10 @@ int moveToSender(UserRequest* req){
 	unistd::usleep(2000);
 	#endif
 
+	char buff[256];
+	sprintf(buff,"%c",3);
+	write(pipeFds[1],buff,sizeof(buff));
+
 	req->state = 1;
 	
 #ifndef NO_CAR_MODE
@@ -838,6 +838,10 @@ int moveToReceiver(UserRequest* req){
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
 	#endif
+
+	char buff[256];
+	sprintf(buff,"%c",3);
+	write(pipeFds[1],buff,sizeof(buff));
 
 	req->state = 3;
 	
