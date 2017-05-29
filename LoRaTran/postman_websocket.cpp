@@ -296,6 +296,12 @@ char sendBuff[256];
 using websocketpp::connection_hdl;
 using std::placeholders::_1;
 
+void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
+{
+    std::cout << msg->get_payload() << std::endl;
+    std::thread t(std::bind(&count_server::count,&server));
+}
+
 class count_server {
 public:
     count_server() : m_count(0) {
@@ -315,7 +321,7 @@ public:
         m_connections.erase(hdl);
     }
     
-    void on_message() {
+    void count() {
         vector<Coor> coorVec;
         int state = 1;
 
@@ -382,6 +388,8 @@ public:
     }
     
     void run(uint16_t port) {
+        m_server.set_message_handler(&on_message);
+
         m_server.listen(port);
         m_server.start_accept();
         m_server.run();
@@ -419,6 +427,5 @@ int main(int argc, const char * argv[]) {
     close(pipeFds[1]);
 
     count_server server;
-    std::thread t(std::bind(&count_server::on_message,&server));
     server.run(9002);
 }
