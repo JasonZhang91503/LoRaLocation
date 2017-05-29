@@ -423,7 +423,7 @@ int main(int argc, const char * argv[]){
 	#endif
 
 	#ifndef NO_CAR_MODE
-	buildWebSocket();
+	//buildWebSocket();
 	#endif
 
 	//car程式開始執行
@@ -492,7 +492,7 @@ int main(int argc, const char * argv[]){
 	//建造一條用作recv的thread
 	pthread_t recvThread,webSocketThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
-	pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
+	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
 	//開始送貨循環
 	while(1){
