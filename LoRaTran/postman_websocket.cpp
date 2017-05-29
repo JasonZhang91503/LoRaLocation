@@ -273,6 +273,7 @@ int main(int argc, const char * argv[]) {
 typedef websocketpp::server<websocketpp::config::asio> server;
 
 using websocketpp::connection_hdl;
+using std::placeholders::_1;
 
 class count_server {
 public:
