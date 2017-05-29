@@ -96,6 +96,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include"postman_request.h"
 #include"postman_packet.h"
 #include"postman_consoleMap.h"
+#include"postman_websocket.h"
 #include"confTest.h"
 //#include"postman_GPS.h"
 
@@ -106,6 +107,11 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #endif
 
 using namespace std;
+
+#ifndef NO_CAR_MODE
+using namespace unistd;
+#endif
+
 
 int e;
 char recv_packet[100];	//車子接收資料的buffer
@@ -130,8 +136,6 @@ float** adj;
 int LocCount;
 
 int pipeFds[2];
-char argPipe1[10];
-char argPipe2[10];
 int pchild;
 
 RequestManager ReqManger;
@@ -348,6 +352,10 @@ void buildWebSocket(){
 		exit(1);
 	}
 	
+	
+	char argPipe1[10];
+	char argPipe2[10];
+
 	sprintf(argPipe1,"%d",pipeFds[0]);
 	sprintf(argPipe2,"%d",pipeFds[1]);
 
@@ -361,6 +369,9 @@ void buildWebSocket(){
 		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,NULL);
 	}
 }
+
+
+
 #endif
 
 int main(int argc, const char * argv[]){
