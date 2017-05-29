@@ -709,7 +709,7 @@ int goToLocation(double lon,double lat){
 		else if(dirInfo == 90){ newDirInfo = 4; }
 		else if(dirInfo == 180){ newDirInfo = 2; }
 		else if(dirInfo == 270){ newDirInfo = 3; }
-		sprintf(buff,"%c%c%c%c",2,mapNode.x,mapNode.y,newDirInfo);
+		sprintf(buff,"%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo);
 		write(pipeFds[1],buff,sizeof(buff));
 
 
@@ -730,6 +730,9 @@ int goToLocation(double lon,double lat){
 		#endif
 	} while ( traIt != traceVec.end() || firstFind == true );
 
+	char buff[256];
+	sprintf(buff,"%c",3);
+	write(pipeFds[1],buff,sizeof(buff));
 
 	return CAR_OK;
 }

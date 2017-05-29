@@ -31,6 +31,8 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 
     std::cout << msg->get_payload() << std::endl;
     cout << "BuildConnection" << endl;
+    print_server.send(hdl, msg->get_payload(), msg->get_opcode());
+
 
     while(1){
         read(pipeFds[0],readBuff,sizeof(readBuff));
@@ -62,6 +64,7 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
             print_server.send(hdl, readBuff, websocketpp::frame::opcode::TEXT);
             break;
         case '3':
+            print_server.send(hdl, readBuff, websocketpp::frame::opcode::TEXT);
             break;
         }
 
