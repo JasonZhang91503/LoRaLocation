@@ -22,8 +22,6 @@ server print_server;
 int pipeFds[2];
 char readBuff[256];
 
-
-
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
     vector<Coor> coorVec;
