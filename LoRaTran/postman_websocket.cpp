@@ -8,6 +8,8 @@ using namespace std;
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
+Coor parseStrongHold();
+
 typedef websocketpp::server<websocketpp::config::asio> server;
 
 server print_server;
@@ -18,7 +20,7 @@ char readBuff[256];
 struct Coor{
     int x;
     int y;
-}
+};
 
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
