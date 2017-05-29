@@ -322,7 +322,7 @@ public:
         //std::cout << msg->get_payload() << std::endl;
         cout << "BuildConnection" << endl;
         //s->send(hdl, msg->get_payload(), msg->get_opcode());
-        /*
+        
         while(1){
             read(pipeFds[0],readBuff,sizeof(readBuff));
             cout << "read from postman : "<< readBuff << endl;
@@ -348,24 +348,31 @@ public:
                     }
                     sendBuff[count] = '\0';
                     state = 2;
+                    std::lock_guard<std::mutex> lock(m_mutex);
                     for (auto it : m_connections) {
                         m_server.send(it,sendBuff,websocketpp::frame::opcode::text);
+                        cout << "1 send" << endl;
                     }
                 }
+                std::lock_guard<std::mutex> lock(m_mutex);
                 for (auto it : m_connections) {
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
+                    cout << "2 send" << endl;
                 }
                 break;
             case '3':
+                std::lock_guard<std::mutex> lock(m_mutex);
                 for (auto it : m_connections) {
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
+                    cout << "3 send" << endl;
                 }
                 break;
             }
 
             //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
         }
-        */
+        
+        /*
         while (1) {
             sleep(1);
             m_count++;
@@ -378,6 +385,7 @@ public:
                 m_server.send(it,ss.str(),websocketpp::frame::opcode::text);
             }
         }
+        */
         
     }
     
