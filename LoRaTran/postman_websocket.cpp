@@ -147,7 +147,7 @@ typedef server::message_ptr message_ptr;
 
 // Define a callback to handle incoming messages
 void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
-    /*
+    
     std::cout << "on_message called with hdl: " << hdl.lock().get() 
               << " and message: " << msg->get_payload()
               << std::endl;
@@ -158,8 +158,8 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
         std::cout << "Echo failed because: " << e  
                   << "(" << e.message() << ")" << std::endl;
     }
-    */
-
+    
+/*
     vector<Coor> coorVec;
     int state = 1;
 
@@ -203,6 +203,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
 
         //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
     }
+*/
 }
 
 Coor parseStrongHold(){
