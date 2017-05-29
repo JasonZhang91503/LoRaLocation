@@ -423,7 +423,7 @@ int main(int argc, const char * argv[]){
 	#endif
 
 	#ifndef NO_CAR_MODE
-	//buildWebSocket();
+	buildWebSocket();
 	#endif
 
 	//car程式開始執行
