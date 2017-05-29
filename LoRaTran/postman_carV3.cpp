@@ -610,7 +610,6 @@ int goToLocation(double lon,double lat){
 		ss.y = 24.943603;
 		#endif
 
-		
 		if(!cgms->isInsideMap(ss.x,ss.y)){
 			//if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
 			mapgotoxy(17,1);
@@ -640,6 +639,7 @@ int goToLocation(double lon,double lat){
 			if(carLog){cout << bufferN;}
 			fileInput(bufferN);
 
+			int recX = -1 ,recY = -1;
             for(traIt = traceVec.begin(); traIt != traceVec.end();traIt++){
 				char buff1[256];
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
@@ -650,8 +650,12 @@ int goToLocation(double lon,double lat){
 				cout << "●";
 
 				if((*traIt)->GetstrongholdMark()){
-					sprintf(buff1,"1,%d,%d",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
-					write(pipeFds[1],buff1,sizeof(buff1));
+					if(recX != (*traIt)->GetCor_x() || recY != (*traIt)->GetCor_y()){
+						recX = (*traIt)->GetCor_x();
+						recY = (*traIt)->GetCor_y();
+						sprintf(buff1,"1,%d,%d",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
+						write(pipeFds[1],buff1,sizeof(buff1));
+					}
 				}
             }
 
@@ -698,6 +702,16 @@ int goToLocation(double lon,double lat){
 		mapgotoxy(16,0);
 		printf(buff);
 		fileInput(buff);
+
+		int dirInfo = (int)directionInfo;
+		int newDirInfo;
+		if(dirInfo == 0){ newDirInfo = 1;}
+		else if(dirInfo == 90){ newDirInfo = 4; }
+		else if(dirInfo == 180){ newDirInfo = 2; }
+		else if(dirInfo == 270){ newDirInfo = 3; }
+		sprintf(buff,"%c%c%c%c",2,mapNode.x,mapNode.y,newDirInfo);
+		write(pipeFds[1],buff,sizeof(buff));
+
 
 		if (isCarReach) {
 			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());

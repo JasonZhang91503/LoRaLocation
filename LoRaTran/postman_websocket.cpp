@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<string.h>
-
+#include <string>
 using namespace std;
 
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -21,10 +21,13 @@ server print_server;
 
 int pipeFds[2];
 char readBuff[256];
+char sendBuff[256];
 
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
     vector<Coor> coorVec;
+    int state = 1;
+    //std::string sendStr;
 
     std::cout << msg->get_payload() << std::endl;
     cout << "BuildConnection" << endl;
@@ -35,9 +38,28 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg)
 
         switch(readBuff[0]){
         case '1':
+            if(state == 2){
+                coorVec.clear();
+                state = 1;
+            }
             coorVec.push_back(parseStrongHold());
             break;
         case '2':
+            if(state == 1){
+                sendBuff[0] = 1;
+                sendBuff[1] = coorVec.size();
+                int count = 2;
+                for(int i = 0; i < coorVec.size(); i++){
+                    sendBuff[count] = coorVec[i].x;
+                    count++;
+                    sendBuff[count] = coorVec[i].y;
+                    count++;
+                }
+                sendBuff[count] = '\0';
+                state = 2;
+                print_server.send(hdl, sendBuff, websocketpp::frame::opcode::TEXT);
+            }
+            print_server.send(hdl, readBuff, websocketpp::frame::opcode::TEXT);
             break;
         case '3':
             break;
