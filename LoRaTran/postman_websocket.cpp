@@ -287,7 +287,6 @@ Coor parseStrongHold();
 #include <websocketpp/server.hpp>
 
 typedef websocketpp::server<websocketpp::config::asio> server;
-typedef server::message_ptr message_ptr;
 
 int pipeFds[2];
 char readBuff[256];
@@ -296,10 +295,6 @@ char sendBuff[256];
 
 using websocketpp::connection_hdl;
 using std::placeholders::_1;
-using std::placeholders::_2;
-
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg);
-
 
 class count_server {
 public:
@@ -327,7 +322,7 @@ public:
         //std::cout << msg->get_payload() << std::endl;
         cout << "BuildConnection" << endl;
         //s->send(hdl, msg->get_payload(), msg->get_opcode());
-
+        /*
         while(1){
             read(pipeFds[0],readBuff,sizeof(readBuff));
             cout << "read from postman : "<< readBuff << endl;
@@ -370,7 +365,7 @@ public:
 
             //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
         }
-        /*
+        */
         while (1) {
             sleep(1);
             m_count++;
@@ -383,12 +378,10 @@ public:
                 m_server.send(it,ss.str(),websocketpp::frame::opcode::text);
             }
         }
-        */
+        
     }
     
     void run(uint16_t port) {
-        m_server.set_message_handler(bind(&on_message,&m_server,::_1,::_2));
-
         m_server.listen(port);
         m_server.start_accept();
         m_server.run();
@@ -401,13 +394,6 @@ private:
     con_list m_connections;
     std::mutex m_mutex;
 };
-
-void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg)
-{
-    std::cout << msg->get_payload() << std::endl;
-    s->send(hdl, msg->get_payload(), msg->get_opcode());
-    std::thread t(std::bind(&count_server::count,s));
-}
 
 Coor parseStrongHold(){
 	const char *d = " ,";
@@ -433,5 +419,6 @@ int main(int argc, const char * argv[]) {
     close(pipeFds[1]);
 
     count_server server;
+    std::thread t(std::bind(&count_server::count,&server));
     server.run(9002);
 }
