@@ -340,7 +340,7 @@ public:
                     m_server.send(it,"hello",websocketpp::frame::opcode::text);
                 }
                 break;
-            case '2':
+            case 2:
                 if(state == 1){
                     sendBuff[0] = 1;
                     sendBuff[1] = coorVec.size();
@@ -365,7 +365,7 @@ public:
                     cout << "2 send" << endl;
                 }
                 break;
-            case '3':
+            case 3:
                 for (auto it : m_connections) {
                     m_server.send(it,"3hello",websocketpp::frame::opcode::text);
                     //m_server.send(it,readBuff,websocketpp::frame::opcode::text);
