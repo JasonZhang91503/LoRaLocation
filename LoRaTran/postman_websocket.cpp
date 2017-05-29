@@ -166,6 +166,11 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
     std::cout << msg->get_payload() << std::endl;
     cout << "BuildConnection" << endl;
     s->send(hdl, msg->get_payload(), msg->get_opcode());
+    while(1){
+        
+    }
+
+
 /*
     while(1){
         read(pipeFds[0],readBuff,sizeof(readBuff));
