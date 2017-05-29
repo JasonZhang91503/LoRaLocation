@@ -58,12 +58,14 @@ int main(){
     do{
 
         while(!kbhit()){
+            /*
             if(!stop){
                 RS232_SendBuf(TTYUSB0,mX,14);
                 usleep(100 * MILI);
                 RS232_SendBuf(TTYUSB0,mY,14);
                 stop = true;
             }
+            */
         }
 
         
