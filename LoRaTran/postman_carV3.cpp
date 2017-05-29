@@ -92,6 +92,10 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include <iostream>
 #include <pthread.h>
 
+#ifndef NO_CAR_MODE
+using namespace unistd;
+#endif
+
 //class library
 #include"postman_request.h"
 #include"postman_packet.h"
@@ -108,9 +112,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 
 using namespace std;
 
-#ifndef NO_CAR_MODE
-using namespace unistd;
-#endif
+
 
 
 int e;
