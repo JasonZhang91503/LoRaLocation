@@ -354,20 +354,20 @@ public:
                     sendBuff[count] = '\0';
                     state = 2;
                     for (auto it : m_connections) {
-                        m_server.send(it,"1hello",websocketpp::frame::opcode::text);
+                        //m_server.send(it,"1hello",websocketpp::frame::opcode::text);
                         m_server.send(it,sendBuff,websocketpp::frame::opcode::text);
                         cout << "1 send" << endl;
                     }
                 }
                 for (auto it : m_connections) {
-                    m_server.send(it,"2hello",websocketpp::frame::opcode::text);
+                    //m_server.send(it,"2hello",websocketpp::frame::opcode::text);
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "2 send" << endl;
                 }
                 break;
             case 3:
                 for (auto it : m_connections) {
-                    m_server.send(it,"3hello",websocketpp::frame::opcode::text);
+                    //m_server.send(it,"3hello",websocketpp::frame::opcode::text);
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "3 send" << endl;
                 }
