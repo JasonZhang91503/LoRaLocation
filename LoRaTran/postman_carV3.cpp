@@ -703,6 +703,7 @@ int goToLocation(double lon,double lat){
 		printf(buff);
 		fileInput(buff);
 
+		mapNode = cgms->gpsToCoordinate(ss);
 		int dirInfo = (int)directionInfo;
 		int newDirInfo;
 		if(dirInfo == 0){ newDirInfo = 1;}
