@@ -27,6 +27,7 @@ var regionLD = new position(62 * scale, 67 * scale);
 var myBuildings = [];
 var myBlackStreets = [];
 var myBuildingsName = [];
+var myNavigations = [];
 
 function start() {
     myMapArea.start();
@@ -35,13 +36,15 @@ function start() {
 var myMapArea = {
     canvas : document.createElement("canvas"),
     start : function() {
+        // initialize canvas
         this.canvas.width = canvasWidth;
         this.canvas.height = canvasHeight;
         this.context = this.canvas.getContext("2d");
         this.context.textBaseline="middle";
         this.context.textAlign="center";
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-
+        
+        // draw buildings' background
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 0));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 35 * scale));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 70 * scale));
@@ -52,7 +55,7 @@ var myMapArea = {
 	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 35 * scale));
 	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 70 * scale));
 
-	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 30 * scale));
+        // draw streets
 	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 65 * scale));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 0));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 70 * scale));
@@ -91,12 +94,9 @@ var myMapArea = {
         updateMapArea();
 
 // test	
-        this.context.beginPath();
-        this.context.arc(95 * scale, 67 * scale, 5 * scale, 0, 2*Math.PI);
-        this.context.fillStyle = 'yellow';
-        this.context.fill();
+        drawCircle(this.context, 95 * scale, 67 * scale, 5 * scale);
 
-        star(this.context, 165 * scale, 32 * scale, 6 * scale, 5, 0.5);
+        drawStar(this.context, 165 * scale, 32 * scale, 6 * scale, 5, 0.5);
 
     },
     clear : function() {
@@ -104,7 +104,16 @@ var myMapArea = {
     }
 }
 
-function star(ctx, x, y, r, p, m)
+function drawCircle(ctx, x, y, r) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y , r, 0, 2*Math.PI);
+    ctx.fillStyle = "yellow";
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawStar(ctx, x, y, r, p, m)
 {
     ctx.save();
     ctx.beginPath();
@@ -117,6 +126,7 @@ function star(ctx, x, y, r, p, m)
         ctx.rotate(Math.PI / p);
         ctx.lineTo(0, 0 - r);
     }
+    ctx.fillStyle = "yellow";
     ctx.fill();
     ctx.restore();
 }
@@ -147,6 +157,7 @@ function position(x, y) {
 }
 
 function updateMapArea() {
+    myMapArea.clear();
     for (i = 0; i < myBuildings.length; i += 1) {
         myBuildings[i].update();
     }
@@ -162,7 +173,8 @@ function updateMapArea() {
 }
 
 // websocket
-var wsUri = "ws://echo.websocket.org/";
+//var wsUri = "ws://echo.websocket.org";
+var wsUri = "ws://192.168.0.121:9002";
 var websocket;
 var output;
 
@@ -185,8 +197,8 @@ function testWebSocket() {
 function onOpen(evt) {
     //writeToScreen("CONNECTED");
     console.log("CONNECTED");
-    websocket.send("helloo");
-    console.log("SEND: hello");
+    //websocket.send("helloo");
+    //console.log("SEND: hello");
 }
 
 function onClose(evt) {
@@ -199,13 +211,15 @@ function onMessage(evt) {
     console.log("RESPONSE: " + evt.data);
     
     // handle message
-    if (evt.data.charCodeAt(0) == 104) {
+    if (evt.data.charCodeAt(0) == 1) {
         showNavigation(evt);
-    }else if (evt.data.charCodeAt(0) == 104) {
+    }else if (evt.data.charCodeAt(0) == 2) {
         showPosition(evt.data.charCodeAt(1), evt.data.charCodeAt(2), evt.data.charCodeAt(3));
         
+    }else if (evt.data.charCodeAt(0) == 3) {
+        console.log("NAVIGATION COMPLETE");
     }else {
-        console("MESSAGE ERROR");
+        console.log("MESSAGE ERROR");
     }
 }
 
@@ -223,14 +237,19 @@ function writeToScreen(message) {
 
 function showNavigation(evt) {
     middlePoint = [];
+    myNavigations = [];
     for (i = 0; i < evt.data.charCodeAt(1); i++) {
         middlePoint.push(new position(evt.data.charCodeAt(i * 2 + 2),evt.data.charCodeAt(i * 2 + 3)));
         console.log("NAVIGATION: x: " + middlePoint[i].x + ",y: " + middlePoint[i].y);
+    }
+    console.log(middlePoint.length + "");
+    for (i = 0; i < middlePoint.length; i++) {
     }
 }
 
 function showPosition(x, y, direction) {
     console.log("x: " + x + ", y: " + y + ", direction: " + direction);
+    updateMapArea();
 }
 
 window.addEventListener("load", init, false);
