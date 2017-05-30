@@ -3,8 +3,10 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta charset="UTF-8">
+<title>Graphic Web</title>
 <style>
 canvas {
+    float: left;
     border:1px solid #d3d3d3;
     background-color: #f9f9f9;
 }
@@ -13,7 +15,7 @@ canvas {
 <body onload="start()">
 <script>
 
-var scale = 4;
+var scale = 3.7;
 var buildingColor = "#e4e4df";
 var blackStreetColor = "#aaa";
 var canvasWidth = (135 + 65) * scale;
@@ -58,6 +60,15 @@ var myMapArea = {
 	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 125 * scale, 70 * scale));
 	myBlackStreets.push(new component(5 * scale, 100 * scale, blackStreetColor, 195 * scale, 0));
 
+// test
+        myBlackStreets.push(new component(30 * scale, 5 * scale, "blue", 95 * scale, 65 * scale));
+	myBlackStreets.push(new component(6 * scale, 40 * scale, "blue", 125 * scale, 30 * scale));
+	myBlackStreets.push(new component(40 * scale, 5 * scale, "blue", 125 * scale, 30 * scale));
+
+
+
+
+
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 15 * scale, "text"));
 	myBuildingsName[0].text = "社會科學大樓";
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 15 * scale, "text"));
@@ -78,10 +89,36 @@ var myMapArea = {
 	myBuildingsName[8].text = "法學大樓";
 
         updateMapArea();
+
+// test	
+        this.context.beginPath();
+        this.context.arc(95 * scale, 67 * scale, 5 * scale, 0, 2*Math.PI);
+        this.context.fillStyle = 'yellow';
+        this.context.fill();
+
+        star(this.context, 165 * scale, 32 * scale, 6 * scale, 5, 0.5);
+
     },
     clear : function() {
     	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+}
+
+function star(ctx, x, y, r, p, m)
+{
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(x, y);
+    ctx.moveTo(0,0-r);
+    for (var i = 0; i < p; i++)
+    {
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - (r*m));
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - r);
+    }
+    ctx.fill();
+    ctx.restore();
 }
 
 function component(width, height, color, x, y, type) {
@@ -119,9 +156,104 @@ function updateMapArea() {
     for (i = 0; i < myBuildingsName.length; i++) {
         myBuildingsName[i].update();
     }
+    if (boolNavigation) {
+        
+    }
 }
 
+// websocket
+var wsUri = "ws://echo.websocket.org/";
+var websocket;
+var output;
+
+var boolNavigation = false;
+var middlePoint = [];
+
+function init() {
+    output = document.getElementById("output");
+    testWebSocket();
+}
+
+function testWebSocket() {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+}
+
+function onOpen(evt) {
+    //writeToScreen("CONNECTED");
+    console.log("CONNECTED");
+    websocket.send("helloo");
+    console.log("SEND: hello");
+}
+
+function onClose(evt) {
+    //writeToScreen("DISCONNECTED");
+    console.log("DISCONNECTED");
+}
+
+function onMessage(evt) {
+    //writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+    console.log("RESPONSE: " + evt.data);
+    
+    // handle message
+    if (evt.data.charCodeAt(0) == 104) {
+        showNavigation(evt);
+    }else if (evt.data.charCodeAt(0) == 104) {
+        showPosition(evt.data.charCodeAt(1), evt.data.charCodeAt(2), evt.data.charCodeAt(3));
+        
+    }else {
+        console("MESSAGE ERROR");
+    }
+}
+
+function onError(evt) {
+    //writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+    console.log("ERROR: " + evt.data);
+}
+
+function writeToScreen(message) {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+}
+
+function showNavigation(evt) {
+    middlePoint = [];
+    for (i = 0; i < evt.data.charCodeAt(1); i++) {
+        middlePoint.push(new position(evt.data.charCodeAt(i * 2 + 2),evt.data.charCodeAt(i * 2 + 3)));
+        console.log("NAVIGATION: x: " + middlePoint[i].x + ",y: " + middlePoint[i].y);
+    }
+}
+
+function showPosition(x, y, direction) {
+    console.log("x: " + x + ", y: " + y + ", direction: " + direction);
+}
+
+window.addEventListener("load", init, false);
+          
+
 </script>
+
+<div id="output"></div>
+<h2>Enter the password</h2>
+<button type="button" style="font-size: 30px;">1</button>
+<button type="button" style="font-size: 30px;">2</button>
+<button type="button" style="font-size: 30px;">3</button><br/>
+<button type="button" style="font-size: 30px;">4</button>
+<button type="button" style="font-size: 30px;">5</button>
+<button type="button" style="font-size: 30px;">6</button><br/>
+<button type="button" style="font-size: 30px;">7</button>
+<button type="button" style="font-size: 30px;">8</button>
+<button type="button" style="font-size: 30px;">9</button><br/>
+<button type="button" style="font-size: 30px;">0</button>
+<button type="button" style="font-size: 30px;">Enter</button><br><br>
+<input type="text" value="9487" style="font-size: 30px;" size="1">
+<h2 style="color:green;">CORRECT!</h2>
+
 
 </body>
 </html>
