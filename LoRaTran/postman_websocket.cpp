@@ -337,7 +337,7 @@ public:
                 coorVec.push_back(parseStrongHold());
 
                 for (auto it : m_connections) {
-                    m_server.send(it,"hello",websocketpp::frame::opcode::text);
+                    //m_server.send(it,"hello",websocketpp::frame::opcode::text);
                 }
                 break;
             case 2:
