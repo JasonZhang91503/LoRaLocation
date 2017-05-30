@@ -62,6 +62,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView tvName;
     private SharedPreferences sharedPreferences;
+    private TextView tvMoney;
 
 
     private static boolean isBind;
@@ -98,11 +99,14 @@ public class HomeFragment extends Fragment {
         btnRegister = (ImageButton) myview.findViewById(R.id.btnHomeToRegister);
         mHeadImage = (RoundImageView)myview.findViewById(R.id.main_roundImage);
         tvName = (TextView)myview.findViewById(R.id.textViewName);
+        tvMoney = (TextView)myview.findViewById(R.id.textViewMoney);
+
         sharedPreferences = getActivity().getSharedPreferences("data" , MODE_PRIVATE);
         tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
+        tvMoney.setText("帳戶金額：NT$"+sharedPreferences.getString("Money","100"));
+
         MyBoundedService.fragmentID=1;
         MyBoundedService.curFragment=this;
-
 
         isBind = false;
         updateListView();

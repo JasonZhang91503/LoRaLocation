@@ -23,6 +23,24 @@
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintLeft_creator="1" />
 
+        <TextView
+            android:id="@+id/textViewMoney"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/money_color"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="帳戶金額：NT$180"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.example.huyuxuan.lora2.RoundImageView
             android:id="@+id/main_roundImage"
             android:layout_width="100dp"
