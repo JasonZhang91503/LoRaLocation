@@ -792,7 +792,7 @@ int goToLocation(double lon,double lat){
 		bool isReachSH = false;
 		isReachSH = cgms->carMapNode[(int)traCoor.x][(int)traCoor.y].GetstrongholdMark();
 		if(isReachSH){ 
-			reachSH = cgms->carMapNode[(int)traCoor.x](int)[traCoor.y].GetStronghold(); 
+			reachSH = cgms->carMapNode[(int)traCoor.x][(int)traCoor.y].GetStronghold(); 
 		}else{reachSH = 100;}
 		sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo,reachSH);
 		write(pipeFds[1],buff,sizeof(buff));
