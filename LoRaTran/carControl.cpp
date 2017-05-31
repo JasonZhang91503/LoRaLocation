@@ -59,7 +59,7 @@ int kbhit(void)
 class carControl{
 public:
     carControl(int comport){
-        if(RS232_OpenComport(TTYUSB0,9600,"8N1")){
+        if(RS232_OpenComport(comport,9600,"8N1")){
             printf("OpenComport error\n");
             exit(1);
         }
@@ -67,6 +67,7 @@ public:
     
     void turnLeft(){
         RS232_SendBuf(TTYUSB0,leftX,14);
+        usleep( * MILI);
     }
 
     void turnRight(){
@@ -88,7 +89,7 @@ public:
 
     void stop(){
         RS232_SendBuf(TTYUSB0,mX,14);
-        usleep(2000 * MILI);
+        usleep(100 * MILI);
         RS232_SendBuf(TTYUSB0,mY,14);
     }
 

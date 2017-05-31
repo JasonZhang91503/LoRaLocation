@@ -651,7 +651,7 @@ int goToLocation(double lon,double lat){
 			printf("fix to : lon:%lf, lat:%lf,mapLon:%lf,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 
 			#ifndef NO_CAR_MODE
-			unistd::usleep(1000000);
+			//unistd::usleep(1000000);
 			#endif
 			//continue;
 		}
@@ -992,7 +992,7 @@ void initCGMS(){
 	double gpsData[SH_SIZE]={
         24.943584,121.370883,  //1.圖書公院轉角
         24.943888,121.370672,  //2.圖書館
-		24.944148,121.370493,  //3.圖書行政轉角
+		24.944148,121.370508,  //3.圖書行政轉角
         24.943946,121.371511,  //4.公院
 		24.944436,121.371015,  //5.行政
         24.944188,121.371931,  //6.法商大道法院測

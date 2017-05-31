@@ -361,6 +361,8 @@ public:
                 }
                 for (auto it : m_connections) {
                     //m_server.send(it,"2hello",websocketpp::frame::opcode::text);
+                    if((int)readBuff[1] == 0){ readBuff[1] = 1; }
+                    if((int)readBuff[2] == 0){ readBuff[2] = 1; }
                     cout << "event num :" <<(int)readBuff[0] << ",x :" << (int)readBuff[1] << ",y :" << (int)readBuff[2] << ",dir :" << (int)readBuff[3] << endl;
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "2 send" << endl;
