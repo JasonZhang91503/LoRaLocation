@@ -384,6 +384,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
 
         alarm.cancelAlarm(NavigationActivity.this);
+        MyBoundedService.myBGService.disconnect();
 
     }
 
