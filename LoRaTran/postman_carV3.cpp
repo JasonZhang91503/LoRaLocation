@@ -713,8 +713,8 @@ int goToLocation(double lon,double lat){
 		
 
 		if(NOGPS == 2){
-			ss.x = traCoor.x;
-			ss.y = traCoor.y;
+			ss.x = traGPS.x;
+			ss.y = traGPS.y;
 			isCarReach = true;
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000000);
