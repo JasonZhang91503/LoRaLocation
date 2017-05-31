@@ -506,7 +506,7 @@ int main(int argc, const char * argv[]){
 		Coor gps = { gpsData[i+1],gpsData[i] };
 		Coor coor = cgms->gpsToCoordinate(gps);
 
-		printf("Test data : %d,%d",coor.x,coor.y);
+		printf("Test data : %d,%d\n",(int)coor.x,(int)coor.y);
 	}
 	
 
