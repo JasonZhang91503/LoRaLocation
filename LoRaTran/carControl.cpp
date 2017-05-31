@@ -46,12 +46,12 @@ int main(){
     speedLow[12] = {"FE FE LL FF"},
 
     leftX[15] = {"FE FE XX 23 FF"},
-    leftX2[15] = {"FE FE XX 39 FF"},
+    leftX2[15] = {"FE FE XX 40 FF"},
 
     rightX[15] = {"FE FE XX 70 FF"},
     rightX2[15] = {"FE FE XX 55 FF"},
 
-    goY[15] = {"FE FE YY 70 FF"},
+    goY[15] = {"FE FE YY 85 FF"},
     goY2[15] = {"FE FE YY 55 FF"},
 
     backY[15] = {"FE FE YY 30 FF"},
