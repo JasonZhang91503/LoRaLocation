@@ -101,6 +101,11 @@ using namespace unistd;
 #include"postman_packet.h"
 #include"postman_consoleMap.h"
 //#include"postman_websocket.h"
+
+#ifndef NO_CAR_MODE
+#include"postman_carControl.h"
+#endif
+
 #include"confTest.h"
 //#include"postman_GPS.h"
 
@@ -136,9 +141,12 @@ int receivePeriod = 700;
 int carLog = 0;
 float** adj;
 int LocCount;
+int carOpen = 0;
 
 int pipeFds[2];
 int pchild;
+
+int carPipeFds[2];
 
 RequestManager ReqManger;
 
@@ -374,9 +382,31 @@ void buildWebSocket(){
 
 }
 
+void buildCarControl(){
+	if(unistd::pipe(carPipeFds)){
+		perror("Pipe build failed\n");
+		exit(1);
+	}
+
+	//unistd::close(carPipeFds[0]);
+}
+
+
 
 
 #endif
+
+
+void* asyncCarControl(void* prarm){
+	#ifndef NO_CAR_MODE
+	carControl cc;
+	#endif
+	
+	char readBuff[256];
+	read(carPipeFds[0],readBuff,sizeof(readBuff));
+
+	cout << "HAHHHHHHHHHHHHHHHHHHHHHHHA" << endl;
+}
 
 int main(int argc, const char * argv[]){
 	int error;	//
@@ -398,9 +428,14 @@ int main(int argc, const char * argv[]){
 	CarMapSystemLog = carLog;
 	postman_packetLog = carLog;
 
+
 	int rrc;
+
 	cout << "ReadRequestConf?(1 Yes, 0No):";
 	cin >> rrc;
+
+	cout << "CarOpen?(1 yes,0No):";
+	cin >> carOpen;
 
 	cin.get();
 
@@ -487,6 +522,8 @@ int main(int argc, const char * argv[]){
 	sprintf(buff,"go toward %lf degree for %lf meter.\n",directionInfo,distanceInfo*1000);
 	printf(buff);
 
+	*/
+
 	double gpsData[SH_SIZE]={
         24.943584,121.370883,  //1.圖書公院轉角
         24.943888,121.370672,  //2.圖書館
@@ -509,7 +546,7 @@ int main(int argc, const char * argv[]){
 
 		printf("Test data : %d,%d\n",(int)coor.x,(int)coor.y);
 	}
-	*/
+	
 
 //---------------------------------
 
@@ -517,8 +554,22 @@ int main(int argc, const char * argv[]){
 	pthread_cond_init(&timerCond, NULL);
 
 	//建造一條用作recv的thread
-	pthread_t recvThread,webSocketThread;
+	pthread_t recvThread,carControlThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
+	if(carOpen){
+		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
+	}
+
+	cin.get();
+	cin.get();
+
+	cout << "send" << endl;
+
+
+	char JAJA[256] = "HAHAHAHAHA";
+	write(carPipeFds[1],JAJA,sizeof(JAJA));
+
+
 	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
 	//開始送貨循環

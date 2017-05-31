@@ -67,11 +67,14 @@ public:
     
     void turnLeft(){
         RS232_SendBuf(TTYUSB0,leftX,14);
-        usleep( * MILI);
+        usleep(LEFT_T * MILI);
+        stop();
     }
 
     void turnRight(){
         RS232_SendBuf(TTYUSB0,rightX,14);
+        usleep(RIGHT_T * MILI);
+        stop();
     }
 
     void goStraight(){
@@ -91,6 +94,7 @@ public:
         RS232_SendBuf(TTYUSB0,mX,14);
         usleep(100 * MILI);
         RS232_SendBuf(TTYUSB0,mY,14);
+        usleep(100 * MILI);
     }
 
 private:
@@ -177,6 +181,7 @@ int main(){
             RS232_SendBuf(TTYUSB0,mX,14);
             usleep(100 * MILI);
             RS232_SendBuf(TTYUSB0,mY,14);
+            usleep(100 * MILI);
             break;
         case '8':
             RS232_SendBuf(TTYUSB0,goY2,14);
