@@ -45,8 +45,8 @@ int main(){
     speedHigh[12] = {"FE FE HH FF"},
     speedLow[12] = {"FE FE LL FF"},
 
-    leftX[15] = {"FE FE XX 25 FF"},
-    leftX2[15] = {"FE FE XX 35 FF"},
+    leftX[15] = {"FE FE XX 23 FF"},
+    leftX2[15] = {"FE FE XX 38 FF"},
 
     rightX[15] = {"FE FE XX 70 FF"},
     rightX2[15] = {"FE FE XX 55 FF"},
