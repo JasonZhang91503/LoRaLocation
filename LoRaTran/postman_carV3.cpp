@@ -762,7 +762,7 @@ int goToLocation(double lon,double lat){
 			isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance, ss.x, ss.y, traGPS.x, ss.y);
 		}
 		
-
+		
 		if(NOGPS == 2){
 			ss.x = traGPS.x;
 			ss.y = traGPS.y;
@@ -785,12 +785,18 @@ int goToLocation(double lon,double lat){
 
 		mapNode = cgms->gpsToCoordinate(ss);
 		int dirInfo = (int)directionInfo;
-		int newDirInfo;
+		int newDirInfo,reachSH;
 		if(dirInfo == 0){ newDirInfo = 1;}
 		else if(dirInfo == 90){ newDirInfo = 4; }
 		else if(dirInfo == 180){ newDirInfo = 2; }
 		else if(dirInfo == 270){ newDirInfo = 3; }
-		sprintf(buff,"%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo);
+
+		bool isReachSH = false;
+		isReachSH = cgms->carMapNode[traCoor.x][traCoor.y].GetstrongholdMark();
+		if(isReachSH){ 
+			reachSH = cgms->carMapNode[traCoor.x][traCoor.y].GetStronghold(); 
+		}else{reachSH = 100;}
+		sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo,reachSH);
 		write(pipeFds[1],buff,sizeof(buff));
 
 
