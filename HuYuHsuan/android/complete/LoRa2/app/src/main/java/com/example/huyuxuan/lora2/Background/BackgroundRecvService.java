@@ -116,32 +116,36 @@ public class BackgroundRecvService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId){
-        acquireWakeLock(1);
-        Log.d("BGService","onStartCommand");
-        new AsyncTask<String,String,String>() {
-            @Override
-            protected String doInBackground(String... strings) {
+        String account=sharedPreferences.getString(getString(R.string.account),"");
+        if(account != null) {
+            acquireWakeLock(1);
+            Log.d("BGService", "onStartCommand");
+            sharedPreferences.edit().putInt("BGServiceCount",1).apply();
+            new AsyncTask<String, String, String>() {
+                @Override
+                protected String doInBackground(String... strings) {
 
-                try {
-                    ensureConnected();
-                    if(in != null){
-                        rcvMessage = in.readLine();
-                        rcvMessage.concat("\0");
-                        Log.d("BGRService", "receive " + rcvMessage + " from server");
-                        if(rcvMessage!=null){
-                            analyze(rcvMessage);
+                    try {
+                        ensureConnected();
+                        if (in != null) {
+                            rcvMessage = in.readLine();
+                            rcvMessage.concat("\0");
+                            Log.d("BGRService", "receive " + rcvMessage + " from server");
+                            if (rcvMessage != null) {
+                                analyze(rcvMessage);
 
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    return null;
                 }
-                return null;
-            }
 
-        }.execute();
+            }.execute();
 
-        releaseWakeLock();
+            releaseWakeLock();
+        }
         return START_STICKY;
     }
 
@@ -285,20 +289,22 @@ public class BackgroundRecvService extends Service {
     private void ensureConnected(){
         Log.e("BgService","ensureConnected");
         try {
-            if(mSocket==null){
-                mSocket=new Socket();
-            }
-            if (mSocket.isConnected()) {
-                Log.i("BgService", "Socket Connected");
-            }else if(mSocket.isClosed()){
-                Log.i("BgService", "Socket closed reconnect");
-                //mSocket = new Socket();
-                mSocket.connect(sc_add, 2000);
-                in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
-                out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
-            }else{
-                Log.e("EnsureConnected","not connected and not closed");
-            }
+
+                if(mSocket==null){
+                    mSocket=new Socket();
+                }
+                if (mSocket.isConnected()) {
+                    Log.i("BgService", "Socket Connected");
+                }else if(mSocket.isClosed()){
+                    Log.i("BgService", "Socket closed reconnect");
+                    mSocket = new Socket();
+                    mSocket.connect(sc_add, 2000);
+                    in = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), "utf8"));
+                    out = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream(), "utf8"));
+                }else{
+                    Log.e("EnsureConnected","not connected and not closed");
+                }
+
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -312,6 +318,8 @@ public class BackgroundRecvService extends Service {
                 releaseWakeLock();
                 mSocket.close();
                 sharedPreferences.edit().putInt("BGServiceCount",0).apply();
+                MyBoundedService.myBGService=null;
+                this.stopSelf();
             }
         }catch (IOException e){
             e.printStackTrace();

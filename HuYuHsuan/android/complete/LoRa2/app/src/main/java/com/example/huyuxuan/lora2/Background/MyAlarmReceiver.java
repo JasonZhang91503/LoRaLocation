@@ -94,8 +94,8 @@ public class MyAlarmReceiver extends WakefulBroadcastReceiver {
                 PackageManager.DONT_KILL_APP);
         try{
             context.getApplicationContext().unregisterReceiver(mServiceBroadcastReceiver);
-            MyBoundedService.myBGService.disconnect();
-            MyBoundedService.myBGService.stopSelf();
+            //MyBoundedService.myBGService.disconnect();
+            //MyBoundedService.myBGService.stopSelf();
         }catch(Exception e){
             e.printStackTrace();
         }
