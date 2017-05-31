@@ -20,15 +20,18 @@ var buildingColor = "#e4e4df";
 var blackStreetColor = "#aaa";
 var canvasWidth = (135 + 65) * scale;
 var canvasHeight = (40 + 60) * scale;
-var regionLU = new position(62 * scale, 32 * scale);
-var regionLM = new position(62 * scale, 50 * scale);
-var regionLD = new position(62 * scale, 67 * scale);
+//var regionLU = new position(62 * scale, 32 * scale);
+//var regionLM = new position(62 * scale, 50 * scale);
+//var regionLD = new position(62 * scale, 67 * scale);
 
 var myBuildings = [];
 var myBlackStreets = [];
 var myBuildingsName = [];
 var myNavigations = [];
 var myNewNavigation;
+var myLocation;
+var myDirection;
+var myDestination;
 
 function start() {
     myMapArea.start();
@@ -49,19 +52,19 @@ var myMapArea = {
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 0));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 35 * scale));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 70 * scale));
-	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 0));
-	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 35 * scale));
-	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 65 * scale, 70 * scale));
-	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 0));
-	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 35 * scale));
-	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 70 * scale));
+	myBuildings.push(new component(58 * scale, 30 * scale, buildingColor, 65 * scale, 0));
+	myBuildings.push(new component(58 * scale, 30 * scale, buildingColor, 65 * scale, 35 * scale));
+	myBuildings.push(new component(58 * scale, 30 * scale, buildingColor, 65 * scale, 70 * scale));
+	myBuildings.push(new component(66 * scale, 30 * scale, buildingColor, 129 * scale, 0));
+	myBuildings.push(new component(66 * scale, 30 * scale, buildingColor, 129 * scale, 35 * scale));
+	myBuildings.push(new component(66 * scale, 30 * scale, buildingColor, 129 * scale, 70 * scale));
 
         // initialize streets
 	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 65 * scale));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 0));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 70 * scale));
-	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 125 * scale, 0));
-	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 125 * scale, 70 * scale));
+	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 123 * scale, 0));
+	myBlackStreets.push(new component(6 * scale, 30 * scale, blackStreetColor, 123 * scale, 70 * scale));
 	myBlackStreets.push(new component(5 * scale, 100 * scale, blackStreetColor, 195 * scale, 0));
 
 // test
@@ -72,30 +75,24 @@ var myMapArea = {
         // initialize buildings' name
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 15 * scale, "text"));
 	myBuildingsName[0].text = "社會科學大樓";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 15 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 94 * scale, 15 * scale, "text"));
 	myBuildingsName[1].text = "行政大樓";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 15 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 162 * scale, 15 * scale, "text"));
 	myBuildingsName[2].text = "商學大樓";
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 50 * scale, "text"));
 	myBuildingsName[3].text = "圖書館";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 50 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 94 * scale, 50 * scale, "text"));
 	myBuildingsName[4].text = "北大草原";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 50 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 162 * scale, 50 * scale, "text"));
 	myBuildingsName[5].text = "北大草原";
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 85 * scale, "text"));
 	myBuildingsName[6].text = "電資大樓預定地";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 85 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 94 * scale, 85 * scale, "text"));
 	myBuildingsName[7].text = "公共事物大樓";
-        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 163 * scale, 85 * scale, "text"));
+        myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 162 * scale, 85 * scale, "text"));
 	myBuildingsName[8].text = "法學大樓";
 
         updateMapArea();
-
-// test	
-       /* drawCircle(this.context, 95 * scale, 67 * scale, 5 * scale);
-
-        drawStar(this.context, 165 * scale, 32 * scale, 6 * scale, 5, 0.5);
-*/
     },
     clear : function() {
     	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -117,10 +114,16 @@ function updateMapArea() {
         for (i = 0; i < myNavigations.length; i++) {
             myNavigations[i].update();
         }
+
+        console.log("myNavigations.length " + myNavigations.length);// test
+        myNewNavigation.update();
+        drawCircle(myLocation.x * scale, myLocation.y * scale, 5 * scale);
+        drawStar(myDestination.x * scale, myDestination.y * scale, 6 * scale, 5, 0.5);
     }
 }
 
-function drawCircle(ctx, x, y, r) {
+function drawCircle(x, y, r) {
+    ctx = myMapArea.context;
     ctx.save();
     ctx.beginPath();
     ctx.arc(x, y , r, 0, 2*Math.PI);
@@ -129,7 +132,8 @@ function drawCircle(ctx, x, y, r) {
     ctx.restore();
 }
 
-function drawStar(ctx, x, y, r, p, m) {
+function drawStar(x, y, r, p, m) {
+    ctx = myMapArea.context;
     ctx.save();
     ctx.beginPath();
     ctx.translate(x, y);
@@ -170,55 +174,118 @@ function position(x, y) {
     this.x = x;
     this.y = y;
 }
-/*
+
 function modifyPosition(position, type) {
     if (type == "corner") {
-        if (position.x == ) {
-            if (position.y ==) {
+        if (position.y == 1) {
+            if (position.x ==3) {
                 position.x = 60;
                 position.y = 65;
-            }else if (position.y ==) {
-                position.x = ;
+            }else if (position.x == 40) {
+                position.x = 100;
                 position.y = 65;
-            }else if (position.y ==) {
-                position.x = 130;
+            }else if (position.x == 65) {
+                position.x = 123;
                 position.y = 65;
-            }else if (position.y ==) {
-                position.x = ;
+            }else if (position.x == 103) {
+                position.x = 163;
                 position.y = 65;
             }
-        }else if (position.x == ) {
+        }else if (position.y == 37) {
+            if (position.x == 1) {
                 position.x = 60;
-                position.y = ;
-            }else if (position.y ==) {
-                position.x = 130;
-                position.y = ;
+                position.y = 30;
+            }else if (position.x == 30) {
+                position.x = 90;
+                position.y = 30;
+            }else if (position.x == 63) {
+                position.x = 123;
+                position.y = 30;
+            }else if (position.x == 98) {
+                position.x = 158;
+                position.y = 30;
             }
-        }else if (position.x == ){
-            if (position.y ==) {
+        }else if (position.y == 20) {
+            if (position.x == 1) {
                 position.x = 60;
-                position.y = 30;
-            }else if (position.y ==) {
-                position.x = ;
-                position.y = 30;
-            }else if (position.y ==) {
-                position.x = 130;
-                position.y = 30;
-            }else if (position.y ==) {
-                position.x = ;
-                position.y = 30;
+                position.y = 50;
+            }
+        }else if (position.y == 18) {
+            if (position.x == 66) {
+                position.x = 123;
+                position.y = 52;
             }
         }
     }else if (type == "myPosition") {
         position.x = position.x + 60;
-        position.y = 80 - position.y;
+        position.y = 70 - position.y;
+    }else if (type == "destination") {
+        if (position.y == 30 || position.y == 65) {
+            position.y = position.y + 2;
+        }else if (position.y == 50) {
+            position.x = position.x + 2;
+        }
     }
     return position;
 }
-*/
-function makeNavigarion(position1, position2, type) {
-    if (type == "newPosition") {
 
+function makeNavigation(position1, position2, type) {
+    console.log("position1: x " + position1.x + ", y " + position1.y + "position2: x " + position2.x + ", y " + position2.y);
+    if (type == "newPosition") {
+        if (position2.x == 123) {
+            // pop
+            if (position2.x < position1.x && position1.x < position2.x + 6) {
+                if (position2.y < position1.y && position1.y < position2.y + 5) {
+                    myNavigations.pop();
+                    middlePoint.splice(0, 1);
+                    position2 = middlePoint[0];
+                    console.log("pop");
+                }
+            }
+            roadSize = 6;
+        }else {
+            // pop
+            if (position2.x < position1.x && position1.x < position2.x + 5) {
+                if (position2.y < position1.y && position1.y < position2.y + 5) {
+                    myNavigations.pop();
+                    middlePoint.splice(0, 1);
+                    position2 = middlePoint[0];
+                    console.log("pop");
+                }
+            }
+            roadSize = 5;
+        }
+        
+        if (position1.x > position2.x) {
+            width = position1.x - position2.x;
+        }else {
+            width = position2.x - position1.x;
+        }
+        if (position1.y > position2.y) {
+            height = position1.y - position2.y;
+        }else {
+            height = position2.y - position1.y;
+        }
+        
+        if (width > height) {
+            if (position1.x < position2.x) {
+                x = position1.x;
+                y = position2.y;
+            }else {
+                x = position2.x;
+                y = position2.y;
+            }
+            height = 5;
+        }else {
+            if (position1.y < position2.y) {
+                x = position2.x;
+                y = position1.y;
+            }else {
+                x = position2.x;
+                y = position2.y;
+            }
+            width = roadSize;
+        }
     }else if (type == "fixPosition") {
         if (position1.x < position2.x || position1.y < position2.y) {
             x = position1.x;
@@ -232,21 +299,27 @@ function makeNavigarion(position1, position2, type) {
             height = position1.y - position2.y;
         }
         if (width == 0) {
+            height += 5;
             if (x == 60) {
                 width = 5;
-            }else if (x == 125) {
+            }else if (x == 123) {
                 width = 6;
             }
         }else if (height == 0) {
             height = 5;
+            if (x == 123) {
+                width += 6;
+            }else {
+                width += 5;
+            }
         }
     }
     return new component(width * scale, height * scale, "blue", x * scale, y * scale);
 }
 
 // websocket
-var wsUri = "ws://echo.websocket.org";
-//var wsUri = "ws://192.168.0.121:9002";
+//var wsUri = "ws://echo.websocket.org";
+var wsUri = "ws://192.168.0.121:9002";
 var websocket;
 var output;
 
@@ -286,12 +359,12 @@ function onMessage(evt) {
     if (evt.data.charCodeAt(0) == 1) {
         addNavigation(evt);
     }else if (evt.data.charCodeAt(0) == 2) {
-        showPosition(evt.data.charCodeAt(1), evt.data.charCodeAt(2), evt.data.charCodeAt(3));
+        updatePosition(evt.data.charCodeAt(1), evt.data.charCodeAt(2), evt.data.charCodeAt(3));
         boolNavigation = true;
     }else if (evt.data.charCodeAt(0) == 3) {
 	boolNavigation = false;
         console.log("NAVIGATION COMPLETE");
-    }else if (evt.data.charCodeAt(0) == 4){
+    }else if (evt.data.charCodeAt(0) == 4) {
         console.log("MESSAGE ERROR");
     }else {
         console.log("MESSAGE ERROR");
@@ -315,16 +388,21 @@ function addNavigation(evt) {
     myNavigations = [];
     for (i = 0; i < evt.data.charCodeAt(1); i++) {
         middlePoint.push(new position(evt.data.charCodeAt(i * 2 + 2),evt.data.charCodeAt(i * 2 + 3)));
+        console.log("NAVIGATION: x: " + middlePoint[i].x + ",y: " + middlePoint[i].y);
         middlePoint[i] = modifyPosition(middlePoint[i], "corner");
         console.log("NAVIGATION: x: " + middlePoint[i].x + ",y: " + middlePoint[i].y);
     }
     for (i = 0; i < middlePoint.length - 1; i++) {
-        myNavigations.push(makeNavigation(middlePoint.length - i - 1, middlePoint.length - i - 2, "fixPosition"))
+        myNavigations.push(makeNavigation(middlePoint[middlePoint.length - i - 1], middlePoint[middlePoint.length - i - 2], "fixPosition"));
     }
+    myDestination = modifyPosition(middlePoint[middlePoint.length - 1], "destination");
 }
 
-function showPosition(x, y, direction) {
+function updatePosition(x, y, direction) {
     console.log("x: " + x + ", y: " + y + ", direction: " + direction);
+    myLocation = modifyPosition(new position(x, y), "myPosition");
+    myNewNavigation = makeNavigation(myLocation, middlePoint[0], "newPosition");
+    myDirection = direction;
     updateMapArea();
 }
 
