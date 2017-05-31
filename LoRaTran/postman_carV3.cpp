@@ -467,6 +467,7 @@ int main(int argc, const char * argv[]){
 
 
 //--------------------------------
+/*
 	double directionInfo, distanceInfo;	//方位與距離之回傳
 	double reachDistance = dest_range;	//判定多少距離內算到達(單位 : 格數)
 	double sLon, sLat;	//起始地點
@@ -508,7 +509,7 @@ int main(int argc, const char * argv[]){
 
 		printf("Test data : %d,%d\n",(int)coor.x,(int)coor.y);
 	}
-	
+	*/
 
 //---------------------------------
 
