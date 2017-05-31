@@ -28,6 +28,7 @@ var myBuildings = [];
 var myBlackStreets = [];
 var myBuildingsName = [];
 var myNavigations = [];
+var myNewNavigation;
 
 function start() {
     myMapArea.start();
@@ -44,7 +45,7 @@ var myMapArea = {
         this.context.textAlign="center";
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         
-        // draw buildings' background
+        // initialize buildings' background
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 0));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 35 * scale));
 	myBuildings.push(new component(60 * scale, 30 * scale, buildingColor, 0, 70 * scale));
@@ -55,7 +56,7 @@ var myMapArea = {
 	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 35 * scale));
 	myBuildings.push(new component(64 * scale, 30 * scale, buildingColor, 131 * scale, 70 * scale));
 
-        // draw streets
+        // initialize streets
 	myBlackStreets.push(new component(60 * scale, 5 * scale, blackStreetColor, 0, 65 * scale));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 0));
 	myBlackStreets.push(new component(5 * scale, 30 * scale, blackStreetColor, 60 * scale, 70 * scale));
@@ -64,14 +65,11 @@ var myMapArea = {
 	myBlackStreets.push(new component(5 * scale, 100 * scale, blackStreetColor, 195 * scale, 0));
 
 // test
-        myBlackStreets.push(new component(30 * scale, 5 * scale, "blue", 95 * scale, 65 * scale));
+        /*myBlackStreets.push(new component(30 * scale, 5 * scale, "blue", 95 * scale, 65 * scale));
 	myBlackStreets.push(new component(6 * scale, 40 * scale, "blue", 125 * scale, 30 * scale));
-	myBlackStreets.push(new component(40 * scale, 5 * scale, "blue", 125 * scale, 30 * scale));
-
-
-
-
-
+	myBlackStreets.push(new component(40 * scale, 5 * scale, "blue", 125 * scale, 30 * scale));*/
+        
+        // initialize buildings' name
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 30 * scale, 15 * scale, "text"));
 	myBuildingsName[0].text = "社會科學大樓";
         myBuildingsName.push(new component(8 * scale + "px", "San-serif", "black", 95 * scale, 15 * scale, "text"));
@@ -94,13 +92,31 @@ var myMapArea = {
         updateMapArea();
 
 // test	
-        drawCircle(this.context, 95 * scale, 67 * scale, 5 * scale);
+       /* drawCircle(this.context, 95 * scale, 67 * scale, 5 * scale);
 
         drawStar(this.context, 165 * scale, 32 * scale, 6 * scale, 5, 0.5);
-
+*/
     },
     clear : function() {
     	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function updateMapArea() {
+    myMapArea.clear();
+    for (i = 0; i < myBuildings.length; i += 1) {
+        myBuildings[i].update();
+    }
+    for (i = 0; i < myBlackStreets.length; i++) {
+        myBlackStreets[i].update();
+    }
+    for (i = 0; i < myBuildingsName.length; i++) {
+        myBuildingsName[i].update();
+    }
+    if (boolNavigation) {
+        for (i = 0; i < myNavigations.length; i++) {
+            myNavigations[i].update();
+        }
     }
 }
 
@@ -113,8 +129,7 @@ function drawCircle(ctx, x, y, r) {
     ctx.restore();
 }
 
-function drawStar(ctx, x, y, r, p, m)
-{
+function drawStar(ctx, x, y, r, p, m) {
     ctx.save();
     ctx.beginPath();
     ctx.translate(x, y);
@@ -155,26 +170,83 @@ function position(x, y) {
     this.x = x;
     this.y = y;
 }
+/*
+function modifyPosition(position, type) {
+    if (type == "corner") {
+        if (position.x == ) {
+            if (position.y ==) {
+                position.x = 60;
+                position.y = 65;
+            }else if (position.y ==) {
+                position.x = ;
+                position.y = 65;
+            }else if (position.y ==) {
+                position.x = 130;
+                position.y = 65;
+            }else if (position.y ==) {
+                position.x = ;
+                position.y = 65;
+            }
+        }else if (position.x == ) {
+                position.x = 60;
+                position.y = ;
+            }else if (position.y ==) {
+                position.x = 130;
+                position.y = ;
+            }
+        }else if (position.x == ){
+            if (position.y ==) {
+                position.x = 60;
+                position.y = 30;
+            }else if (position.y ==) {
+                position.x = ;
+                position.y = 30;
+            }else if (position.y ==) {
+                position.x = 130;
+                position.y = 30;
+            }else if (position.y ==) {
+                position.x = ;
+                position.y = 30;
+            }
+        }
+    }else if (type == "myPosition") {
+        position.x = position.x + 60;
+        position.y = 80 - position.y;
+    }
+    return position;
+}
+*/
+function makeNavigarion(position1, position2, type) {
+    if (type == "newPosition") {
 
-function updateMapArea() {
-    myMapArea.clear();
-    for (i = 0; i < myBuildings.length; i += 1) {
-        myBuildings[i].update();
+    }else if (type == "fixPosition") {
+        if (position1.x < position2.x || position1.y < position2.y) {
+            x = position1.x;
+            y = position1.y;
+            width = position2.x - position1.x;
+            height = position2.y - position1.y;
+        }else {
+            x = position2.x;
+            y = position2.y;
+            width = position1.x - position2.x;
+            height = position1.y - position2.y;
+        }
+        if (width == 0) {
+            if (x == 60) {
+                width = 5;
+            }else if (x == 125) {
+                width = 6;
+            }
+        }else if (height == 0) {
+            height = 5;
+        }
     }
-    for (i = 0; i < myBlackStreets.length; i++) {
-        myBlackStreets[i].update();
-    }
-    for (i = 0; i < myBuildingsName.length; i++) {
-        myBuildingsName[i].update();
-    }
-    if (boolNavigation) {
-        
-    }
+    return new component(width * scale, height * scale, "blue", x * scale, y * scale);
 }
 
 // websocket
-//var wsUri = "ws://echo.websocket.org";
-var wsUri = "ws://192.168.0.121:9002";
+var wsUri = "ws://echo.websocket.org";
+//var wsUri = "ws://192.168.0.121:9002";
 var websocket;
 var output;
 
@@ -212,12 +284,15 @@ function onMessage(evt) {
     
     // handle message
     if (evt.data.charCodeAt(0) == 1) {
-        showNavigation(evt);
+        addNavigation(evt);
     }else if (evt.data.charCodeAt(0) == 2) {
         showPosition(evt.data.charCodeAt(1), evt.data.charCodeAt(2), evt.data.charCodeAt(3));
-        
+        boolNavigation = true;
     }else if (evt.data.charCodeAt(0) == 3) {
+	boolNavigation = false;
         console.log("NAVIGATION COMPLETE");
+    }else if (evt.data.charCodeAt(0) == 4){
+        console.log("MESSAGE ERROR");
     }else {
         console.log("MESSAGE ERROR");
     }
@@ -235,15 +310,16 @@ function writeToScreen(message) {
     output.appendChild(pre);
 }
 
-function showNavigation(evt) {
+function addNavigation(evt) {
     middlePoint = [];
     myNavigations = [];
     for (i = 0; i < evt.data.charCodeAt(1); i++) {
         middlePoint.push(new position(evt.data.charCodeAt(i * 2 + 2),evt.data.charCodeAt(i * 2 + 3)));
+        middlePoint[i] = modifyPosition(middlePoint[i], "corner");
         console.log("NAVIGATION: x: " + middlePoint[i].x + ",y: " + middlePoint[i].y);
     }
-    console.log(middlePoint.length + "");
-    for (i = 0; i < middlePoint.length; i++) {
+    for (i = 0; i < middlePoint.length - 1; i++) {
+        myNavigations.push(makeNavigation(middlePoint.length - i - 1, middlePoint.length - i - 2, "fixPosition"))
     }
 }
 
