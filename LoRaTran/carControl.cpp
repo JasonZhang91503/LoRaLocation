@@ -6,9 +6,33 @@
 #include"rs232.h"
 #include<iostream>
 using namespace std;
+using namespace unistd;
 
 #define TTYUSB0 16
 #define MILI 1000
+
+#define LEFT_T 2000
+#define RIGHT_T 2000
+
+unsigned char 
+power[12] = {"FE FE EE FF"},
+speedHigh[12] = {"FE FE HH FF"},
+speedLow[12] = {"FE FE LL FF"},
+
+leftX[15] = {"FE FE XX 23 FF"},
+leftX2[15] = {"FE FE XX 43 FF"},
+
+rightX[15] = {"FE FE XX 70 FF"},
+rightX2[15] = {"FE FE XX 55 FF"},
+
+goY[15] = {"FE FE YY 85 FF"},
+goY2[15] = {"FE FE YY 55 FF"},
+
+backY[15] = {"FE FE YY 30 FF"},
+backY2[15] = {"FE FE YY 45 FF"},
+
+mX[15] = {"FE FE XX 50 FF"},
+mY[15] = {"FE FE YY 50 FF"};
 
 int kbhit(void)
 {  
@@ -32,6 +56,46 @@ int kbhit(void)
     return 0;  
 }  
 
+class carControl{
+public:
+    carControl(int comport){
+        if(RS232_OpenComport(TTYUSB0,9600,"8N1")){
+            printf("OpenComport error\n");
+            exit(1);
+        }
+    }
+    
+    void turnLeft(){
+        RS232_SendBuf(TTYUSB0,leftX,14);
+    }
+
+    void turnRight(){
+        RS232_SendBuf(TTYUSB0,rightX,14);
+    }
+
+    void goStraight(){
+        RS232_SendBuf(TTYUSB0,goY,14);
+    }
+
+    void leftSmall(){
+        RS232_SendBuf(TTYUSB0,leftX2,14);
+    }
+
+    void rightSmall(){
+        RS232_SendBuf(TTYUSB0,rightX2,14);
+    }
+
+
+    void stop(){
+        RS232_SendBuf(TTYUSB0,mX,14);
+        usleep(2000 * MILI);
+        RS232_SendBuf(TTYUSB0,mY,14);
+    }
+
+private:
+    
+}
+
 
 int main(){
     //open ttyUSB0 ,16 = ttyUSB0;
@@ -39,26 +103,6 @@ int main(){
         cout << "OpenComport error" << endl;
         exit(1);
     }
-
-    unsigned char 
-    power[12] = {"FE FE EE FF"},
-    speedHigh[12] = {"FE FE HH FF"},
-    speedLow[12] = {"FE FE LL FF"},
-
-    leftX[15] = {"FE FE XX 23 FF"},
-    leftX2[15] = {"FE FE XX 43 FF"},
-
-    rightX[15] = {"FE FE XX 70 FF"},
-    rightX2[15] = {"FE FE XX 55 FF"},
-
-    goY[15] = {"FE FE YY 85 FF"},
-    goY2[15] = {"FE FE YY 55 FF"},
-
-    backY[15] = {"FE FE YY 30 FF"},
-    backY2[15] = {"FE FE YY 45 FF"},
-
-    mX[15] = {"FE FE XX 50 FF"},
-    mY[15] = {"FE FE YY 50 FF"};
 
 
     char c;

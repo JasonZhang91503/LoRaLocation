@@ -618,10 +618,12 @@ int goToLocation(double lon,double lat){
 			if(LocCount == 1){
 				ss.x = 121.371511;
 				ss.y = 24.943946;
+				LocCount=3;
 			}
 			else if (LocCount ==2){
 				ss.x = 121.372605;
 				ss.y = 24.944498;
+				LocCount=3;
 			}
 			//法院
 		}
@@ -711,6 +713,8 @@ int goToLocation(double lon,double lat){
 		
 
 		if(NOGPS == 2){
+			ss.x = traCoor.x;
+			ss.y = traCoor.y;
 			isCarReach = true;
 			#ifndef NO_CAR_MODE
 			unistd::usleep(1000000);
@@ -794,6 +798,8 @@ int moveToSender(UserRequest* req){
 	printf("moveToSender : Begin go to sender location\n");
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
+
+	LocCount =1;
 
 	int e = goToLocation(req->src_lon,req->src_lat);
 	if(e != CAR_OK){
