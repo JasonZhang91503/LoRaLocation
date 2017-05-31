@@ -483,8 +483,32 @@ int main(int argc, const char * argv[]){
 	isCarReach = isCarReachDestination(directionInfo, distanceInfo, reachDistance,sLon,sLat,dLon,dLat);
 
 	char buff[256];
-		sprintf(buff,"go toward %lf degree for %lf meter.\n",directionInfo,distanceInfo*1000);
-		printf(buff);
+	sprintf(buff,"go toward %lf degree for %lf meter.\n",directionInfo,distanceInfo*1000);
+	printf(buff);
+
+	double gpsData[SH_SIZE]={
+        24.943584,121.370883,  //1.圖書公院轉角
+        24.943888,121.370672,  //2.圖書館
+		24.944148,121.370493,  //3.圖書行政轉角
+        24.943946,121.371511,  //4.公院
+		24.944436,121.371015,  //5.行政
+        24.944188,121.371931,  //6.法商大道法院測
+        24.944480,121.371801,  //7.法商大道
+        24.944757,121.371559,  //8.法商大道商院測
+        24.944498,121.372605,   //9.法院
+        24.945091,121.372150  //10.商院
+        //24.945390,121.372683,  //10.正門商院轉角
+       // 24.945161,121.372851,  //11.正門
+        //24.944835,121.373112,  //12.正門法院
+    };
+
+	for(int i = 0; i < SH_SIZE/2;i++){
+		Coor gps = { gpsData[i+1],gpsData[i] };
+		Coor coor = cgms->gpsToCoordinate(gps);
+
+		printf("Test data : %d,%d",coor.x,coor.y);
+	}
+	
 
 //---------------------------------
 
