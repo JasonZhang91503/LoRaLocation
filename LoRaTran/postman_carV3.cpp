@@ -399,7 +399,7 @@ void buildCarControl(){
 
 void* asyncCarControl(void* prarm){
 
-	
+	cout <<"asdkasdkasfsakfjjskfjask" << endl;
 	char readBuff[256];
 	read(carPipeFds[0],readBuff,sizeof(readBuff));
 
@@ -554,7 +554,7 @@ int main(int argc, const char * argv[]){
 	//建造一條用作recv的thread
 	pthread_t recvThread,carControlThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
-	if(carOpen){
+	if(carOpen == 1){
 		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
 	}
 
