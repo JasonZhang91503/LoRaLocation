@@ -398,9 +398,7 @@ void buildCarControl(){
 
 
 void* asyncCarControl(void* prarm){
-	#ifndef NO_CAR_MODE
-	carControl cc;
-	#endif
+
 	
 	char readBuff[256];
 	read(carPipeFds[0],readBuff,sizeof(readBuff));
@@ -792,9 +790,9 @@ int goToLocation(double lon,double lat){
 		else if(dirInfo == 270){ newDirInfo = 3; }
 
 		bool isReachSH = false;
-		isReachSH = cgms->carMapNode[traCoor.x][traCoor.y].GetstrongholdMark();
+		isReachSH = cgms->carMapNode[(int)traCoor.x][(int)traCoor.y].GetstrongholdMark();
 		if(isReachSH){ 
-			reachSH = cgms->carMapNode[traCoor.x][traCoor.y].GetStronghold(); 
+			reachSH = cgms->carMapNode[(int)traCoor.x](int)[traCoor.y].GetStronghold(); 
 		}else{reachSH = 100;}
 		sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo,reachSH);
 		write(pipeFds[1],buff,sizeof(buff));
