@@ -503,7 +503,7 @@ int main(int argc, const char * argv[]){
     };
 
 	for(int i = 0; i < SH_SIZE/2;i++){
-		Coor gps = { gpsData[i+1],gpsData[i] };
+		Coor gps = { gpsData[i*2+1],gpsData[i*2] };
 		Coor coor = cgms->gpsToCoordinate(gps);
 
 		printf("Test data : %d,%d\n",(int)coor.x,(int)coor.y);
