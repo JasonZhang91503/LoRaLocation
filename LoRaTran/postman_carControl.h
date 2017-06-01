@@ -13,6 +13,7 @@ using namespace unistd;
 
 #define LEFT_T 2000
 #define RIGHT_T 2000
+#define R_AROUND_T 3400
 
 unsigned char 
 power[12] = {"FE FE EE FF"},
@@ -84,6 +85,12 @@ public:
     void turnRight(){
         RS232_SendBuf(TTYUSB0,rightX,14);
         usleep(RIGHT_T * MILI);
+        stop();
+    }
+
+    void turnAround(){
+        RS232_SendBuf(TTYUSB0,rightX,14);
+        usleep(R_AROUND_T * MILI);
         stop();
     }
 
