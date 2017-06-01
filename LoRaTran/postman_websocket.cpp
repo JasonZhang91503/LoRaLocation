@@ -310,6 +310,10 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
                 write(WpipeFds[1],buff,sizeof(buff));
 
                 break;
+            case 2:
+                std::cout << "User place file" << std::endl;
+                sprintf(buff,"%c",2);
+                write(WpipeFds[1],buff,sizeof(buff));
         }
 
         

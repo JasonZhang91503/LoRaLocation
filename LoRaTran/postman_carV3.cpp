@@ -892,7 +892,15 @@ int beginTransport(UserRequest* req){
 	//改成偵測是否recv到收到寄件?
 	
 	//判定使用者放入文件，目前使用enter做為判定
-	getchar();
+	//getchar();
+
+
+	char buff[256];
+	do{
+		read(rpipeFds[0],buff,sizeof(buff));
+		printf("rpipeFds : %d\n",buff[0]);
+	}while(buff[0] != 2);
+
 	
 	printf("beginTransport : Sender placed file\n");
 	printf("beginTransport : goto longitude =  %lf, latitude = %lf\n",req->dest_lon, req->dest_lat);
@@ -965,7 +973,7 @@ int endTransport(UserRequest* req){
 
 	do{
 		read(rpipeFds[0],buff,sizeof(buff));
-		printf("rpipeFds : %d",buff[0]);
+		printf("rpipeFds : %d\n",buff[0]);
 	}while(buff[0] != 1);
 	
 /*
