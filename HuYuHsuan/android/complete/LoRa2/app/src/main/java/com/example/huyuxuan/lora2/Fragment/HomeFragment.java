@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
         tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
         tvMoney.setText("帳戶金額：NT$"+sharedPreferences.getString("Money","100"));
 
-        MyBoundedService.fragmentID=1;
+        MyBoundedService.fragmentID=0;
         MyBoundedService.curFragment=this;
 
         isBind = false;
@@ -317,7 +317,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        MyBoundedService.fragmentID=1;
+        MyBoundedService.fragmentID=0;
         MyBoundedService.curFragment=this;
         if(resum){
            // updateListView();

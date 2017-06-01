@@ -190,10 +190,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             FragmentManager fm = this.getFragmentManager();
 
             if (fm.getBackStackEntryCount() == 0) {
-                Log.d("NavigationActivity","onBack backstackcount==0");
+
                 int curFragmentId = MyBoundedService.fragmentID;
-                if(curFragmentId==0 || curFragmentId==6 || curFragmentId == 5 || curFragmentId == 1
-                        || curFragmentId == 2 ){
+                Log.d("NavigationActivity","onBack backstackcount==0 curID="+curFragmentId);
+                if(curFragmentId==6 || curFragmentId == 5 || curFragmentId == 1 || curFragmentId == 2 ){
                     //這些畫面返回時要跳回主畫面
                     Log.d("NavigationActivity","cur == ... Go to Home");
 
@@ -208,6 +208,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     MyBoundedService.curFragment=firstFragment;
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container,firstFragment).commit();
+                }
+                else if(curFragmentId==0){
+                    Log.d("NavigationActivity","在主畫面按返回");
+                    //主畫面按返回要離開程式
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
                 }
                 else{
                     super.onBackPressed();
