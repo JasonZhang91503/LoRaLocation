@@ -426,7 +426,7 @@ void* asyncCarControl(void* prarm){
 		if(!change){
 			continue;
 		}
-		change = false
+		change = false;
 		pthread_mutex_unlock(&carMutex);
 		read(carPipeFds[0],readBuff,sizeof(readBuff));
 
@@ -465,54 +465,54 @@ void* asyncCarControl(void* prarm){
 				cc->stop();
 
 				if(currentDir == 1){
-					if(tar == 2){
+					if(tarDir == 2){
 						cc->turnLeft();
 						cc->turnLeft();
 					}
-					else if(tar == 3){
+					else if(tarDir == 3){
 						cc->turnLeft();
 					}
-					else if(tar == 4){
+					else if(tarDir == 4){
 						cc->turnRight();
 					}
 				}
 				else if(currentDir == 2){
-					if(tar == 1){
+					if(tarDir == 1){
 						cc->turnLeft();
 						cc->turnLeft();
 					}
-					else if(tar == 4){
+					else if(tarDir == 4){
 						cc->turnLeft();
 					}
-					else if(tar == 3){
+					else if(tarDir == 3){
 						cc->turnRight();
 					}
 				}
 				else if(currentDir == 3){
-					if(tar == 4){
+					if(tarDir == 4){
 						cc->turnLeft();
 						cc->turnLeft();
 					}
-					else if(tar == 2){
+					else if(tarDir == 2){
 						cc->turnLeft();
 					}
-					else if(tar == 1){
+					else if(tarDir == 1){
 						cc->turnRight();
 					}
 				}
 				else if(currentDir == 4){
-					if(tar == 3){
+					if(tarDir == 3){
 						cc->turnLeft();
 						cc->turnLeft();
 					}
-					else if(tar == 1){
+					else if(tarDir == 1){
 						cc->turnLeft();
 					}
-					else if(tar == 2){
+					else if(tarDir == 2){
 						cc->turnRight();
 					}
 				}
-				currentDir = tar;
+				currentDir = tarDir;
 
 			}
 
