@@ -391,17 +391,13 @@ void buildWebSocket(){
 
 }
 
+
 void buildCarControl(){
 	if(unistd::pipe(carPipeFds)){
-		perror("Pipe build failed\n");
+		perror("carPipe build failed\n");
 		exit(1);
 	}
-
-	//unistd::close(carPipeFds[0]);
 }
-
-
-
 
 #endif
 
@@ -412,7 +408,7 @@ void* asyncCarControl(void* prarm){
 	char readBuff[256];
 	read(carPipeFds[0],readBuff,sizeof(readBuff));
 
-	cout << "HAHHHHHHHHHHHHHHHHHHHHHHHA" << endl;
+	cout << "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ" << endl;
 }
 
 int main(int argc, const char * argv[]){
@@ -567,6 +563,15 @@ int main(int argc, const char * argv[]){
 		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
 	}
 
+	buildCarControl();
+
+
+	cin.get();
+	cin.get();
+
+	char buff[256];
+	sprintf(buff,"qweqqweqwe");
+	write(carPipeFds[1],buff,sizeof(buff));
 
 	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
