@@ -307,7 +307,7 @@ void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
             case 1:
                 std::cout << "Password Correct" << std::endl;
                 sprintf(buff,"%c",1);
-                write(WpipeFds[1],buff,sizeof(buff));)
+                write(WpipeFds[1],buff,sizeof(buff));
 
                 break;
         }
