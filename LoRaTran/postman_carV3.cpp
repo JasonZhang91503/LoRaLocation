@@ -472,8 +472,7 @@ void* asyncCarControl(void* prarm){
 
 				if(currentDir == 1){
 					if(tarDir == 2){
-						cc->turnLeft();
-						cc->turnLeft();
+						cc->turnAround();
 					}
 					else if(tarDir == 3){
 						cc->turnLeft();
@@ -484,8 +483,7 @@ void* asyncCarControl(void* prarm){
 				}
 				else if(currentDir == 2){
 					if(tarDir == 1){
-						cc->turnLeft();
-						cc->turnLeft();
+						cc->turnAround();
 					}
 					else if(tarDir == 4){
 						cc->turnLeft();
@@ -496,8 +494,7 @@ void* asyncCarControl(void* prarm){
 				}
 				else if(currentDir == 3){
 					if(tarDir == 4){
-						cc->turnLeft();
-						cc->turnLeft();
+						cc->turnAround();
 					}
 					else if(tarDir == 2){
 						cc->turnLeft();
@@ -508,8 +505,7 @@ void* asyncCarControl(void* prarm){
 				}
 				else if(currentDir == 4){
 					if(tarDir == 3){
-						cc->turnLeft();
-						cc->turnLeft();
+						cc->turnAround();
 					}
 					else if(tarDir == 1){
 						cc->turnLeft();
