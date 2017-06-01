@@ -430,6 +430,11 @@ void* asyncCarControl(void* prarm){
 		pthread_mutex_unlock(&carMutex);
 		read(carPipeFds[0],readBuff,sizeof(readBuff));
 
+		if(carLog){
+			printf("eventNum : %d, dir : %d, mb : %d",readBuff[0],readBuff[1],readBuff[2]);
+		}
+		
+
 		if(readBuff[0] == 2){
 			int currentDir = cc->getDir();
 			int tarDir = readBuff[1];
