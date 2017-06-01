@@ -558,15 +558,6 @@ int main(int argc, const char * argv[]){
 		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
 	}
 
-	cin.get();
-	cin.get();
-
-	cout << "send" << endl;
-
-
-	char JAJA[256] = "HAHAHAHAHA";
-	write(carPipeFds[1],JAJA,sizeof(JAJA));
-
 
 	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
@@ -665,13 +656,13 @@ int goToLocation(double lon,double lat){
 		if(NOGPS == 2){
 			//公院
 			if(LocCount == 1){
-				ss.x = 121.371511;
-				ss.y = 24.943946;
+				ss.x = 121.371028;
+				ss.y = 24.944502;
 				LocCount=3;
 			}
 			else if (LocCount ==2){
-				ss.x = 121.372605;
-				ss.y = 24.944498;
+				ss.x = 121.372155;
+				ss.y = 24.945151;
 				LocCount=3;
 			}
 			//法院
