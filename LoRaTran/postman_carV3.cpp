@@ -518,7 +518,7 @@ void* asyncCarControl(void* prarm){
 						cc->turnRight();
 					}
 				}
-				currentDir = tarDir;
+				cc->setDir(tarDir);
 
 			}
 
