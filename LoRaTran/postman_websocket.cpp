@@ -281,7 +281,7 @@ struct Coor{
 
 Coor parseStrongHold();
 
-
+bool isCarBusy;
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
