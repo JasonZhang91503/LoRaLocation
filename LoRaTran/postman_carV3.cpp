@@ -424,6 +424,7 @@ void* asyncCarControl(void* prarm){
 	while(1){
 		pthread_mutex_lock(&carMutex);
 		if(!change){
+			pthread_mutex_unlock(&carMutex);
 			continue;
 		}
 		change = false;
