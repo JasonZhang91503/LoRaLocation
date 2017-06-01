@@ -130,11 +130,12 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 //跳到個人資料介面
                 AccountFragment accountFragment = new AccountFragment();
-                accountFragment.setTargetFragment(HomeFragment.this,0);
+               // accountFragment.setTargetFragment(HomeFragment.this,0);
                 MyBoundedService.fragmentID=1;
                 MyBoundedService.curFragment=accountFragment;
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container,accountFragment).commit();
+                //getChildFragmentManager().beginTransaction().replace(R.id.fragment_container,accountFragment).commit();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -338,21 +339,30 @@ public class HomeFragment extends Fragment {
         Log.d("HomeFragment","onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("HomeFragment","resultCode="+resultCode+"requestCode="+requestCode);
-        if (resultCode != RESULT_OK){
+        if (resultCode != RESULT_OK ){
+            //刪除照片
+            String sd = Environment.getExternalStorageDirectory().toString();
+            File file = new File(sd+"/mypic.png");
+            boolean delete=file.delete();
+            Log.d("LogOut","file delete"+String.valueOf(delete));
+
             Log.d("onActivityResult","resultCode not ok");
             return;
         }
         //藉由requestCode判斷是否為開啟相機或開啟相簿而呼叫的，且data不為null
         switch (requestCode) {
             case PHOTO_PICKED_FROM_CAMERA:
+                Log.d("photo pick from camera","do crop");
                 doCrop();
                 break;
             case PHOTO_PICKED_FROM_FILE:
                 imgUri = data.getData();
+                Log.d("photo picked from file","do crop");
                 doCrop();
                 break;
             case CROP_FROM_CAMERA:
                 if (data != null){
+                    Log.d("crop from camera","set cropImg");
                     setCropImg(data);
                 }else{
                     Log.d("onActivityResult","data = null");
@@ -463,6 +473,7 @@ public class HomeFragment extends Fragment {
             if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(getActivity(),"無法讀取SD卡", Toast.LENGTH_LONG).show();
             }else{
+                Log.d("onRequestResult","request read and set bitmap");
                 String sd = Environment.getExternalStorageDirectory().toString();
                 Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
                 if(bitmap != null){

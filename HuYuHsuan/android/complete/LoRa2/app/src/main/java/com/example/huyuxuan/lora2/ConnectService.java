@@ -234,6 +234,7 @@ public class ConnectService extends Service {
                     //純斷線的broadcast
                     Bundle tmp = new Bundle();
                     tmp.putString(getString(R.string.id),"15");
+                    activityName = intent.getExtras().getString("activity");
                     Intent broadcastIntent = new Intent();
                     broadcastIntent.setAction(ACTION_RECV_MSG);
                     broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -274,13 +275,8 @@ public class ConnectService extends Service {
                     sharedPreferences.edit().putString("BGLogin","false").apply();
 
                 }
-                else if(type.compareTo("0")==0){
-                    String error = mes.substring(3);
-                    dataBundle.putString(getString(R.string.type),type);
-                    dataBundle.putString(getString(R.string.errorMsg),error);
-                    Log.d("ana:","id="+id+"type="+type+"errorMsg="+error);
-                }else{
-                    Log.d("Service","login type error");
+                else{
+                    Log.d("Service","login fail");
                 }
                 dataBundle.putString("type",type);
                 break;

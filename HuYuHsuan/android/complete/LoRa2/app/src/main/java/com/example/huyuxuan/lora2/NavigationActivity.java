@@ -158,12 +158,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             e.printStackTrace();
         }
 
-        /*
-        if(MyBoundedService.myBGService != null){
-            MyBoundedService.myBGService.disconnect();
-        }
-        */
-
         super.onDestroy();
     }
 
@@ -202,12 +196,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         || curFragmentId == 2 ){
                     //這些畫面返回時要跳回主畫面
                     Log.d("NavigationActivity","cur == ... Go to Home");
-                    /*
-                    if(myFragment!=null){
-                        getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                        myFragment.onDestroy();
-                    }
-                    */
+
                     Fragment curfragment=MyBoundedService.curFragment;
                     if(curfragment!=null){
                         getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
@@ -241,12 +230,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
         switch (itemId){
             case R.id.nav_home:
-                /*
-                getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
-                if(myFragment!=null){
-                    myFragment.onDestroy();
-                }
-                */
                 Fragment curfragment=MyBoundedService.curFragment;
                 if(curfragment!=null){
                     getSupportFragmentManager().beginTransaction().remove(curfragment).commit();
@@ -384,7 +367,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
 
         alarm.cancelAlarm(NavigationActivity.this);
-        MyBoundedService.myBGService.disconnect();
+        if(MyBoundedService.myBGService!=null){
+            MyBoundedService.myBGService.disconnect();
+        }
+
 
     }
 

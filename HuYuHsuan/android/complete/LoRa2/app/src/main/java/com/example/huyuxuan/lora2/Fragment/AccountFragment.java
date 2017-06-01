@@ -366,6 +366,13 @@ public class AccountFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("AccountFragment","resultCode="+resultCode+"requestCode="+requestCode);
         if (resultCode != RESULT_OK){
+
+            //刪除照片
+            String sd = Environment.getExternalStorageDirectory().toString();
+            File file = new File(sd+"/mypic.png");
+            boolean delete=file.delete();
+            Log.d("LogOut","file delete"+String.valueOf(delete));
+
             Log.d("onActivityResult","resultCode not ok");
             return;
         }
