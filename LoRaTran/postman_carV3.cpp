@@ -559,19 +559,26 @@ int main(int argc, const char * argv[]){
 	//建造一條用作recv的thread
 	pthread_t recvThread,carControlThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
+
+
+	
+
 	if(carOpen == 1){
+		buildCarControl();
 		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
+			
+		cout << "heyheyhey" << endl;
+		cin.get();
+		cin.get();
+
+		char buff[256];
+		sprintf(buff,"qweqqweqwe");
+		write(carPipeFds[1],buff,sizeof(buff));
+		cout << "pass" << endl;
 	}
 
-	buildCarControl();
+	
 
-
-	cin.get();
-	cin.get();
-
-	char buff[256];
-	sprintf(buff,"qweqqweqwe");
-	write(carPipeFds[1],buff,sizeof(buff));
 
 	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
 
