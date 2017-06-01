@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                     intent.putExtra(getString(R.string.account),account);
                     intent.putExtra(getString(R.string.password),password);
                     Log.d("LoginActivity","account="+account+"password="+password);
+                    btnLogin.setClickable(false);
 
                     if(!isBind){
                         getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
@@ -119,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                         //登入失敗
                         String errorMsg=bundle.getString(getString(R.string.errorMsg));
                         Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
+                        btnLogin.setClickable(true);
                     }
                 }
                 else{

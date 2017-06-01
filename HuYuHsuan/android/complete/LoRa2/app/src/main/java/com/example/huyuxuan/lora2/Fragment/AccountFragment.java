@@ -125,41 +125,53 @@ public class AccountFragment extends Fragment {
         photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> list = new ArrayList<>();
-                list.add("拍照");
-                list.add("相簿");
-                showDialog(new SelectDialog.SelectDialogListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        MyBoundedService.fragmentID=8;
-                        switch (position){
-                            case 0:
-                                //用系統相機拍照
+                if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_READ_EXTERNAL_CODE);
+                }
 
-                                if (checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.CAMERA)
-                                        != PackageManager.PERMISSION_GRANTED) {
+                if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    List<String> list = new ArrayList<>();
+                    list.add("拍照");
+                    list.add("相簿");
+                    showDialog(new SelectDialog.SelectDialogListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            MyBoundedService.fragmentID=8;
+                            switch (position){
+                                case 0:
+                                    //用系統相機拍照
 
-                                    requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                            MY_REQUEST_CODE);
-                                }else{
-                                    openCamera();
-                                }
+                                    if (checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.CAMERA)
+                                            != PackageManager.PERMISSION_GRANTED) {
 
-                                Log.d("AccountFragment","PHOTO-PICK-FROM-CAMERA");
-                                break;
-                            case 1:
-                                //開啟相簿相片集，須由startActivityForResult且帶入requestCode進行呼叫，原因
-                                //為點選相片後返回程式呼叫onActivityResult
-                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, PHOTO_PICKED_FROM_FILE);
-                                Log.d("AccountFragment","PHOTO-PICK-FROM-FILE");
-                                break;
-                            default:
-                                break;
+                                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                                MY_REQUEST_CODE);
+                                    }else{
+                                        openCamera();
+                                    }
+
+                                    Log.d("AccountFragment","PHOTO-PICK-FROM-CAMERA");
+                                    break;
+                                case 1:
+                                    //開啟相簿相片集，須由startActivityForResult且帶入requestCode進行呼叫，原因
+                                    //為點選相片後返回程式呼叫onActivityResult
+                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, PHOTO_PICKED_FROM_FILE);
+                                    Log.d("AccountFragment","PHOTO-PICK-FROM-FILE");
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                },list);
+                    },list);
+                }
+                else{
+                    Toast.makeText(getContext(),"請同意使用SD卡權限",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -460,7 +472,7 @@ public class AccountFragment extends Fragment {
                 // Your app will not have this permission. Turn off all functions
                 // that require this permission or it will force close like your
                 // original question
-                Toast.makeText(getActivity(),"請開啟相機權限", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"請開啟相機權限", Toast.LENGTH_SHORT).show();
             }
         }else if(requestCode==REQUEST_WRITE_EXTERNAL_CODE){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -472,11 +484,11 @@ public class AccountFragment extends Fragment {
                 // Your app will not have this permission. Turn off all functions
                 // that require this permission or it will force close like your
                 // original question
-                Toast.makeText(getActivity(),"無法寫入外部SD", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"無法寫入外部SD", Toast.LENGTH_SHORT).show();
             }
         }else if(requestCode==REQUEST_READ_EXTERNAL_CODE){
             if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_SHORT).show();
             }else{
                 String sd = Environment.getExternalStorageDirectory().toString();
                 Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");

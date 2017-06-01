@@ -71,6 +71,8 @@ public class SignUpActivity extends AppCompatActivity {
                 name = editTextName.getText().toString();
                 email = editTextEmail.getText().toString();
 
+                btnSignUp.setClickable(false);
+
 
                 Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
                 intent.putExtra(getString(R.string.activity),"SignUpActivity");
@@ -122,14 +124,17 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.d("SignUpActivity","跳到主畫面");
                         break;
                     case "2":
+                        btnSignUp.setClickable(true);
                         Toast.makeText(SignUpActivity.this,"帳號重複", Toast.LENGTH_LONG).show();
                         editTextAccount.setText("");
                         break;
                     case "3":
+                        btnSignUp.setClickable(true);
                         Toast.makeText(SignUpActivity.this,"密碼重複", Toast.LENGTH_LONG).show();
                         editTextPassword.setText("");
                         break;
                     case "4":
+                        btnSignUp.setClickable(true);
                         Toast.makeText(SignUpActivity.this,"帳號密碼都重複", Toast.LENGTH_LONG).show();
                         editTextAccount.setText("");
                         editTextPassword.setText("");
