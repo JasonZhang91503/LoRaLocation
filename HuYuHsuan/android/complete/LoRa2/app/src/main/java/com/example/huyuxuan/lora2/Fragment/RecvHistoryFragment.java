@@ -309,7 +309,7 @@ public class RecvHistoryFragment extends Fragment {
             if(intent.getStringExtra("activity").equals("RecvHistoryFragment")){
                 if(intent.getStringExtra("result").equals("true")){
                     Log.d("RecvHistoryFragment:","receiver on receive");
-                     Bundle bundle = intent.getExtras();
+                    Bundle bundle = intent.getExtras();
                     dataset = (ArrayList<Order>)bundle.getSerializable("arrayList");
                     setView();
 
@@ -374,7 +374,6 @@ public class RecvHistoryFragment extends Fragment {
             }
         }
         tmp=true;
-       // adapter=null;
         super.onStop();
         Log.d("RecvHistoryFragment:","after super.onStop");
     }

@@ -387,7 +387,6 @@ public class SendHistoryFragment extends Fragment {
         }
 
         tmp=true;
-       // adapter=null;
         super.onStop();
     }
 

@@ -295,8 +295,12 @@ public class AccountFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("AccountFragment")){
-                getActivity().getApplicationContext().unregisterReceiver(receiver);
-                getActivity().getApplicationContext().unbindService(mConnection);
+                try{
+                    getActivity().getApplicationContext().unbindService(mConnection);
+                    getActivity().getApplicationContext().unregisterReceiver(receiver);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 Bundle bundle = intent.getExtras();
                 if(bundle != null){
                     String type = bundle.getString(getString(R.string.type));
