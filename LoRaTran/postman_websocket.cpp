@@ -289,12 +289,32 @@ Coor parseStrongHold();
 typedef websocketpp::server<websocketpp::config::asio> server;
 
 int pipeFds[2];
+int WpipeFds[2];
+
 char readBuff[256];
 char sendBuff[256];
 
 
 using websocketpp::connection_hdl;
 using std::placeholders::_1;
+
+void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
+        std::cout << msg->get_payload() << std::endl;
+
+        char buff[256];
+
+        switch(msg->get_payload()[0]){
+            case 1:
+                std::cout << "Password Correct" << std::endl;
+                sprintf(buff,"%c",1);
+                write(WpipeFds[1],buff,sizeof(buff));)
+
+                break;
+        }
+
+        
+}
+
 
 class count_server {
 public:
@@ -376,27 +396,16 @@ public:
                     m_server.send(it,readBuff,websocketpp::frame::opcode::text);
                     cout << "3 send" << endl;
                 }
+            case 4:
+                for (auto it : m_connections) {
+                    //m_server.send(it,"3hello",websocketpp::frame::opcode::text);
+                    cout << "event num :" <<(int)readBuff[0] << "key :" << (int)readBuff[1] -'0' << (int)readBuff[2] - '0' << (int)readBuff[3] - '0' << (int)readBuff[4] - '0' << endl;
+                    m_server.send(it,readBuff,websocketpp::frame::opcode::text);
+                    cout << "4 send" << endl;
+                }
                 break;
             }
-
-            //print_server.send(hdl, msg->get_payload(), msg->get_opcode());
         }
-        
-        /*
-        while (1) {
-            sleep(1);
-            m_count++;
-            
-            std::stringstream ss;
-            ss << m_count;
-            
-            std::lock_guard<std::mutex> lock(m_mutex);    
-            for (auto it : m_connections) {
-                m_server.send(it,ss.str(),websocketpp::frame::opcode::text);
-            }
-        }
-        */
-        
     }
     
     void run(uint16_t port) {
@@ -412,6 +421,7 @@ private:
     con_list m_connections;
     std::mutex m_mutex;
 };
+
 
 Coor parseStrongHold(){
 	const char *d = " ,";
@@ -434,7 +444,10 @@ Coor parseStrongHold(){
 int main(int argc, const char * argv[]) {
     pipeFds[0] = atoi(argv[1]);
     pipeFds[1] = atoi(argv[2]);
+    WpipeFds[0] = atoi(argv[3]);
+    WpipeFds[1] = atoi(argv[4]);
     close(pipeFds[1]);
+    close(WpipeFds[0]);
 
     count_server server;
     std::thread t(std::bind(&count_server::count,&server));

@@ -144,6 +144,7 @@ int LocCount;
 int carOpen = 0;
 
 int pipeFds[2];
+int rpipeFds[2];
 int pchild;
 
 int carPipeFds[2];
@@ -361,13 +362,20 @@ void buildWebSocket(){
 		perror("Pipe build failed\n");
 		exit(1);
 	}
-	
+	if(unistd::pipe(rpipeFds)){
+		perror("readPipe build failed\n");
+		exit(1);
+	}
 	
 	char argPipe1[10];
 	char argPipe2[10];
+	char read_argPipe1[10];
+	char read_argPipe2[10];
 
 	sprintf(argPipe1,"%d",pipeFds[0]);
 	sprintf(argPipe2,"%d",pipeFds[1]);
+	sprintf(read_argPipe1,"%d",rpipeFds[0]);
+	sprintf(read_argPipe2,"%d",rpipeFds[1]);
 
 	pchild = unistd::fork();
 
@@ -376,9 +384,10 @@ void buildWebSocket(){
 		exit(1);
 	}
 	else if(pchild == 0){
-		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,NULL);
+		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,read_argPipe1,read_argPipe2,NULL);
 	}
 	unistd::close(pipeFds[0]);
+	unistd::close(rpipeFds[1]);
 
 }
 
@@ -943,6 +952,23 @@ int endTransport(UserRequest* req){
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
+	int key[4];
+
+	fot(int i = 0; i < 4; i++){
+		key[i] = (int)(req->packetKey[i]);
+	}
+
+
+	char buff[256];
+	sprintf(buff,"%c%c%c%c%c",4,key[0],key[1],key[2],key[3]);
+	write(pipeFds[1],buff,sizeof(buff));
+
+	do{
+		read(rpipeFds[0],buff,sizeof(buff));
+		printf("rpipeFds : %d",buff[0]);
+	}{buff[0] != 1}
+	
+/*
 	do{
 		printf("Password :");
 		getline(cin,input,'\n');
@@ -952,7 +978,9 @@ int endTransport(UserRequest* req){
 		}
 		else{isCorrect = true;}
 	}while(!isCorrect);
-	
+*/
+
+
 	printf("Password correct!\n");
 	printf("Press enter to end transport!\n");
 	
