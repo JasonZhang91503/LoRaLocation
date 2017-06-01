@@ -966,7 +966,7 @@ int endTransport(UserRequest* req){
 	do{
 		read(rpipeFds[0],buff,sizeof(buff));
 		printf("rpipeFds : %d",buff[0]);
-	}{buff[0] != 1}
+	}while(buff[0] != 1);
 	
 /*
 	do{
