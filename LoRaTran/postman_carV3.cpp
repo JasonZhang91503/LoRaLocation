@@ -954,7 +954,7 @@ int endTransport(UserRequest* req){
 
 	int key[4];
 
-	fot(int i = 0; i < 4; i++){
+	for(int i = 0; i < 4; i++){
 		key[i] = (int)(req->packetKey[i]);
 	}
 
