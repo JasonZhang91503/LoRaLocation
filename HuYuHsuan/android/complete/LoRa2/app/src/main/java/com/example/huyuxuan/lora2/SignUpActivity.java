@@ -70,28 +70,32 @@ public class SignUpActivity extends AppCompatActivity {
                 password = editTextPassword.getText().toString();
                 name = editTextName.getText().toString();
                 email = editTextEmail.getText().toString();
+                if(account != null && password != null && name != null && email != null){
+                    btnSignUp.setClickable(false);
 
-                btnSignUp.setClickable(false);
 
+                    Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
+                    intent.putExtra(getString(R.string.activity),"SignUpActivity");
+                    intent.putExtra(getString(R.string.id), "2");
+                    intent.putExtra(getString(R.string.account),account);
+                    intent.putExtra(getString(R.string.password),password);
+                    intent.putExtra(getString(R.string.name), name);
+                    intent.putExtra(getString(R.string.email), email);
 
-                Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
-                intent.putExtra(getString(R.string.activity),"SignUpActivity");
-                intent.putExtra(getString(R.string.id), "2");
-                intent.putExtra(getString(R.string.account),account);
-                intent.putExtra(getString(R.string.password),password);
-                intent.putExtra(getString(R.string.name), name);
-                intent.putExtra(getString(R.string.email), email);
-
-                if(!isBind){
-                    getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-                    isBind=true;
-                    Log.d("SignUpActivity:", "bindService");
+                    if(!isBind){
+                        getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                        isBind=true;
+                        Log.d("SignUpActivity:", "bindService");
+                    }
+                    else{
+                        mBoundService.sendToServer(intent);
+                        Log.d("SignUpActivity:", "sendToService");
+                    }
+                    setReceiver();
                 }
                 else{
-                    mBoundService.sendToServer(intent);
-                    Log.d("SignUpActivity:", "sendToService");
+                    Toast.makeText(SignUpActivity.this,"請填寫資料",Toast.LENGTH_SHORT).show();
                 }
-                setReceiver();
 
             }
         });
@@ -103,7 +107,14 @@ public class SignUpActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("SignUpActivity")){
-                unregisterReceiver(receiver);
+                try{
+                    getApplicationContext().unregisterReceiver(receiver);
+                    getApplicationContext().unbindService(mConnection);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+
                 Bundle bundle = intent.getExtras();
                 String type = bundle.getString(getString(R.string.type));
                 switch (type){

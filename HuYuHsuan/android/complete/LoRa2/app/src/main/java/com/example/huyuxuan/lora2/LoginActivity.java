@@ -59,14 +59,13 @@ public class LoginActivity extends AppCompatActivity {
                 account = editTextAccount.getText().toString();
                 password = editTextPassword.getText().toString();
                 if(account != null && password != null){
-
+                    btnLogin.setClickable(false);
                     Intent intent = new Intent(LoginActivity.this,ConnectService.class);
                     intent.putExtra(getString(R.string.activity),"LoginActivity");
                     intent.putExtra(getString(R.string.id),"3");
                     intent.putExtra(getString(R.string.account),account);
                     intent.putExtra(getString(R.string.password),password);
                     Log.d("LoginActivity","account="+account+"password="+password);
-                    btnLogin.setClickable(false);
 
                     if(!isBind){
                         getApplicationContext().bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
@@ -92,8 +91,13 @@ public class LoginActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("LoginActivity")){
                 if(intent.getStringExtra("result").equals("true")){
-                    getApplicationContext().unbindService(mConnection);
-                    unregisterReceiver(receiver);
+                    try{
+                        getApplicationContext().unbindService(mConnection);
+                        getApplicationContext().unregisterReceiver(receiver);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
                     Bundle bundle = intent.getExtras();
                     String type = bundle.getString(getString(R.string.type));
                     if(type.compareTo("1")==0){
@@ -118,8 +122,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     }else{
                         //登入失敗
-                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                        Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
+
+                        Toast.makeText(LoginActivity.this,"帳號或密碼錯誤，請重新輸入", Toast.LENGTH_SHORT).show();
                         btnLogin.setClickable(true);
                     }
                 }
@@ -145,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
             Log.d("LoginActivity","onServiceDisconnected");
-            //mBoundService = null;
+            mBoundService = null;
             isBind=false;
         }
 
@@ -163,6 +167,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         Log.d("LoginActivity","onDestroy");
+        try{
+            getApplicationContext().unbindService(mConnection);
+            unregisterReceiver(receiver);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 

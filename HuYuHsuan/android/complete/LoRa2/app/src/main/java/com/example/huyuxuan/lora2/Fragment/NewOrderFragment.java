@@ -155,7 +155,6 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
             Toast.makeText(getContext(),"寄件地收件地不可相同",Toast.LENGTH_SHORT).show();
         }
         else {
-          //  getActivity().getApplicationContext().unbindService(mConnection);
             String timeText = str_show_time.substring(str_show_time.indexOf(" ")+1);
             NewOrderFragment2 fragment2 = NewOrderFragment2.newInstance(location, timeText);
             FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -194,13 +193,12 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
             if(intent.getStringExtra("result").equals("true")){
                 if(intent.getStringExtra("activity").equals("NewOrderFragment")){
                     if(isAdded()){
-                        getActivity().getApplicationContext().unregisterReceiver(receiver);
-                    }/*
-                    if(isBind){
-                        getActivity().getApplicationContext().unbindService(mConnection);
-                        isBind=false;
+                        try{
+                            getActivity().getApplicationContext().unregisterReceiver(receiver);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
-                    */
                     Bundle bundle = intent.getExtras();
                     String id = bundle.getString(getString(R.string.id));
                     switch(id){
@@ -303,7 +301,11 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     public void onStop() {
         Log.d("NewOrderFragment:", "onStop");
         if(isBind){
-            getActivity().getApplicationContext().unbindService(mConnection);
+            try{
+                getActivity().getApplicationContext().unbindService(mConnection);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             isBind=false;
         }
 
