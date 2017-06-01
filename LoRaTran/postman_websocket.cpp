@@ -409,6 +409,8 @@ public:
     }
     
     void run(uint16_t port) {
+        m_server.set_message_handler(&on_message);
+
         m_server.listen(port);
         m_server.start_accept();
         m_server.run();
