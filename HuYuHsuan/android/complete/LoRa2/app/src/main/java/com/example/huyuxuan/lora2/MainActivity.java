@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<View> viewList;
     private RadioGroup indicator;
 
+    private static int REQUEST_FININSH=666;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
                             //跳到登入畫面
                             Intent intent = new Intent();
                             intent.setClass(MainActivity.this,LoginActivity.class);
-                            startActivity(intent);
-                           // MainActivity.this.finish();
+                            MyBoundedService.callingActivity=1;
+                            startActivityForResult(intent,REQUEST_FININSH);
+                            //MainActivity.this.finish();
                             Log.d("MainActivity","跳到登入畫面");
                         }
                     });
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                             //跳到註冊畫面
                             Intent intent = new Intent();
                             intent.setClass(MainActivity.this,SignUpActivity.class);
-                            startActivity(intent);
+                            startActivityForResult(intent,REQUEST_FININSH);
                            // MainActivity.this.finish();
                             Log.d("MainActivity","跳到註冊畫面");
 
@@ -118,9 +121,6 @@ public class MainActivity extends AppCompatActivity {
                                 case 1:
                                     indicator.check(R.id.index2);
                                     break;
-                                //case 2:
-
-                                // break;
                             }
                         }
 
@@ -137,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume(){
+        sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
+        Log.d("MainActivity on Resume","sharedpreference isLogin="+sharedPreferences.getString("isLogin",""));
+        Log.d("MainActivity on Resume","sharedpreference isFirstTimeOpen="+sharedPreferences.getString("isFirstTimeOpen",""));
         super.onResume();
         //sharedPreferences = getSharedPreferences("data" , MODE_PRIVATE);
     }
@@ -163,6 +166,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean isViewFromObject(View arg0,Object arg1){
             return arg0==arg1;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FININSH) {
+            if (resultCode == RESULT_OK) {
+                this.finish();
+            }
         }
     }
 }

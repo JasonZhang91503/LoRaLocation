@@ -90,13 +90,13 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("LoginActivity")){
+                try{
+                    getApplicationContext().unbindService(mConnection);
+                    getApplicationContext().unregisterReceiver(receiver);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 if(intent.getStringExtra("result").equals("true")){
-                    try{
-                        getApplicationContext().unbindService(mConnection);
-                        getApplicationContext().unregisterReceiver(receiver);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
 
                     Bundle bundle = intent.getExtras();
                     String type = bundle.getString(getString(R.string.type));
@@ -117,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intentToMain = new Intent();
                         intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
                         startActivity(intentToMain);
+                        LoginActivity.this.setResult(RESULT_OK,null);//關閉MainActivity
                         LoginActivity.this.finish();
                         Log.d("LoginActivity","跳到主畫面");
 
@@ -169,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("LoginActivity","onDestroy");
         try{
             getApplicationContext().unbindService(mConnection);
-            unregisterReceiver(receiver);
+            getApplicationContext().unregisterReceiver(receiver);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -180,6 +181,22 @@ public class LoginActivity extends AppCompatActivity {
     public void onPause(){
         Log.d("LoginActivity","onPause");
         super.onPause();
-
     }
+
+    @Override
+    public void onBackPressed(){
+        Log.d("LoginActivity","onBackPressed");
+        if(MyBoundedService.callingActivity==2){
+            Intent intent = new Intent();
+            intent.setClass(LoginActivity.this,MainActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
+            Log.d("LoginActivity","跳到歡迎畫面");
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+
 }

@@ -165,7 +165,7 @@ public class RecvHistoryFragment extends Fragment {
     }
 
     public void dateDecrease(){
-        if(index_DayOfMonth>0){
+        if(index_DayOfMonth>1){
             index_DayOfMonth--;
         }else{
             index_Month--;

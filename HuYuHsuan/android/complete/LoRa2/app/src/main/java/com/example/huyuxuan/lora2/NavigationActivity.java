@@ -147,7 +147,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         sharedPreferences.edit().putString("BGLogin","true")
                 .putInt("BGServiceCount",0)
                 .apply();
-        Log.d("NavigationActivity","BGLogin="+sharedPreferences.getString("BGLogin",""));
+
         try{
             if(mBoundService!=null){
                 mBoundService.disconnect();
@@ -211,6 +211,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
                 else if(curFragmentId==0){
                     Log.d("NavigationActivity","在主畫面按返回");
+
+                    try{
+                        getApplicationContext().unbindService(mConnection);
+                        getApplicationContext().unregisterReceiver(receiver);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
                     //主畫面按返回要離開程式
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_HOME);
@@ -325,6 +333,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         clearData();
                         Intent intent = new Intent();
                         intent.setClass(NavigationActivity.this,LoginActivity.class);
+                        MyBoundedService.callingActivity=2;
                         startActivity(intent);
                         Log.d("NavigationActivity","跳到登入畫面");
                         NavigationActivity.this.finish();

@@ -17,4 +17,5 @@ public class MyBoundedService extends Application {
     public static BackgroundRecvService myBGService;
     public static int fragmentID;//0主畫面 1個人資料 2登記寄件(1) 3登記寄件(2) 4登記寄件(3) 5寄件歷史 6收件歷史 7選時段 8改照片
     public static Fragment curFragment;
+    public static int callingActivity;//判斷是歡迎畫面還是登出之後開啟LoginActivity 1是歡迎畫面 2是登出之後
 }
