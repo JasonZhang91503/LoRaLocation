@@ -1358,7 +1358,7 @@ int sendPacket(UserRequest *req){
 #endif
 
 int parseRequestData(UserRequest* req){
-	const char *d = " ,";
+	const char *d = ",";
 	char* pacIdPtr;
 	char* senderIdPtr;
 	char* receiverIdPtr;
