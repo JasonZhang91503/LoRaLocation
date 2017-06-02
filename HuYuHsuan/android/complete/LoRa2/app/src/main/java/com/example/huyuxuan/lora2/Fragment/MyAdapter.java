@@ -160,7 +160,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
                     switch (temp.getOrder_state()){
                         case 0:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
-                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
+                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
                             status.setText(R.string.order_inprocess);
                             break;
@@ -184,7 +184,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
                             break;
                         case 4:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
-                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
+                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
                             status.setText(R.string.order_complete);
                             break;

@@ -91,6 +91,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 //#include <math.h>
 #include <iostream>
 #include <pthread.h>
+#include <time.h>
 
 #ifndef NO_CAR_MODE
 using namespace unistd;
@@ -144,9 +145,14 @@ int LocCount;
 int carOpen = 0;
 
 int pipeFds[2];
+int rpipeFds[2];
 int pchild;
 
 int carPipeFds[2];
+int carReadFds[2];
+
+pthread_mutex_t carMutex = PTHREAD_MUTEX_INITIALIZER;
+bool change = false;
 
 RequestManager ReqManger;
 
@@ -361,13 +367,20 @@ void buildWebSocket(){
 		perror("Pipe build failed\n");
 		exit(1);
 	}
-	
+	if(unistd::pipe(rpipeFds)){
+		perror("readPipe build failed\n");
+		exit(1);
+	}
 	
 	char argPipe1[10];
 	char argPipe2[10];
+	char read_argPipe1[10];
+	char read_argPipe2[10];
 
 	sprintf(argPipe1,"%d",pipeFds[0]);
 	sprintf(argPipe2,"%d",pipeFds[1]);
+	sprintf(read_argPipe1,"%d",rpipeFds[0]);
+	sprintf(read_argPipe2,"%d",rpipeFds[1]);
 
 	pchild = unistd::fork();
 
@@ -376,34 +389,150 @@ void buildWebSocket(){
 		exit(1);
 	}
 	else if(pchild == 0){
-		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,NULL);
+		unistd::execl("/usr/bin/xterm","xterm","-e","LoRaLocation/LoRaTran/websocketServer_exe",argPipe1,argPipe2,read_argPipe1,read_argPipe2,NULL);
 	}
 	unistd::close(pipeFds[0]);
+	unistd::close(rpipeFds[1]);
 
 }
-
-void buildCarControl(){
-	if(unistd::pipe(carPipeFds)){
-		perror("Pipe build failed\n");
-		exit(1);
-	}
-
-	//unistd::close(carPipeFds[0]);
-}
-
-
-
 
 #endif
 
 
+void buildCarControl(){
+#ifndef NO_CAR_MODE
+	if(unistd::pipe(carPipeFds)){
+		perror("carPipe build failed\n");
+		exit(1);
+	}
+	if(unistd::pipe(carReadFds)){
+		perror("carReadFds build failed\n");
+		exit(1);
+	}
+#endif
+}
+
 void* asyncCarControl(void* prarm){
+#ifndef NO_CAR_MODE
+	printf("Build car control\n");
 
-	cout <<"asdkasdkasfsakfjjskfjask" << endl;
+	int lr = 1;
+	clock_t start,end;
+	carControl* cc = carControl::getInstance(TTYUSB0);
+
 	char readBuff[256];
-	read(carPipeFds[0],readBuff,sizeof(readBuff));
+	while(1){
+		pthread_mutex_lock(&carMutex);
+		if(!change){
+			pthread_mutex_unlock(&carMutex);
+			continue;
+		}
+		change = false;
+		pthread_mutex_unlock(&carMutex);
+		read(carPipeFds[0],readBuff,sizeof(readBuff));
 
-	cout << "HAHHHHHHHHHHHHHHHHHHHHHHHA" << endl;
+		if(carLog){
+			printf("eventNum : %d, dir : %d, mb : %d",readBuff[0],readBuff[1],readBuff[2]);
+		}
+		
+
+		if(readBuff[0] == 2){
+			int currentDir = cc->getDir();
+			int tarDir = readBuff[1];
+			int forward = cc->getForward();
+
+			if(currentDir == tarDir){
+				cc->goStraight();
+				if(forward){
+					end = clock();
+
+					if(end - start >= 1200){
+						if(lr == 1){
+							cc->leftSmall();
+							lr = 2;
+						}
+						else if(lr == 2){
+							cc->rightSmall();
+							lr = 1;
+						}
+						start = clock();
+					}
+				}
+				else{
+					start = clock();
+
+					cc->setForward(true);
+					//要set timer
+				}
+
+			}
+			else{
+				cc->setForward(false);
+				cc->stop();
+
+				if(currentDir == 1){
+					if(tarDir == 2){
+						cc->turnAround();
+					}
+					else if(tarDir == 3){
+						cc->turnLeft();
+					}
+					else if(tarDir == 4){
+						cc->turnRight();
+					}
+				}
+				else if(currentDir == 2){
+					if(tarDir == 1){
+						cc->turnAround();
+					}
+					else if(tarDir == 4){
+						cc->turnLeft();
+					}
+					else if(tarDir == 3){
+						cc->turnRight();
+					}
+				}
+				else if(currentDir == 3){
+					if(tarDir == 4){
+						cc->turnAround();
+					}
+					else if(tarDir == 2){
+						cc->turnLeft();
+					}
+					else if(tarDir == 1){
+						cc->turnRight();
+					}
+				}
+				else if(currentDir == 4){
+					if(tarDir == 3){
+						cc->turnAround();
+					}
+					else if(tarDir == 1){
+						cc->turnLeft();
+					}
+					else if(tarDir == 2){
+						cc->turnRight();
+					}
+				}
+				cc->setDir(tarDir);
+
+			}
+
+		}
+		else if(readBuff[0] == 3){
+			cc->setForward(false);
+			cc->stop();
+		}
+		else{ printf("GGGGGGGGGGGGGGGGGGGGGGGGGG\n"); }
+
+		if(readBuff[2] == 1){
+			char buff[256];
+			sprintf(buff,"OK");
+			write(carReadFds[1],buff,sizeof(buff));
+		}
+
+	}
+#endif
 }
 
 int main(int argc, const char * argv[]){
@@ -554,18 +683,13 @@ int main(int argc, const char * argv[]){
 	//建造一條用作recv的thread
 	pthread_t recvThread,carControlThread;
 	pthread_create(&recvThread,NULL,asyncRecv,NULL);
+
 	if(carOpen == 1){
+		buildCarControl();
 		pthread_create(&carControlThread,NULL,asyncCarControl,NULL);
 	}
 
-	cin.get();
-	cin.get();
-
-	cout << "send" << endl;
-
-
-	char JAJA[256] = "HAHAHAHAHA";
-	write(carPipeFds[1],JAJA,sizeof(JAJA));
+	
 
 
 	//pthread_create(&webSocketThread,NULL,asyncWebSocketServer,NULL);
@@ -573,6 +697,7 @@ int main(int argc, const char * argv[]){
 	//開始送貨循環
 	while(1){
 		cout << "Begin transport\n";
+		LocCount = 1;
 
 		if(rrc){
 			req = new UserRequest;
@@ -634,6 +759,7 @@ int goToLocation(double lon,double lat){
 	vec_CMnode::iterator traIt;
 	vec_CMnode::iterator printIt;
 	int count = 0;
+	int dir =0;
 	
 	CarGpsMapSystem* cgms = CarGpsMapSystem::getInstance(MAP_WIDTH,MAP_HEIGHT,init,xMax,yMax);
 
@@ -665,13 +791,13 @@ int goToLocation(double lon,double lat){
 		if(NOGPS == 2){
 			//公院
 			if(LocCount == 1){
-				ss.x = 121.371511;
-				ss.y = 24.943946;
+				ss.x = 121.371028;
+				ss.y = 24.944502;
 				LocCount=3;
 			}
 			else if (LocCount ==2){
-				ss.x = 121.372605;
-				ss.y = 24.944498;
+				ss.x = 121.372155;
+				ss.y = 24.945151;
 				LocCount=3;
 			}
 			//法院
@@ -782,7 +908,8 @@ int goToLocation(double lon,double lat){
 		fileInput(buff);
 
 		mapNode = cgms->gpsToCoordinate(ss);
-		int dirInfo = (int)directionInfo;
+		//int dirInfo = (int)directionInfo;
+		int dirInfo = (*traIt)->getDir();
 		int newDirInfo,reachSH;
 		if(dirInfo == 0){ newDirInfo = 1;}
 		else if(dirInfo == 90){ newDirInfo = 4; }
@@ -794,9 +921,33 @@ int goToLocation(double lon,double lat){
 		if(isReachSH){ 
 			reachSH = cgms->carMapNode[(int)traCoor.x][(int)traCoor.y].GetStronghold(); 
 		}else{reachSH = 100;}
-		sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo,reachSH);
+		//sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,newDirInfo,reachSH);
+		sprintf(buff,"%c%c%c%c%c",2,(int)mapNode.x,(int)mapNode.y,dirInfo,reachSH);
 		write(pipeFds[1],buff,sizeof(buff));
+		
+		if(carOpen == 1){
+			int nodeDir = (*traIt)->getDir();
+			int modifyBit;
+			if(dir != (*traIt)->getDir()){
+				modifyBit = 1;
+			}
+			else{
+				modifyBit = 2;
+			}
+			sprintf(buff,"%c%c%c",2,nodeDir,modifyBit);
+			write(carPipeFds[1],buff,sizeof(buff));
 
+			pthread_mutex_lock(&carMutex);
+			change = true;
+			pthread_mutex_unlock(&carMutex);
+
+			if(dir != (*traIt)->getDir()){ 
+				read(carReadFds[0],buff,sizeof(buff));
+			}
+
+			dir = (*traIt)->getDir();
+		}
+		
 
 		if (isCarReach) {
 			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
@@ -873,6 +1024,7 @@ int moveToSender(UserRequest* req){
 	char buff[256];
 	sprintf(buff,"%c",3);
 	write(pipeFds[1],buff,sizeof(buff));
+	write(carPipeFds[1],buff,sizeof(buff));
 
 	req->state = 1;
 	
@@ -892,7 +1044,15 @@ int beginTransport(UserRequest* req){
 	//改成偵測是否recv到收到寄件?
 	
 	//判定使用者放入文件，目前使用enter做為判定
-	getchar();
+	//getchar();
+
+
+	char buff[256];
+	do{
+		read(rpipeFds[0],buff,sizeof(buff));
+		printf("rpipeFds : %d\n",buff[0]);
+	}while(buff[0] != 2);
+
 	
 	printf("beginTransport : Sender placed file\n");
 	printf("beginTransport : goto longitude =  %lf, latitude = %lf\n",req->dest_lon, req->dest_lat);
@@ -929,6 +1089,7 @@ int moveToReceiver(UserRequest* req){
 	char buff[256];
 	sprintf(buff,"%c",3);
 	write(pipeFds[1],buff,sizeof(buff));
+	write(carPipeFds[1],buff,sizeof(buff));
 
 	req->state = 3;
 	
@@ -952,6 +1113,23 @@ int endTransport(UserRequest* req){
 
 	PacketManager *pac = PacketManager::getInstance(receivePeriod);
 
+	int key[4];
+
+	for(int i = 0; i < 4; i++){
+		key[i] = (int)(req->packetKey[i]);
+	}
+
+
+	char buff[256];
+	sprintf(buff,"%c%c%c%c%c",4,key[0],key[1],key[2],key[3]);
+	write(pipeFds[1],buff,sizeof(buff));
+
+	do{
+		read(rpipeFds[0],buff,sizeof(buff));
+		printf("rpipeFds : %d\n",buff[0]);
+	}while(buff[0] != 1);
+	
+/*
 	do{
 		printf("Password :");
 		getline(cin,input,'\n');
@@ -961,7 +1139,9 @@ int endTransport(UserRequest* req){
 		}
 		else{isCorrect = true;}
 	}while(!isCorrect);
-	
+*/
+
+
 	printf("Password correct!\n");
 	printf("Press enter to end transport!\n");
 	

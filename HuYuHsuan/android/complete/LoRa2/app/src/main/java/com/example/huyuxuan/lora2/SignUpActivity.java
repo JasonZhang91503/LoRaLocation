@@ -70,26 +70,32 @@ public class SignUpActivity extends AppCompatActivity {
                 password = editTextPassword.getText().toString();
                 name = editTextName.getText().toString();
                 email = editTextEmail.getText().toString();
+                if(account != null && password != null && name != null && email != null){
+                    btnSignUp.setClickable(false);
 
 
-                Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
-                intent.putExtra(getString(R.string.activity),"SignUpActivity");
-                intent.putExtra(getString(R.string.id), "2");
-                intent.putExtra(getString(R.string.account),account);
-                intent.putExtra(getString(R.string.password),password);
-                intent.putExtra(getString(R.string.name), name);
-                intent.putExtra(getString(R.string.email), email);
+                    Intent intent = new Intent(SignUpActivity.this,ConnectService.class);
+                    intent.putExtra(getString(R.string.activity),"SignUpActivity");
+                    intent.putExtra(getString(R.string.id), "2");
+                    intent.putExtra(getString(R.string.account),account);
+                    intent.putExtra(getString(R.string.password),password);
+                    intent.putExtra(getString(R.string.name), name);
+                    intent.putExtra(getString(R.string.email), email);
 
-                if(!isBind){
-                    getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
-                    isBind=true;
-                    Log.d("SignUpActivity:", "bindService");
+                    if(!isBind){
+                        getApplicationContext().bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+                        isBind=true;
+                        Log.d("SignUpActivity:", "bindService");
+                    }
+                    else{
+                        mBoundService.sendToServer(intent);
+                        Log.d("SignUpActivity:", "sendToService");
+                    }
+                    setReceiver();
                 }
                 else{
-                    mBoundService.sendToServer(intent);
-                    Log.d("SignUpActivity:", "sendToService");
+                    Toast.makeText(SignUpActivity.this,"請填寫資料",Toast.LENGTH_SHORT).show();
                 }
-                setReceiver();
 
             }
         });
@@ -101,39 +107,50 @@ public class SignUpActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("SignUpActivity")){
-                unregisterReceiver(receiver);
-                Bundle bundle = intent.getExtras();
-                String type = bundle.getString(getString(R.string.type));
-                switch (type){
-                    case "1":
-                        sharedPreferences.edit()
-                                .putString(getString(R.string.account),account)
-                                .putString(getString(R.string.password),password)
-                                .putString(getString(R.string.name),name)
-                                .putString(getString(R.string.email),email)
-                                .putString(getString(R.string.isLogin),"true")
-                                .apply();
-                        Log.d("SignUpActivity:", "account:"+account+"password:"+password+"name:"+name+"email:"+email);
-                        //跳到主畫面
-                        Intent intentToMain = new Intent();
-                        intentToMain.setClass(SignUpActivity.this,NavigationActivity.class);
-                        startActivity(intentToMain);
-                        SignUpActivity.this.finish();
-                        Log.d("SignUpActivity","跳到主畫面");
-                        break;
-                    case "2":
-                        Toast.makeText(SignUpActivity.this,"帳號重複", Toast.LENGTH_LONG).show();
-                        editTextAccount.setText("");
-                        break;
-                    case "3":
-                        Toast.makeText(SignUpActivity.this,"密碼重複", Toast.LENGTH_LONG).show();
-                        editTextPassword.setText("");
-                        break;
-                    case "4":
-                        Toast.makeText(SignUpActivity.this,"帳號密碼都重複", Toast.LENGTH_LONG).show();
-                        editTextAccount.setText("");
-                        editTextPassword.setText("");
-                        break;
+                if(intent.getStringExtra("result").equals("true")) {
+                    try {
+                        getApplicationContext().unregisterReceiver(receiver);
+                        getApplicationContext().unbindService(mConnection);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = intent.getExtras();
+                    String type = bundle.getString(getString(R.string.type));
+                    switch (type) {
+                        case "1":
+                            sharedPreferences.edit()
+                                    .putString(getString(R.string.account), account)
+                                    .putString(getString(R.string.password), password)
+                                    .putString(getString(R.string.name), name)
+                                    .putString(getString(R.string.email), email)
+                                    .putString(getString(R.string.isLogin), "true")
+                                    .apply();
+                            Log.d("SignUpActivity:", "account:" + account + "password:" + password + "name:" + name + "email:" + email);
+                            //跳到主畫面
+                            Intent intentToMain = new Intent();
+                            intentToMain.setClass(SignUpActivity.this, NavigationActivity.class);
+                            startActivity(intentToMain);
+                            SignUpActivity.this.setResult(RESULT_OK, null);
+                            SignUpActivity.this.finish();
+                            Log.d("SignUpActivity", "跳到主畫面");
+                            break;
+                        case "2":
+                            btnSignUp.setClickable(true);
+                            Toast.makeText(SignUpActivity.this, "帳號重複", Toast.LENGTH_LONG).show();
+                            editTextAccount.setText("");
+                            break;
+                        case "3":
+                            btnSignUp.setClickable(true);
+                            Toast.makeText(SignUpActivity.this, "密碼重複", Toast.LENGTH_LONG).show();
+                            editTextPassword.setText("");
+                            break;
+                        case "4":
+                            btnSignUp.setClickable(true);
+                            Toast.makeText(SignUpActivity.this, "帳號密碼都重複", Toast.LENGTH_LONG).show();
+                            editTextAccount.setText("");
+                            editTextPassword.setText("");
+                            break;
+                    }
                 }
             }
         }
@@ -152,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
             Log.d("SignUpActivity","onServiceDisconnected");
-            //mBoundService = null;
+            mBoundService = null;
             isBind=false;
         }
 
@@ -165,5 +182,17 @@ public class SignUpActivity extends AppCompatActivity {
         receiver = new ConnectServiceReceiver();
         registerReceiver(receiver, filter);
         Log.d("SignUpActivity:","register receiver");
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.d("SignUpActivity:","onDestroy");
+        try{
+            getApplicationContext().unbindService(mConnection);
+            getApplicationContext().unregisterReceiver(receiver);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 }

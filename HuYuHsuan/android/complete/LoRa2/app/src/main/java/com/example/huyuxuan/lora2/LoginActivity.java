@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 account = editTextAccount.getText().toString();
                 password = editTextPassword.getText().toString();
                 if(account != null && password != null){
-
+                    btnLogin.setClickable(false);
                     Intent intent = new Intent(LoginActivity.this,ConnectService.class);
                     intent.putExtra(getString(R.string.activity),"LoginActivity");
                     intent.putExtra(getString(R.string.id),"3");
@@ -90,9 +90,14 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("LoginActivity")){
-                if(intent.getStringExtra("result").equals("true")){
+                try{
                     getApplicationContext().unbindService(mConnection);
-                    unregisterReceiver(receiver);
+                    getApplicationContext().unregisterReceiver(receiver);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                if(intent.getStringExtra("result").equals("true")){
+
                     Bundle bundle = intent.getExtras();
                     String type = bundle.getString(getString(R.string.type));
                     if(type.compareTo("1")==0){
@@ -112,13 +117,15 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intentToMain = new Intent();
                         intentToMain.setClass(LoginActivity.this,NavigationActivity.class);
                         startActivity(intentToMain);
+                        LoginActivity.this.setResult(RESULT_OK,null);//關閉MainActivity
                         LoginActivity.this.finish();
                         Log.d("LoginActivity","跳到主畫面");
 
                     }else{
                         //登入失敗
-                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                        Toast.makeText(LoginActivity.this,errorMsg, Toast.LENGTH_LONG).show();
+
+                        Toast.makeText(LoginActivity.this,"帳號或密碼錯誤，請重新輸入", Toast.LENGTH_SHORT).show();
+                        btnLogin.setClickable(true);
                     }
                 }
                 else{
@@ -143,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             // TODO Auto-generated method stub
             Log.d("LoginActivity","onServiceDisconnected");
-            //mBoundService = null;
+            mBoundService = null;
             isBind=false;
         }
 
@@ -161,6 +168,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         Log.d("LoginActivity","onDestroy");
+        try{
+            getApplicationContext().unbindService(mConnection);
+            getApplicationContext().unregisterReceiver(receiver);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 
@@ -168,6 +181,22 @@ public class LoginActivity extends AppCompatActivity {
     public void onPause(){
         Log.d("LoginActivity","onPause");
         super.onPause();
-
     }
+
+    @Override
+    public void onBackPressed(){
+        Log.d("LoginActivity","onBackPressed");
+        if(MyBoundedService.callingActivity==2){
+            Intent intent = new Intent();
+            intent.setClass(LoginActivity.this,MainActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
+            Log.d("LoginActivity","跳到歡迎畫面");
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+
 }

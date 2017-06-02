@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
         tvName.setText(sharedPreferences.getString(getString(R.string.name),"使用者"));
         tvMoney.setText("帳戶金額：NT$"+sharedPreferences.getString("Money","100"));
 
-        MyBoundedService.fragmentID=1;
+        MyBoundedService.fragmentID=0;
         MyBoundedService.curFragment=this;
 
         isBind = false;
@@ -130,11 +130,12 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 //跳到個人資料介面
                 AccountFragment accountFragment = new AccountFragment();
-                accountFragment.setTargetFragment(HomeFragment.this,0);
+               // accountFragment.setTargetFragment(HomeFragment.this,0);
                 MyBoundedService.fragmentID=1;
                 MyBoundedService.curFragment=accountFragment;
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container,accountFragment).commit();
+                //getChildFragmentManager().beginTransaction().replace(R.id.fragment_container,accountFragment).commit();
             }
         });
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -154,41 +155,52 @@ public class HomeFragment extends Fragment {
         mHeadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> list = new ArrayList<>();
-                list.add("拍照");
-                list.add("相簿");
-                showDialog(new SelectDialogListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        MyBoundedService.fragmentID=8;
-                        switch (position){
-                            case 0:
-                                //用系統相機拍照
+                if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_READ_EXTERNAL_CODE);
+                }
+                if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    List<String> list = new ArrayList<>();
+                    list.add("拍照");
+                    list.add("相簿");
+                    showDialog(new SelectDialogListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            MyBoundedService.fragmentID=8;
+                            switch (position){
+                                case 0:
+                                    //用系統相機拍照
 
-                                if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.CAMERA)
-                                        != PackageManager.PERMISSION_GRANTED) {
+                                    if (checkSelfPermission(getActivity().getApplicationContext(),Manifest.permission.CAMERA)
+                                            != PackageManager.PERMISSION_GRANTED) {
 
-                                    requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                            MY_REQUEST_CODE);
-                                }else{
-                                    openCamera();
-                                }
+                                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                                MY_REQUEST_CODE);
+                                    }else{
+                                        openCamera();
+                                    }
 
-                                Log.d("HomeFragment","PHOTO-PICK-FROM-CAMERA");
-                                break;
-                            case 1:
-                                //開啟相簿相片集，須由startActivityForResult且帶入requestCode進行呼叫，原因
-                                //為點選相片後返回程式呼叫onActivityResult
-                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, PHOTO_PICKED_FROM_FILE);
-                                Log.d("HomeFragment","PHOTO-PICK-FROM-FILE");
-                                break;
-                            default:
-                                break;
+                                    Log.d("HomeFragment","PHOTO-PICK-FROM-CAMERA");
+                                    break;
+                                case 1:
+                                    //開啟相簿相片集，須由startActivityForResult且帶入requestCode進行呼叫，原因
+                                    //為點選相片後返回程式呼叫onActivityResult
+                                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, PHOTO_PICKED_FROM_FILE);
+                                    Log.d("HomeFragment","PHOTO-PICK-FROM-FILE");
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                },list);
+                    },list);
+                }
+                else{
+                    Toast.makeText(getContext(),"請同意使用SD卡權限",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -206,7 +218,6 @@ public class HomeFragment extends Fragment {
 
     private SelectDialog showDialog(SelectDialogListener listener, List<String> list){
         Log.d("HomeFragment","showDialog");
-        //getActivity?
         SelectDialog dialog = new SelectDialog(getActivity(),
                 R.style.transparentFrameWindowStyle,listener,list);
         dialog.show();
@@ -306,7 +317,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        MyBoundedService.fragmentID=1;
+        MyBoundedService.fragmentID=0;
         MyBoundedService.curFragment=this;
         if(resum){
            // updateListView();
@@ -328,21 +339,30 @@ public class HomeFragment extends Fragment {
         Log.d("HomeFragment","onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("HomeFragment","resultCode="+resultCode+"requestCode="+requestCode);
-        if (resultCode != RESULT_OK){
+        if (resultCode != RESULT_OK ){
+            //刪除照片
+            String sd = Environment.getExternalStorageDirectory().toString();
+            File file = new File(sd+"/mypic.png");
+            boolean delete=file.delete();
+            Log.d("LogOut","file delete"+String.valueOf(delete));
+
             Log.d("onActivityResult","resultCode not ok");
             return;
         }
         //藉由requestCode判斷是否為開啟相機或開啟相簿而呼叫的，且data不為null
         switch (requestCode) {
             case PHOTO_PICKED_FROM_CAMERA:
+                Log.d("photo pick from camera","do crop");
                 doCrop();
                 break;
             case PHOTO_PICKED_FROM_FILE:
                 imgUri = data.getData();
+                Log.d("photo picked from file","do crop");
                 doCrop();
                 break;
             case CROP_FROM_CAMERA:
                 if (data != null){
+                    Log.d("crop from camera","set cropImg");
                     setCropImg(data);
                 }else{
                     Log.d("onActivityResult","data = null");
@@ -447,12 +467,13 @@ public class HomeFragment extends Fragment {
                 // Your app will not have this permission. Turn off all functions
                 // that require this permission or it will force close like your
                 // original question
-                Toast.makeText(getActivity(),"無法寫入外部SD", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"無法寫入SD卡", Toast.LENGTH_LONG).show();
             }
         }else if(requestCode==REQUEST_READ_EXTERNAL_CODE){
             if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(getActivity(),"無法讀取外部SD", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"無法讀取SD卡", Toast.LENGTH_LONG).show();
             }else{
+                Log.d("onRequestResult","request read and set bitmap");
                 String sd = Environment.getExternalStorageDirectory().toString();
                 Bitmap bitmap = BitmapFactory.decodeFile(sd + "/mypic.png");
                 if(bitmap != null){

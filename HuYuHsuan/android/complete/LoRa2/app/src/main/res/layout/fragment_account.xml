@@ -113,7 +113,7 @@
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
                 android:text="@string/account_title"
-                android:textAlignment="textStart"
+                android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
 

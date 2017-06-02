@@ -13,6 +13,7 @@ using namespace unistd;
 
 #define LEFT_T 2000
 #define RIGHT_T 2000
+#define R_AROUND_T 3400
 
 unsigned char 
 power[12] = {"FE FE EE FF"},
@@ -58,10 +59,20 @@ int kbhit(void)
 
 class carControl{
 public:
+    static carControl* getInstance(int comport){
+        if(!instance){
+            instance = new carControl(comport);
+        }
+        return instance;
+    }
+
     carControl(int comport){
         if(RS232_OpenComport(comport,9600,"8N1")){
             printf("OpenComport error\n");
             exit(1);
+        }
+        else{
+            printf("carControl : car OK\n");
         }
     }
     
@@ -77,8 +88,15 @@ public:
         stop();
     }
 
+    void turnAround(){
+        RS232_SendBuf(TTYUSB0,rightX,14);
+        usleep(R_AROUND_T * MILI);
+        stop();
+    }
+
     void goStraight(){
         RS232_SendBuf(TTYUSB0,goY,14);
+        usleep(100 * MILI);
     }
 
     void leftSmall(){
@@ -95,8 +113,30 @@ public:
         usleep(100 * MILI);
         RS232_SendBuf(TTYUSB0,mY,14);
         usleep(100 * MILI);
+        forward = false;
     }
 
+    void setDir(int dir){
+        currentDir = dir;
+    }
+
+    int getDir(){
+        return currentDir;
+    }
+
+    void setForward(int f){
+        forward = f;
+    }
+
+    int getForward(){
+        return forward;
+    }
+
+
 private:
-    
+    static carControl* instance;
+    int currentDir = 1;
+    bool forward = false;
 };
+
+carControl* carControl::instance = 0;

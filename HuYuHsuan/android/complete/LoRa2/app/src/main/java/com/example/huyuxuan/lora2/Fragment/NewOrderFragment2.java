@@ -179,7 +179,11 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment2")){
                 if(isAdded()){
-                    getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    try{
+                        getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 Bundle bundle = intent.getExtras();
                 String id = bundle.getString(getString(R.string.id));
@@ -225,7 +229,11 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
     public void onStop(){
         Log.d("NewOrderFragment2:", "onStop");
         if(isBind){
-            getActivity().getApplicationContext().unbindService(mConnection);
+            try{
+                getActivity().getApplicationContext().unbindService(mConnection);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             isBind=false;
         }
         super.onStop();
