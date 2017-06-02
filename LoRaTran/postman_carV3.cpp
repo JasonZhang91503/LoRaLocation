@@ -328,7 +328,7 @@ void* asyncRecv(void *arg){
 				}
 
 				
-				//PacManager->switch_recvWaitingPacNum();
+				PacManager->switch_recvWaitingPacNum();
 				//PacManager->switchSendACK();
 				PacManager->setCurrentSendACK(PacManager->recv_buffer[2]);
 				result = PacManager->sendBackACK();
