@@ -1,3 +1,11 @@
+//
+//  main.cpp
+//  LoRa_Gateway
+//
+//  Created by 耿楷寗 on 3/12/17.
+//  Copyright © 2017 Keng. All rights reserved.
+//
+
 #include <iostream>
 #include <thread>
 #include <arpa/inet.h>
@@ -55,7 +63,7 @@ string recvMessage() {
 	int  id[4];
 	string msg;
 	cout<<"Wait for sent..."<<endl;
-	e = sx1272.receivePacketTimeoutACK(10000);
+	e = sx1272.receivePacketTimeout(10000);
 	if (e == 0)
 	{
 		printf("Receive packet, state %d\n", e);
@@ -79,7 +87,7 @@ string recvMessage() {
 void send(string s,int e){
 	char send_str[256];
 	sprintf(send_str,"%s",s.c_str());
-	e = sx1272.sendPacketTimeoutACK(0,send_str);
+	e = sx1272.sendPacketTimeout(0,send_str);
 	printf("Packet sent, state %d\n",e);
 	
 }
