@@ -211,6 +211,10 @@ public:
         else currentSendACK = 1;
     }
 
+    void setCurrentSendACK(int SendACK){
+        currentSendACK = SendACK;
+    }
+
     void switchRecvACK(){
         if(currentRecvACK == 1) currentRecvACK = 2;
         else currentRecvACK = 1;

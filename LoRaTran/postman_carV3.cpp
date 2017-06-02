@@ -280,7 +280,8 @@ void* asyncRecv(void *arg){
 		else{
 			if(!PacManager->isCorrectPackNum()){
 				cout << "asyncRecv : recvive incorrect packNum, discard it\n";
-				//result = PacManager->sendBackACK();
+				PacManager->setCurrentSendACK(PacManager->recv_buffer[2]);
+				result = PacManager->sendBackACK();
 				cout << "asyncRecv : resend last sended packet\n";
 			}
 			else{
@@ -327,8 +328,9 @@ void* asyncRecv(void *arg){
 				}
 
 				
-				PacManager->switch_recvWaitingPacNum();
-				PacManager->switchSendACK();
+				//PacManager->switch_recvWaitingPacNum();
+				//PacManager->switchSendACK();
+				PacManager->setCurrentSendACK(PacManager->recv_buffer[2]);
 				result = PacManager->sendBackACK();
 			}
 		}
