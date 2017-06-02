@@ -156,7 +156,10 @@ public:
         if(postman_packetLog){printf("PacManager : sendBackACK -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);}
         
         #ifndef NO_CAR_MODE
+        printf("CACSACASCASC\n");
+        if(postman_packetLog){printf("PacManager : sendBackACK -> role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);}
         errorCode = sx1272.sendPacketTimeout(0, send_buffer);
+        printf("1231231232123\n");
         #endif
     }
 
