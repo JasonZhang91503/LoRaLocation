@@ -409,7 +409,7 @@ void carAvailableTime(string strTemp, string &strSendBuff) {
     strDate = strTemp.substr(0, intTemp);
 
     // get the transports in that date
-    res = stmt->executeQuery("SELECT requireTime FROM transport WHERE requireTime>='" + strDate +
+    res = stmt->executeQuery("SELECT state, requireTime FROM transport WHERE state!=4 AND requireTime>='" + strDate +
         "'AND requireTime<ADDDATE('" + strDate + "',1)ORDER BY requireTime");
 
     // add available time to strSendBuff
