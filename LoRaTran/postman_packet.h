@@ -74,6 +74,13 @@ public:
 		{
 			recv_buffer[i] = (char)sx1272.packet_received.data[i];
 		}
+
+        int role = recv_buffer[0];
+        int carID = recv_buffer[1];
+        int packNum = recv_buffer[2];
+        int eventNum = recv_buffer[3];
+        if(postman_packetLog){printf("role = %d, carID = %d, packNum = %d, eventNum = %d\n",role,carID,packNum,eventNum);}
+
         #endif
 
         return 0;
