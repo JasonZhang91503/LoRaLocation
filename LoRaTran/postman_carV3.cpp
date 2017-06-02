@@ -766,11 +766,16 @@ int goToLocation(double lon,double lat){
 	ee.x = lon;
 	ee.y = lat;
 
+	if(!carLog){
+		mapPrint();
+	}
 	
-	mapPrint();
 
 	if(!cgms->isInsideMap(ee.x,ee.y)){
-			mapgotoxy(17,1);
+			if(!carLog){
+				mapgotoxy(17,1);
+			}
+			
 			printf("goToLocation :cgms -> dest out ! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ee.x,ee.y,mapNode.x,mapNode.y);
 			
 
@@ -814,7 +819,9 @@ int goToLocation(double lon,double lat){
 
 		if(!cgms->isInsideMap(ss.x,ss.y)){
 			//if(carLog){printf("goToLocation : cgms detect gps not in map region, lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);}
-			mapgotoxy(17,1);
+			if(!carLog){
+				mapgotoxy(17,1);
+			}
 			printf("goToLocation : cgms ->  gps out! lon:%lf, lat:%lf, mapLon:%lf ,mapLat:%lf\n",ss.x,ss.y,mapNode.x,mapNode.y);
 			
 			mapNode = cgms->gpsToCoordinate(ss);
@@ -846,10 +853,11 @@ int goToLocation(double lon,double lat){
 				char buff1[256];
 				sprintf(buff1,"Node : %d,%d\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y());
 				fileInput(buff1);
-
-				mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
-
-				cout << "●";
+				
+				if(!carLog){
+					mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
+					cout << "●";
+				}
 
 				if((*traIt)->GetstrongholdMark()){
 					if(recX != (*traIt)->GetCor_x() || recY != (*traIt)->GetCor_y()){
@@ -862,8 +870,10 @@ int goToLocation(double lon,double lat){
             }
 
 			traIt--;
-			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
-			cout << "★";
+			if(!carLog){
+				mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
+				cout << "★";
+			}
 
 			if(traceVec.size()==0){
 				return CAR_NOT_FOUND_ROAD;
@@ -903,7 +913,9 @@ int goToLocation(double lon,double lat){
 		char buff[256];
 		sprintf(buff,"%d,%d,%d,%d,go toward %lf degree for %lf kilometer.\n",(*traIt)->GetCor_x(),(*traIt)->GetCor_y(),count,traceVec.size(),directionInfo,distanceInfo);
 		//if(carLog){printf(buff);}
-		mapgotoxy(16,0);
+		if(!carLog){
+			mapgotoxy(16,0);
+		}
 		printf(buff);
 		fileInput(buff);
 
@@ -950,9 +962,11 @@ int goToLocation(double lon,double lat){
 		
 
 		if (isCarReach) {
-			mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
-			cout << "○";
+			if(!carLog){
+				mapGoTo((*traIt)->GetCor_y(),(*traIt)->GetCor_x());
+				cout << "○";
 
+			}
 			count++;
 			traIt++;
 			if(count == traceVec.size()){
@@ -1013,9 +1027,11 @@ int moveToSender(UserRequest* req){
 		return e;
 	}
 
-	mapPrint();
+	if(!carLog){
+		mapPrint();
 
-	mapgotoxy(17,0);
+		mapgotoxy(17,0);
+	}
 	printf("moveToSender : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
@@ -1024,7 +1040,11 @@ int moveToSender(UserRequest* req){
 	char buff[256];
 	sprintf(buff,"%c",3);
 	write(pipeFds[1],buff,sizeof(buff));
-	write(carPipeFds[1],buff,sizeof(buff));
+	
+	if(carOpen){
+		write(carPipeFds[1],buff,sizeof(buff));
+	}
+	
 
 	req->state = 1;
 	
@@ -1077,10 +1097,10 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	mapclear();
-
-	
-	mapgotoxy(17,1);
+	if(carLog){
+		mapclear();
+		mapgotoxy(17,1);
+	}
 	printf("moveToReceiver : reach destnation!\n");
 	#ifndef NO_CAR_MODE
 	unistd::usleep(2000);
@@ -1089,8 +1109,12 @@ int moveToReceiver(UserRequest* req){
 	char buff[256];
 	sprintf(buff,"%c",3);
 	write(pipeFds[1],buff,sizeof(buff));
-	write(carPipeFds[1],buff,sizeof(buff));
-
+	
+	
+	if(carOpen){
+		write(carPipeFds[1],buff,sizeof(buff));
+	}
+		
 	req->state = 3;
 	
 #ifndef NO_CAR_MODE
@@ -1151,7 +1175,7 @@ int endTransport(UserRequest* req){
 		這裡用按下enter來當作拿了
 		~~~~以後要改成RFID
 	*/
-	getchar();
+	//getchar();
 	
 	req->state = 4;
 	
@@ -1182,13 +1206,19 @@ int getGPSLocation(double &sLon,double &sLat){
                         //printf("latitude: %f, longitude: %f, speed: %f, timestamp: %ld\n", myGPS_Data.fix.latitude, myGPS_Data.fix.longitude, myGPS_Data.fix.speed, myGPS_Data.fix.time); //EDIT: Replaced tv.tv_sec with gps_data.fix.time
 						break;
                } else {
-				   	mapgotoxy(16,1);
+
+				   	if(carLog){
+						mapgotoxy(16,1);
+					}
+				   
                     printf("no GPS data available\n");
                 }
             }
         }
 		else{
-			mapgotoxy(16,1);
+			if(carLog){
+				mapgotoxy(16,1);
+			}
 			printf("wait for 2 seconds to receive data again\n");
 		}
 
