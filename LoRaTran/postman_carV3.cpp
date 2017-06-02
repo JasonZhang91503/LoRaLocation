@@ -1099,7 +1099,7 @@ int moveToReceiver(UserRequest* req){
 		return e;
 	}
 
-	if(carLog){
+	if(!carLog){
 		mapclear();
 		mapgotoxy(17,1);
 	}
