@@ -902,7 +902,7 @@ int goToLocation(double lon,double lat){
 			ss.y = traGPS.y;
 			isCarReach = true;
 			#ifndef NO_CAR_MODE
-			unistd::usleep(1000000);
+			unistd::usleep(100000);
 			#endif
 		}
 		#ifndef NO_CAR_MODE

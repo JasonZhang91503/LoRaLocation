@@ -322,7 +322,7 @@ void* asyncTimer(void* param){
     outtime.tv_sec = now.tv_sec + *timeout;
     int result = pthread_cond_timedwait(&timerCond, &timerMutex, &outtime);
     if(result == 0){
-        if(postman_packetLog){printf("asyncTimer : stopTimer!");}
+        if(postman_packetLog){printf("asyncTimer : stopTimer!\n");}
         pm->dequeuePacket();
     }
     pthread_mutex_unlock(&timerMutex);
