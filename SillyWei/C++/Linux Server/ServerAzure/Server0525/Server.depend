@@ -2818,3 +2818,58 @@
 	"Cellphone.h"
 	"Socket.h"
 
+1495431478 source:/home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Gateway.cpp
+	"Gateway.h"
+	"Server.h"
+	"Socket.h"
+
+1494822436 /home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Gateway.h
+	"Server.h"
+
+1495432932 /home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Server.h
+	"mysql_connection.h"
+	<cppconn/driver.h>
+	<cppconn/exception.h>
+	<cppconn/resultset.h>
+	<cppconn/statement.h>
+	<thread>
+	<mutex>
+	<iostream>
+	<stdlib.h>
+	<string>
+	<time.h>
+	<chrono>
+	<iomanip>
+
+1494698361 /home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Socket.h
+	<stdio.h>
+	<stdlib.h>
+	<unistd.h>
+	<errno.h>
+	<string.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+	<arpa/inet.h>
+	<sys/wait.h>
+	<signal.h>
+
+1494742525 source:/home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/main.cpp
+	"Server.h"
+	"Socket.h"
+	"Cellphone.h"
+	"Gateway.h"
+
+1495720161 /home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Cellphone.h
+	"Server.h"
+
+1494828542 source:/home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Server.cpp
+	"Server.h"
+	"Socket.h"
+	"Cellphone.h"
+	"Gateway.h"
+
+1494698348 source:/home/s410385019/github/LoRaLocation/SillyWei/C++/Linux Server/ServerAzure/Server0525/Socket.cpp
+	"Socket.h"
+
