@@ -367,13 +367,15 @@ function onMessage(evt) {
         boolNavigation = true;
     }else if (evt.data.charCodeAt(0) == 3) {
 	boolNavigation = false;
+        document.getElementById("bG").style.display = "inline";
         console.log("NAVIGATION COMPLETE");
-
+        lastArrive = 100;
         document.getElementById("h").innerHTML = "Finish";
+        updateMapArea();
     }else if (evt.data.charCodeAt(0) == 4) {
         myPassword = "";
         for (i = 0; i < 4; i++) {
-            myPassword = myPassword + evt.data.charCodeAt(1 + i);
+            myPassword = myPassword + evt.data[1 + i];
         }
         passwordOn();
         console.log("password get: " + myPassword);
@@ -413,17 +415,17 @@ function addNavigation(evt) {
 }
 
 function updatePosition(x, y, direction, arrive) {
-    console.log("x: " + x + ", y: " + y + ", direction: " + direction);
+    console.log("x: " + x + ", y: " + y + ", direction: " + direction + " " + arrive);
     myLocation = modifyPosition(new position(x, y), "myPosition");
     myNewNavigation = makeNavigation(myLocation, middlePoint[0], "newPosition", arrive);
     myDirection = direction;
     if (direction == 1) {
         document.getElementById("result").innerHTML = "GO UP";
-    }else if (direction ==) {
+    }else if (direction == 2) {
         document.getElementById("result").innerHTML = "GO DOWN";
-    }else if (direction ==) {
+    }else if (direction == 3) {
         document.getElementById("result").innerHTML = "GO LEFT";
-    }else if (direction ==) {
+    }else if (direction == 4) {
         document.getElementById("result").innerHTML = "GO RIGHT";
     }
     updateMapArea();
@@ -436,6 +438,7 @@ var myPassword;
 
 function passwordOn() {
     document.getElementById("h").innerHTML = "Enter the password";
+    document.getElementById("bG").style.display = "none";
     document.getElementById("b1").style.display = "inline";
     document.getElementById("b2").style.display = "inline";
     document.getElementById("b3").style.display = "inline";
@@ -453,6 +456,7 @@ function passwordOn() {
 }
 
 function passwordOff() {
+    document.getElementById("bG").style.display = "none";
     document.getElementById("b1").style.display = "none";
     document.getElementById("b2").style.display = "none";
     document.getElementById("b3").style.display = "none";
@@ -478,13 +482,20 @@ function checkPassword() {
     }else {
         document.getElementById("result").innerHTML = "WRONG PASSWORD!";
         document.getElementById("result").style.color = "red";
+        document.getElementById('i').value = "";
     }
+}
+
+function sendPacket() {
+    sendBuff = "" + String.fromCharCode(2);
+    websocket.send(sendBuff);
 }
 
 </script>
 
 <div id="output"></div>
 <h2 id="h">Wait for the next navigation</h2>
+<button id="bG" onclick="sendPacket()" type="button" style="font-size: 30px;">Send Packet</button>
 <button id="b1" onclick="document.getElementById('i').value = document.getElementById('i').value + 1" type="button" style="font-size: 30px;">1</button>
 <button id="b2" onclick="document.getElementById('i').value = document.getElementById('i').value + 2" type="button" style="font-size: 30px;">2</button>
 <button id="b3" onclick="document.getElementById('i').value = document.getElementById('i').value + 3" type="button" style="font-size: 30px;">3</button><br/>
