@@ -178,40 +178,44 @@ public class NewOrderFragment2 extends Fragment implements View.OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment2")){
-                if(isAdded()){
-                    try{
-                        getActivity().getApplicationContext().unregisterReceiver(receiver);
-                    }catch (Exception e){
-                        e.printStackTrace();
+                if(intent.getStringExtra("result").equals("true")) {
+                    if (isAdded()) {
+                        try {
+                            getActivity().getApplicationContext().unregisterReceiver(receiver);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Bundle bundle = intent.getExtras();
+                    String id = bundle.getString(getString(R.string.id));
+                    switch (id) {
+                        case "10"://要使用者名單
+
+                            if (bundle != null) {
+                                nameArrayList = (ArrayList<HashMap<String, String>>) bundle.getSerializable("nameList");
+                                String nameArray[] = new String[nameArrayList.size()];
+
+                                for (int i = 0; i < nameArrayList.size(); i++) {
+                                    HashMap<String, String> tmp = nameArrayList.get(i);
+                                    for (String key : tmp.keySet()) {
+                                        Log.d("NameArray", "account=" + key + "name=" + tmp.get(key));
+                                        nameArray[i] = tmp.get(key) + "(" + key + ")";
+                                    }
+                                }
+                                ArrayAdapter<String> nameList = new ArrayAdapter<>(getActivity(),
+                                        R.layout.support_simple_spinner_dropdown_item, nameArray);
+                                spnName.setAdapter(nameList);
+
+                            } else {
+                                Toast.makeText(getActivity().getApplicationContext(), "bundle null", Toast.LENGTH_LONG).show();
+                            }
+                            break;
+
                     }
                 }
-                Bundle bundle = intent.getExtras();
-                String id = bundle.getString(getString(R.string.id));
-                switch(id){
-                    case "10"://要使用者名單
-
-                        if (bundle != null) {
-                            nameArrayList=(ArrayList<HashMap<String,String>>) bundle.getSerializable("nameList");
-                            String nameArray[]=new String[nameArrayList.size()];
-
-                            for(int i=0;i<nameArrayList.size();i++){
-                                HashMap<String,String> tmp = nameArrayList.get(i);
-                                for(String key:tmp.keySet()){
-                                    Log.d("NameArray","account="+key+"name="+tmp.get(key));
-                                    nameArray[i]=tmp.get(key)+"("+key+")";
-                                }
-                            }
-                            ArrayAdapter<String > nameList = new ArrayAdapter<>(getActivity(),
-                                    R.layout.support_simple_spinner_dropdown_item,nameArray);
-                            spnName.setAdapter(nameList);
-
-                        } else {
-                            Toast.makeText(getActivity().getApplicationContext(), "bundle null", Toast.LENGTH_LONG).show();
-                        }
-                        break;
-
+                else{
+                    Toast.makeText(getContext(),"與伺服器斷線,請稍候再試",Toast.LENGTH_SHORT).show();
                 }
-
             }
         }
     }

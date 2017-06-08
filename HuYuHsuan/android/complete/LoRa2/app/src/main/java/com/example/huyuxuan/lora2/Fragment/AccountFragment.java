@@ -295,33 +295,39 @@ public class AccountFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("AccountFragment")){
-                try{
-                    getActivity().getApplicationContext().unbindService(mConnection);
-                    getActivity().getApplicationContext().unregisterReceiver(receiver);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                Bundle bundle = intent.getExtras();
-                if(bundle != null){
-                    String type = bundle.getString(getString(R.string.type));
-                    if(type.compareTo("1")==0){
-                        //更改資料成功
-                        sharedPreferences.edit()
-                                .putString(getString(R.string.password),password)
-                                .putString(getString(R.string.email),email)
-                                .apply();
-                        Toast.makeText(getActivity().getApplicationContext(),"更改成功",Toast.LENGTH_LONG).show();
-                    }else if(type.compareTo("0")==0){
-                        pwd.setText(sharedPreferences.getString(getString(R.string.password),""));
-                        mail.setText(sharedPreferences.getString(getString(R.string.email),""));
-                        //更改資料失敗
-                        Toast.makeText(getActivity().getApplicationContext(),"更改失敗",Toast.LENGTH_LONG).show();
-
-                    }else{
-                        Log.e("AccountFragment","type error");
+                if(intent.getStringExtra("result").equals("true")) {
+                    try {
+                        getActivity().getApplicationContext().unbindService(mConnection);
+                        getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }else{
-                    Toast.makeText(getActivity().getApplicationContext(),"bundle null",Toast.LENGTH_LONG).show();
+                    Bundle bundle = intent.getExtras();
+                    if (bundle != null) {
+                        String type = bundle.getString(getString(R.string.type));
+                        if (type.compareTo("1") == 0) {
+                            //更改資料成功
+                            sharedPreferences.edit()
+                                    .putString(getString(R.string.password), password)
+                                    .putString(getString(R.string.email), email)
+                                    .apply();
+                            Toast.makeText(getActivity().getApplicationContext(), "更改成功", Toast.LENGTH_LONG).show();
+                        } else if (type.compareTo("0") == 0) {
+                            pwd.setText(sharedPreferences.getString(getString(R.string.password), ""));
+                            mail.setText(sharedPreferences.getString(getString(R.string.email), ""));
+                            //更改資料失敗
+                            Toast.makeText(getActivity().getApplicationContext(), "更改失敗", Toast.LENGTH_LONG).show();
+
+                        } else {
+                            Log.e("AccountFragment", "type error");
+                        }
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), "bundle null", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else{
+                    //連線有問題
+                    Toast.makeText(getContext(),"與伺服器斷線,請稍候再試",Toast.LENGTH_SHORT).show();
                 }
             }
         }

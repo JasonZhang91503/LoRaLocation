@@ -160,31 +160,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
                     switch (temp.getOrder_state()){
                         case 0:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
-                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
                             status.setText(R.string.order_inprocess);
                             break;
                         case 1:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
-                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_unprocessed));
-                            status.setText(R.string.order_inprocess);
+                            status.setText(R.string.order_processing);
                             break;
                         case 2:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
-                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
                             status.setText(R.string.order_waiting);
                             break;
                         case 3:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
-                            //txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_waiting));
                             status.setText(R.string.order_arrive);
                             break;
                         case 4:
                             time.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
-                            txtPwd.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
                             txtTotal.setBackgroundColor(context.getResources().getColor(R.color.orderBar_complete));
                             status.setText(R.string.order_complete);
                             break;

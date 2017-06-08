@@ -185,45 +185,50 @@ public class NewOrderFragment3 extends Fragment implements View.OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getStringExtra("activity").equals("NewOrderFragment3")){
-                try{
-                    getActivity().getApplicationContext().unregisterReceiver(receiver);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                Bundle bundle = intent.getExtras();
-                String id = bundle.getString(getString(R.string.id));
-                if(id.equals("4")){//是登記寄件結果
-                    String type = bundle.getString(getString(R.string.type));
-                    if(type.compareTo("1")==0){
-                        //登記寄件成功，回到主畫面
-                        Toast.makeText(getContext(),"登記寄件成功",Toast.LENGTH_SHORT).show();
-                        String money = sharedPreferences.getString("Money","100");
-                        int mny = Integer.valueOf(money);
-                        money = String.valueOf(mny-30);
-                        sharedPreferences.edit().putString("Money",money).apply();
+                if(intent.getStringExtra("result").equals("true")) {
+                    try {
+                        getActivity().getApplicationContext().unregisterReceiver(receiver);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = intent.getExtras();
+                    String id = bundle.getString(getString(R.string.id));
+                    if (id.equals("4")) {//是登記寄件結果
+                        String type = bundle.getString(getString(R.string.type));
+                        if (type.compareTo("1") == 0) {
+                            //登記寄件成功，回到主畫面
+                            Toast.makeText(getContext(), "登記寄件成功", Toast.LENGTH_SHORT).show();
+                            String money = sharedPreferences.getString("Money", "100");
+                            int mny = Integer.valueOf(money);
+                            money = String.valueOf(mny - 30);
+                            sharedPreferences.edit().putString("Money", money).apply();
 
-                        HomeFragment homeFragment = new HomeFragment();
-                        homeFragment.setTargetFragment(NewOrderFragment3.this, 0);
-                        getFragmentManager().beginTransaction()
-                                .addToBackStack(null)
-                                .replace(R.id.fragment_container,homeFragment).commit();
+                            HomeFragment homeFragment = new HomeFragment();
+                            homeFragment.setTargetFragment(NewOrderFragment3.this, 0);
+                            getFragmentManager().beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container, homeFragment).commit();
 
 
-                    }else if(type.compareTo("0")==0){
-                        //登記寄件失敗，回到主畫面
-                        String errorMsg=bundle.getString(getString(R.string.errorMsg));
-                        Toast.makeText(getContext(),"登記寄件失敗,"+errorMsg,Toast.LENGTH_SHORT).show();
+                        } else if (type.compareTo("0") == 0) {
+                            //登記寄件失敗，回到主畫面
+                            String errorMsg = bundle.getString(getString(R.string.errorMsg));
+                            Toast.makeText(getContext(), "登記寄件失敗," + errorMsg, Toast.LENGTH_SHORT).show();
 
-                        HomeFragment homeFragment = new HomeFragment();
-                        homeFragment.setTargetFragment(NewOrderFragment3.this, 0);
-                        getFragmentManager().beginTransaction()
-                                .addToBackStack(null)
-                                .replace(R.id.fragment_container,homeFragment).commit();
-                    }else{
-                        Log.d("NewOrderFragment3","type error");
+                            HomeFragment homeFragment = new HomeFragment();
+                            homeFragment.setTargetFragment(NewOrderFragment3.this, 0);
+                            getFragmentManager().beginTransaction()
+                                    .addToBackStack(null)
+                                    .replace(R.id.fragment_container, homeFragment).commit();
+                        } else {
+                            Log.d("NewOrderFragment3", "type error");
+                        }
                     }
                 }
-
+                else{
+                    //連線有問題
+                    Toast.makeText(getContext(),"與伺服器斷線,請稍候再試",Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

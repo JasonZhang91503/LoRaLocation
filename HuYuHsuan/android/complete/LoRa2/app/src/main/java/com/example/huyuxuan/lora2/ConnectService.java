@@ -195,6 +195,18 @@ public class ConnectService extends Service {
                                     sendToServer(intent);
                                     //sendToServer(reSendIntent);
                                 }
+                                else{
+                                    //重新連線也失敗
+                                    Intent broadcastIntent = new Intent();
+                                    broadcastIntent.setAction(ACTION_RECV_MSG);
+                                    broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                                    broadcastIntent.putExtra("result","false");
+                                    broadcastIntent.putExtra("activity",activityName);//決定要傳給哪個activity
+                                    broadcastIntent.putExtras(bundle);
+                                    sendBroadcast(broadcastIntent);
+                                    Log.i("Service:","重新連線失敗sendbroadcast to  "+activityName);
+                                    ConnectService.this.stopSelf();
+                                }
                             }
                         }
                         if(activityName.compareTo("")!=0 && bundle != null){

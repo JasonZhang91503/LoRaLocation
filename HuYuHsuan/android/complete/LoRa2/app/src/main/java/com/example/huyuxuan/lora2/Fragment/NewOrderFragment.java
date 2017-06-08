@@ -190,8 +190,8 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
     public class ConnectServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("result").equals("true")){
-                if(intent.getStringExtra("activity").equals("NewOrderFragment")){
+            if(intent.getStringExtra("activity").equals("NewOrderFragment")){
+                if(intent.getStringExtra("result").equals("true")){
                     if(isAdded()){
                         try{
                             getActivity().getApplicationContext().unregisterReceiver(receiver);
@@ -255,7 +255,7 @@ public class NewOrderFragment extends Fragment implements View.OnClickListener{
 
                 }
                 else{
-                   // Toast.makeText(getActivity(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"與伺服器斷線,請稍候再試",Toast.LENGTH_SHORT).show();
                 }
             }
 

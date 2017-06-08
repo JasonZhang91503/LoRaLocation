@@ -331,7 +331,7 @@ public class SendHistoryFragment extends Fragment {
                 }
                 else{
                     //連線有問題
-                    Toast.makeText(getContext(),"伺服器維護中,請稍候再試",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"與伺服器斷線,請稍候再試",Toast.LENGTH_SHORT).show();
                 }
             }
         }
