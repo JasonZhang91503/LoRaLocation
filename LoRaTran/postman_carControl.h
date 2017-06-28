@@ -6,7 +6,7 @@
 #include"rs232.h"
 #include<iostream>
 using namespace std;
-//using namespace unistd;
+using namespace unistd;
 
 #define TTYUSB0 16
 #define MILI 1000
