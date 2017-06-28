@@ -19,7 +19,7 @@ speedHigh[12] = {"FE FE HH FF"},    //速度up
 speedLow[12] = {"FE FE LL FF"},     //速度down
 
 leftX[15] = {"FE FE XX 28 FF"}, //大左
-leftX2[15] = {"FE FE XX 48 FF"},    //小左
+leftX2[15] = {"FE FE XX 47 FF"},    //小左
 
 rightX[15] = {"FE FE XX 70 FF"}, //大右
 rightX2[15] = {"FE FE XX 55 FF"},//小右
