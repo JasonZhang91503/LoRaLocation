@@ -64,7 +64,7 @@ int main(){
     //open ttyUSB0 ,16 = ttyUSB0;
     if(RS232_OpenComport(TTYUSB0,9600,"8N1")){
         cout << "OpenComport error" << endl;
-        return;
+        return 0;
     }
 
 
