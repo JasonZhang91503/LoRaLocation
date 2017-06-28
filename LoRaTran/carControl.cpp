@@ -19,8 +19,8 @@ power[12] = {"FE FE EE FF"},
 speedHigh[12] = {"FE FE HH FF"},
 speedLow[12] = {"FE FE LL FF"},
 
-leftX[15] = {"FE FE XX 26 FF"},
-leftX2[15] = {"FE FE XX 45 FF"},
+leftX[15] = {"FE FE XX 28 FF"},
+leftX2[15] = {"FE FE XX 47 FF"},
 
 rightX[15] = {"FE FE XX 70 FF"},
 rightX2[15] = {"FE FE XX 55 FF"},
