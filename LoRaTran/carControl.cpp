@@ -99,7 +99,7 @@ public:
 
 private:
     
-}
+};
 
 
 int main(){
