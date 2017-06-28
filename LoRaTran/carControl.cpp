@@ -6,34 +6,37 @@
 #include"rs232.h"
 #include<iostream>
 using namespace std;
-//using namespace unistd;
 
-#define TTYUSB0 16
-#define MILI 1000
+#define TTYUSB0 16  //USB孔的TTY
+#define MILI 1000   //1000us
 
-#define LEFT_T 2000
-#define RIGHT_T 2000
+#define LEFT_T 2000 //2000us
+#define RIGHT_T 2000    //2000us
 
 unsigned char 
-power[12] = {"FE FE EE FF"},
-speedHigh[12] = {"FE FE HH FF"},
-speedLow[12] = {"FE FE LL FF"},
+power[12] = {"FE FE EE FF"},    //開關封包
+speedHigh[12] = {"FE FE HH FF"},    //速度up
+speedLow[12] = {"FE FE LL FF"},     //速度down
 
-leftX[15] = {"FE FE XX 28 FF"},
-leftX2[15] = {"FE FE XX 47 FF"},
+leftX[15] = {"FE FE XX 28 FF"}, //大左
+leftX2[15] = {"FE FE XX 48 FF"},    //小左
 
-rightX[15] = {"FE FE XX 70 FF"},
-rightX2[15] = {"FE FE XX 55 FF"},
+rightX[15] = {"FE FE XX 70 FF"}, //大右
+rightX2[15] = {"FE FE XX 55 FF"},//小右
 
-goY[15] = {"FE FE YY 85 FF"},
-goY2[15] = {"FE FE YY 55 FF"},
+goY[15] = {"FE FE YY 85 FF"},//大前
+goY2[15] = {"FE FE YY 55 FF"},//小前
 
-backY[15] = {"FE FE YY 30 FF"},
-backY2[15] = {"FE FE YY 45 FF"},
+backY[15] = {"FE FE YY 30 FF"},//大後
+backY2[15] = {"FE FE YY 45 FF"},//小後
 
-mX[15] = {"FE FE XX 50 FF"},
-mY[15] = {"FE FE YY 50 FF"};
+mX[15] = {"FE FE XX 50 FF"},//X回到中心
+mY[15] = {"FE FE YY 50 FF"};//Y回到中心
 
+//這個函式是用來偵測鍵盤是否有被按下
+//有的話回傳1
+//沒有回傳0
+//這個網路上找的，我也看不懂QQ，但能用
 int kbhit(void)
 {  
     struct termios oldt, newt;  
@@ -54,52 +57,7 @@ int kbhit(void)
         return 1;  
     }  
     return 0;  
-}  
-
-class carControl{
-public:
-    carControl(int comport){
-        if(RS232_OpenComport(comport,9600,"8N1")){
-            printf("OpenComport error\n");
-            exit(1);
-        }
-    }
-    
-    void turnLeft(){
-        RS232_SendBuf(TTYUSB0,leftX,14);
-        usleep(LEFT_T * MILI);
-        stop();
-    }
-
-    void turnRight(){
-        RS232_SendBuf(TTYUSB0,rightX,14);
-        usleep(RIGHT_T * MILI);
-        stop();
-    }
-
-    void goStraight(){
-        RS232_SendBuf(TTYUSB0,goY,14);
-    }
-
-    void leftSmall(){
-        RS232_SendBuf(TTYUSB0,leftX2,14);
-    }
-
-    void rightSmall(){
-        RS232_SendBuf(TTYUSB0,rightX2,14);
-    }
-
-
-    void stop(){
-        RS232_SendBuf(TTYUSB0,mX,14);
-        usleep(100 * MILI);
-        RS232_SendBuf(TTYUSB0,mY,14);
-        usleep(100 * MILI);
-    }
-
-private:
-    
-};
+}
 
 
 int main(){
@@ -111,45 +69,40 @@ int main(){
 
 
     char c;
-    bool stop = true;
 
     do{
 
+        //若沒有鍵盤按鍵被按下，就無限迴圈，按下則離開迴圈
         while(!kbhit()){
-            /*
-            if(!stop){
-                RS232_SendBuf(TTYUSB0,mX,14);
-                usleep(100 * MILI);
-                RS232_SendBuf(TTYUSB0,mY,14);
-                stop = true;
-            }
-            */
         }
 
-        
 
+        //用getChar得知被按下的ASKII
         c = getchar();
 
         printf("INPUT : %d\n",(int)c);
 
-        /*
-        int input;
-        cout << "Input :";
-        cin >> input;
-        */
         switch(c){
+            //開關機
         case 'e':
             RS232_SendBuf(TTYUSB0,power,11);
             break;
+            //加速
         case 'h':
             RS232_SendBuf(TTYUSB0,speedHigh,11);
             break;
+            //減速
         case 'l':
             RS232_SendBuf(TTYUSB0,speedLow,11);
             break;
+            //27這個是上下左右的判斷
+            //通常按下上下左右，回傳的是三個ASKII的組合，而不是單一ASKII值
+            //所以首先會讀取到第一個ASKII是27
         case 27:
+            //接著在讀取第二個值，這個值會是91，但可以忽略不理她
             c = getchar();
             printf("a : %d\n",(int)c);
+            //接下來第三個值比較重要，他分別是 上 = 65，下 = 66， 左 = 68， 右 = 67
             c = getchar();
             printf("b : %d\n",(int)c);
             if(c == 65){ 
@@ -161,48 +114,48 @@ int main(){
                 printf("send");
             }
             else if(c == 68){ 
-                RS232_SendBuf(TTYUSB0,leftX,14);
+                RS232_SendBuf(TTYUSB0,leftX2,14);
                 printf("send");
             }
             else if(c == 67){ 
-                RS232_SendBuf(TTYUSB0,rightX,14);
+                RS232_SendBuf(TTYUSB0,rightX2,14);
                 printf("send");
             }
-
-            stop = false;
             break;
+            //按下z ， 則x軸回到中心
         case 'z':
             RS232_SendBuf(TTYUSB0,mX,14);
             break;
+            //按下x , 則Y軸回到中心
         case 'x':
             RS232_SendBuf(TTYUSB0,mY,14);
             break;
+            //按下空白建，兩軸回到中心
+            //按下5也是
         case ' ':
+        case '5':
             RS232_SendBuf(TTYUSB0,mX,14);
             usleep(100 * MILI);
             RS232_SendBuf(TTYUSB0,mY,14);
             usleep(100 * MILI);
             break;
+            //就是8
         case '8':
-            RS232_SendBuf(TTYUSB0,goY2,14);
+            RS232_SendBuf(TTYUSB0,goY,14);
             break;
+            //就是2
         case '2':
-            RS232_SendBuf(TTYUSB0,backY2,14);
+            RS232_SendBuf(TTYUSB0,backY,14);
             break;
+            //就是4
         case '4':
-            RS232_SendBuf(TTYUSB0,leftX2,14);
+            RS232_SendBuf(TTYUSB0,leftX,14);
             break;
+            //就是6
         case '6':
-            RS232_SendBuf(TTYUSB0,rightX2,14);
+            RS232_SendBuf(TTYUSB0,rightX,14);
             break;
-
 
         }
-        
-
-        //usleep(1000 * MILI);
     }while(c != 'q');
-
-
-    //
 }
