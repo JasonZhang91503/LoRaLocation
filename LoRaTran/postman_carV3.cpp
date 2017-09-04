@@ -543,7 +543,7 @@ void* asyncCarControl(void* prarm){
 					}
 				}
 				cc->setDir(tarDir);
-
+				cc.setDirAngle( readAngle() );
 			}
 
 		}
