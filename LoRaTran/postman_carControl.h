@@ -129,7 +129,7 @@ public:
     }
 
     float getDirAngle(){
-        return dirAngle
+        return dirAngle;
     }
 
     void setForward(int f){
