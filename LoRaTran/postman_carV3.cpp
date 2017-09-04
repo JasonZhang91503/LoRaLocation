@@ -436,7 +436,7 @@ void* asyncCarControl(void* prarm){
 	clock_t start,end;
 	carControl* cc = carControl::getInstance(TTYUSB0);
 
-	cc.setDirAngle( readAngle() );
+	cc->setDirAngle( readAngle() );
 
 	char readBuff[256];
 	while(1){
@@ -478,7 +478,7 @@ void* asyncCarControl(void* prarm){
 					}
 					*/
 
-					float angle = readAngle() - cc.getDirAngle();
+					float angle = readAngle() - cc->getDirAngle();
 
 					if(angle < 0){ angle = -angle; }
 
@@ -543,7 +543,7 @@ void* asyncCarControl(void* prarm){
 					}
 				}
 				cc->setDir(tarDir);
-				cc.setDirAngle( readAngle() );
+				cc->setDirAngle( readAngle() );
 			}
 
 		}
