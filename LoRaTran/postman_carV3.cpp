@@ -90,6 +90,7 @@ postcar定義的error code皆為9487為開頭以區分error code來源
 #include <unistd.h>
 //#include <math.h>
 #include <iostream>
+#include <fstream>
 #include <pthread.h>
 #include <time.h>
 
@@ -150,6 +151,8 @@ int pchild;
 
 int carPipeFds[2];
 int carReadFds[2];
+
+string AnglePath = "/home/wmnlab/compass/compassoutput.txt";
 
 pthread_mutex_t carMutex = PTHREAD_MUTEX_INITIALIZER;
 bool change = false;
@@ -414,6 +417,17 @@ void buildCarControl(){
 #endif
 }
 
+float readAngle(){
+	fstream AngleFile;
+	char outputStream[256];
+	const char* fileName = AnglePath.c_str();
+
+	AngleFile.open(AnglePath,ios::in);
+	AngleFile.getline(outputStream,256);
+
+	return atof(outputStream);
+}
+
 void* asyncCarControl(void* prarm){
 #ifndef NO_CAR_MODE
 	printf("Build car control\n");
@@ -421,6 +435,8 @@ void* asyncCarControl(void* prarm){
 	int lr = 1;
 	clock_t start,end;
 	carControl* cc = carControl::getInstance(TTYUSB0);
+
+	cc.setDirAngle( readAngle() );
 
 	char readBuff[256];
 	while(1){
@@ -446,6 +462,7 @@ void* asyncCarControl(void* prarm){
 			if(currentDir == tarDir){
 				cc->goStraight();
 				if(forward){
+					/*
 					end = clock();
 
 					if(end - start >= 1200){
@@ -458,6 +475,15 @@ void* asyncCarControl(void* prarm){
 							lr = 1;
 						}
 						start = clock();
+					}
+					*/
+
+					float angle = readAngle() - cc.getDirAngle();
+
+					if(angle < 0){ angle = -angle; }
+
+					if( angle > 30 ){
+						//do something new
 					}
 				}
 				else{

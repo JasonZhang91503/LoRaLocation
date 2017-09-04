@@ -124,6 +124,14 @@ public:
         return currentDir;
     }
 
+    void setDirAngle(float Angle){
+        dirAngle = Angle;
+    }
+
+    float getDirAngle(){
+        return dirAngle
+    }
+
     void setForward(int f){
         forward = f;
     }
@@ -136,6 +144,7 @@ public:
 private:
     static carControl* instance;
     int currentDir = 1;
+    float dirAngle = 0;
     bool forward = false;
 };
 
