@@ -425,7 +425,11 @@ float readAngle(){
 	AngleFile.open(AnglePath,ios::in);
 	AngleFile.getline(outputStream,256);
 
-	return atof(outputStream);
+	float readData = atof(outputStream);
+
+	AngleFile.close();
+
+	return readData;
 }
 
 void* asyncCarControl(void* prarm){
