@@ -416,7 +416,6 @@ void buildCarControl(){
 	}
 #endif
 }
-dfadfas
 
 float readAngle(){
 	fstream AngleFile;
